@@ -1,0 +1,4 @@
+idf_component_register(SRCS "hb_hal_button.c"
+                    INCLUDE_DIRS "include"
+                    REQUIRES driver)
+

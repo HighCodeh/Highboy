@@ -1,0 +1,12 @@
+CMake Error at CMakeLists.txt:18 (target_link_libraries):
+  The keyword signature for target_link_libraries has already been used with
+  the target "High_boy.elf".  All uses of target_link_libraries with a target
+  must be either all-keyword or all-plain.
+
+  The uses of the keyword signature are here:
+
+   * C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/project.cmake:804 (target_link_libraries)
+
+
+
+ninja: error: rebuilding 'build.ninja': subcommand failed

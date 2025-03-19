@@ -1,0 +1,11 @@
+CMake Error at C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/build.cmake:268 (message):
+  Failed to resolve component 'board_pins.h'.
+Call Stack (most recent call first):
+  C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/build.cmake:304 (__build_resolve_and_add_req)
+  C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/build.cmake:305 (__build_expand_requirements)
+  C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/build.cmake:305 (__build_expand_requirements)
+  C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/build.cmake:607 (__build_expand_requirements)
+  C:/Users/vinic/esp/v5.3.2/esp-idf/tools/cmake/project.cmake:710 (idf_build_process)
+  CMakeLists.txt:8 (project)
+
+

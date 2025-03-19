@@ -1,0 +1,4 @@
+{
+    "idf.portWin": "COM23",
+    "idf.flashType": "UART"
+}
