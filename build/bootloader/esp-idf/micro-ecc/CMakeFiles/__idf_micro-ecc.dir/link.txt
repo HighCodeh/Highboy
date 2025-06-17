@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libmicro-ecc.a "CMakeFiles/__idf_micro-ecc.dir/uECC_verify_antifault.c.obj"
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libmicro-ecc.a

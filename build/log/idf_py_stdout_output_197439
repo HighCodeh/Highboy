@@ -1,0 +1,185 @@
+-- git describe returned 'fatal: bad revision 'HEAD''
+-- Could not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32s3
+NOTICE: Processing 2 dependencies:
+NOTICE: [1/2] espressif/led_strip (2.5.5)
+NOTICE: [2/2] idf (5.1.2)
+-- Project sdkconfig file /home/vinibit/Projetos/Highboy-main/sdkconfig
+-- App "highboy" version: 1
+-- Adding linker script /home/vinibit/Projetos/Highboy-main/build/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/esp_system/ld/esp32s3/sections.ld.in
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/esp_rom/esp32s3/ld/esp32s3.rom.newlib.ld
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /home/vinibit/esp-idf-v5.1.2/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- Components: Applications Core Drivers Service app_trace app_update bootloader bootloader_support bt cmock console cxx driver efuse esp-tls esp_adc esp_app_format esp_coex esp_common esp_eth esp_event esp_gdbstub esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_local_ctrl esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_system esp_timer esp_wifi espcoredump espressif__led_strip esptool_py fatfs freertos hal heap http_parser idf_test ieee802154 json log lwip main mbedtls mqtt newlib nvs_flash openthread partition_table perfmon protobuf-c protocomm pthread sdmmc soc spi_flash spiffs tcp_transport touch_element ulp unity usb vfs wear_levelling wifi_provisioning wpa_supplicant xtensa
+-- Component paths: /home/vinibit/Projetos/Highboy-main/components/Applications /home/vinibit/Projetos/Highboy-main/components/Core /home/vinibit/Projetos/Highboy-main/components/Drivers /home/vinibit/Projetos/Highboy-main/components/Service /home/vinibit/esp-idf-v5.1.2/components/app_trace /home/vinibit/esp-idf-v5.1.2/components/app_update /home/vinibit/esp-idf-v5.1.2/components/bootloader /home/vinibit/esp-idf-v5.1.2/components/bootloader_support /home/vinibit/esp-idf-v5.1.2/components/bt /home/vinibit/esp-idf-v5.1.2/components/cmock /home/vinibit/esp-idf-v5.1.2/components/console /home/vinibit/esp-idf-v5.1.2/components/cxx /home/vinibit/esp-idf-v5.1.2/components/driver /home/vinibit/esp-idf-v5.1.2/components/efuse /home/vinibit/esp-idf-v5.1.2/components/esp-tls /home/vinibit/esp-idf-v5.1.2/components/esp_adc /home/vinibit/esp-idf-v5.1.2/components/esp_app_format /home/vinibit/esp-idf-v5.1.2/components/esp_coex /home/vinibit/esp-idf-v5.1.2/components/esp_common /home/vinibit/esp-idf-v5.1.2/components/esp_eth /home/vinibit/esp-idf-v5.1.2/components/esp_event /home/vinibit/esp-idf-v5.1.2/components/esp_gdbstub /home/vinibit/esp-idf-v5.1.2/components/esp_hid /home/vinibit/esp-idf-v5.1.2/components/esp_http_client /home/vinibit/esp-idf-v5.1.2/components/esp_http_server /home/vinibit/esp-idf-v5.1.2/components/esp_https_ota /home/vinibit/esp-idf-v5.1.2/components/esp_https_server /home/vinibit/esp-idf-v5.1.2/components/esp_hw_support /home/vinibit/esp-idf-v5.1.2/components/esp_lcd /home/vinibit/esp-idf-v5.1.2/components/esp_local_ctrl /home/vinibit/esp-idf-v5.1.2/components/esp_mm /home/vinibit/esp-idf-v5.1.2/components/esp_netif /home/vinibit/esp-idf-v5.1.2/components/esp_netif_stack /home/vinibit/esp-idf-v5.1.2/components/esp_partition /home/vinibit/esp-idf-v5.1.2/components/esp_phy /home/vinibit/esp-idf-v5.1.2/components/esp_pm /home/vinibit/esp-idf-v5.1.2/components/esp_psram /home/vinibit/esp-idf-v5.1.2/components/esp_ringbuf /home/vinibit/esp-idf-v5.1.2/components/esp_rom /home/vinibit/esp-idf-v5.1.2/components/esp_system /home/vinibit/esp-idf-v5.1.2/components/esp_timer /home/vinibit/esp-idf-v5.1.2/components/esp_wifi /home/vinibit/esp-idf-v5.1.2/components/espcoredump /home/vinibit/Projetos/Highboy-main/managed_components/espressif__led_strip /home/vinibit/esp-idf-v5.1.2/components/esptool_py /home/vinibit/esp-idf-v5.1.2/components/fatfs /home/vinibit/esp-idf-v5.1.2/components/freertos /home/vinibit/esp-idf-v5.1.2/components/hal /home/vinibit/esp-idf-v5.1.2/components/heap /home/vinibit/esp-idf-v5.1.2/components/http_parser /home/vinibit/esp-idf-v5.1.2/components/idf_test /home/vinibit/esp-idf-v5.1.2/components/ieee802154 /home/vinibit/esp-idf-v5.1.2/components/json /home/vinibit/esp-idf-v5.1.2/components/log /home/vinibit/esp-idf-v5.1.2/components/lwip /home/vinibit/Projetos/Highboy-main/main /home/vinibit/esp-idf-v5.1.2/components/mbedtls /home/vinibit/esp-idf-v5.1.2/components/mqtt /home/vinibit/esp-idf-v5.1.2/components/newlib /home/vinibit/esp-idf-v5.1.2/components/nvs_flash /home/vinibit/esp-idf-v5.1.2/components/openthread /home/vinibit/esp-idf-v5.1.2/components/partition_table /home/vinibit/esp-idf-v5.1.2/components/perfmon /home/vinibit/esp-idf-v5.1.2/components/protobuf-c /home/vinibit/esp-idf-v5.1.2/components/protocomm /home/vinibit/esp-idf-v5.1.2/components/pthread /home/vinibit/esp-idf-v5.1.2/components/sdmmc /home/vinibit/esp-idf-v5.1.2/components/soc /home/vinibit/esp-idf-v5.1.2/components/spi_flash /home/vinibit/esp-idf-v5.1.2/components/spiffs /home/vinibit/esp-idf-v5.1.2/components/tcp_transport /home/vinibit/esp-idf-v5.1.2/components/touch_element /home/vinibit/esp-idf-v5.1.2/components/ulp /home/vinibit/esp-idf-v5.1.2/components/unity /home/vinibit/esp-idf-v5.1.2/components/usb /home/vinibit/esp-idf-v5.1.2/components/vfs /home/vinibit/esp-idf-v5.1.2/components/wear_levelling /home/vinibit/esp-idf-v5.1.2/components/wifi_provisioning /home/vinibit/esp-idf-v5.1.2/components/wpa_supplicant /home/vinibit/esp-idf-v5.1.2/components/xtensa
+-- Configuring done (4.0s)
+-- Generating done (0.7s)
+-- Build files have been written to: /home/vinibit/Projetos/Highboy-main/build
+[  0%] Built target custom_bundle
+[  0%] Built target memory_ld
+[  0%] Built target partition_table_bin
+[  1%] Built target _project_elf_src
+[  1%] Performing build step for 'bootloader'
+[  1%] Built target __idf_ulp
+[  1%] Built target __idf_esp_https_ota
+[  1%] Built target _project_elf_src
+[  4%] Built target __idf_log
+[  2%] Built target __idf_esp_http_server
+[ 14%] Built target __idf_esp_rom
+[  3%] Built target __idf_esp_http_client
+[ 16%] Built target __idf_esp_common
+[  4%] Built target __idf_tcp_transport
+[ 25%] Built target __idf_esp_hw_support
+[ 27%] Built target __idf_esp_system
+[  5%] Built target __idf_esp_gdbstub
+[ 36%] Built target __idf_efuse
+[  6%] Built target __idf_esp_eth
+[ 57%] Built target __idf_bootloader_support
+[  7%] Built target __idf_esp_adc
+[ 58%] Built target __idf_esp_app_format
+[  8%] Built target __idf_esp-tls
+[ 60%] Built target __idf_spi_flash
+[  8%] Built target __idf_http_parser
+[ 65%] Built target __idf_hal
+[  9%] Built target __idf_esp_wifi
+[ 68%] Built target __idf_micro-ecc
+[  9%] Built target __idf_esp_coex
+[ 91%] Built target __idf_soc
+[ 93%] Built target __idf_xtensa
+[ 95%] Built target __idf_main
+[ 98%] Built target bootloader.elf
+[100%] Built target gen_project_binary
+[ 18%] Built target __idf_wpa_supplicant
+[ 19%] Built target __idf_esp_netif
+Bootloader binary size 0x51c0 bytes. 0x2e40 bytes (36%) free.
+[100%] Built target bootloader_check_size
+[100%] Built target app
+[ 19%] No install step for 'bootloader'
+[ 19%] Completed 'bootloader'
+[ 28%] Built target __idf_lwip
+[ 28%] Built target bootloader
+[ 29%] Built target __idf_vfs
+[ 29%] Built target __idf_esp_phy
+[ 30%] Built target __idf_nvs_flash
+[ 30%] Built target __idf_esp_event
+[ 30%] Built target __idf_esp_timer
+[ 30%] Built target __idf_esp_common
+[ 30%] Built target __idf_cxx
+[ 32%] Built target __idf_newlib
+[ 34%] Built target __idf_freertos
+[ 38%] Built target __idf_esp_hw_support
+[ 41%] Built target __idf_soc
+[ 42%] Built target __idf_heap
+[ 43%] Built target __idf_log
+[ 48%] Built target __idf_hal
+[ 50%] Built target __idf_esp_rom
+[ 54%] Built target __idf_esp_system
+[ 55%] Built target __idf_pthread
+[ 57%] Built target __idf_spi_flash
+[ 57%] Built target __idf_esp_mm
+[ 58%] Built target __idf_app_update
+[ 59%] Built target __idf_esp_partition
+[ 60%] Built target __idf_bootloader_support
+[ 60%] Built target __idf_esp_app_format
+[ 62%] Built target mbedtls
+[ 63%] Built target mbedx509
+[ 74%] Built target mbedcrypto
+[ 74%] Built target p256m
+[ 74%] Built target everest
+[ 74%] Built target __idf_mbedtls
+[ 75%] Built target __idf_esp_pm
+[ 80%] Built target __idf_driver
+[ 81%] Built target __idf_efuse
+[ 81%] Built target __idf_esp_ringbuf
+[ 81%] Built target __idf_xtensa
+[ 82%] Built target __idf_espressif__led_strip
+[ 82%] Built target __idf_Drivers
+[ 84%] Built target __idf_wear_levelling
+[ 84%] Built target __idf_Core
+[ 85%] Built target __idf_unity
+[ 85%] Built target __idf_sdmmc
+[ 85%] Built target __idf_esp_hid
+[ 85%] Built target __idf_app_trace
+[ 87%] Built target __idf_console
+[ 88%] Built target __idf_esp_lcd
+[ 88%] Built target __idf_json
+[ 89%] Built target __idf_protobuf-c
+[ 89%] Built target __idf_perfmon
+[ 90%] Built target __idf_mqtt
+[ 91%] Built target __idf_espcoredump
+[ 92%] Built target __idf_spiffs
+[ 93%] Built target __idf_cmock
+[ 93%] Built target __idf_touch_element
+[ 94%] Built target __idf_fatfs
+[ 95%] Built target __idf_usb
+[ 96%] Built target __idf_protocomm
+[ 96%] Built target __idf_Applications
+[ 97%] Built target __idf_esp_local_ctrl
+[ 98%] Built target __idf_wifi_provisioning
+[100%] Built target __idf_Service
+[100%] Building C object esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj
+[100%] Linking C static library libmain.a
+[100%] Built target __idf_main
+[100%] Generating ld/sections.ld
+[100%] Built target __ldgen_output_sections.ld
+[100%] Linking CXX executable highboy.elf
+[100%] Built target highboy.elf
+[100%] Generating binary image from built executable
+esptool.py v4.8.1
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/vinibit/Projetos/Highboy-main/build/highboy.bin
+[100%] Built target gen_project_binary
+highboy.bin binary size 0x57600 bytes. Smallest app partition is 0x100000 bytes. 0xa8a00 bytes (66%) free.
+[100%] Built target app_check_size
+[100%] Built target app
+esptool.py --chip esp32s3 -p /dev/ttyACM0 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 2MB 0x0 bootloader/bootloader.bin 0x10000 highboy.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyACM0
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+MAC: e4:b0:63:91:c0:44
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Flash will be erased from 0x00010000 to 0x00067fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 20928 bytes to 13290...
+Writing at 0x00000000... (100 %)
+Wrote 20928 bytes (13290 compressed) at 0x00000000 in 0.4 seconds (effective 469.4 kbit/s)...
+Hash of data verified.
+Compressed 357888 bytes to 194900...
+Writing at 0x00010000... (8 %)
+Writing at 0x0001b9ec... (16 %)
+Writing at 0x00028003... (25 %)
+Writing at 0x0002da65... (33 %)
+Writing at 0x00033636... (41 %)
+Writing at 0x000399a4... (50 %)
+Writing at 0x0003f146... (58 %)
+Writing at 0x00045707... (66 %)
+Writing at 0x0004b4e4... (75 %)
+Writing at 0x00051935... (83 %)
+Writing at 0x0005a1d6... (91 %)
+Writing at 0x0006198c... (100 %)
+Wrote 357888 bytes (194900 compressed) at 0x00010000 in 2.6 seconds (effective 1101.1 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.0 seconds (effective 532.0 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+[100%] Built target flash

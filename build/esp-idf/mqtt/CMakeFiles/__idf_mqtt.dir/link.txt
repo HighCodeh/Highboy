@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libmqtt.a "CMakeFiles/__idf_mqtt.dir/esp-mqtt/mqtt_client.c.obj" "CMakeFiles/__idf_mqtt.dir/esp-mqtt/lib/mqtt_msg.c.obj" "CMakeFiles/__idf_mqtt.dir/esp-mqtt/lib/mqtt_outbox.c.obj" "CMakeFiles/__idf_mqtt.dir/esp-mqtt/lib/platform_esp32_idf.c.obj"
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libmqtt.a

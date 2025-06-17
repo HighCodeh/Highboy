@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_timer.a CMakeFiles/__idf_esp_timer.dir/src/esp_timer.c.obj CMakeFiles/__idf_esp_timer.dir/src/ets_timer_legacy.c.obj CMakeFiles/__idf_esp_timer.dir/src/system_time.c.obj CMakeFiles/__idf_esp_timer.dir/src/esp_timer_impl_common.c.obj CMakeFiles/__idf_esp_timer.dir/src/esp_timer_impl_systimer.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_timer.a

@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_pm.a CMakeFiles/__idf_esp_pm.dir/pm_locks.c.obj CMakeFiles/__idf_esp_pm.dir/pm_trace.c.obj CMakeFiles/__idf_esp_pm.dir/pm_impl.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_pm.a

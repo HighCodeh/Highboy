@@ -1,0 +1,11 @@
+idf_component_register(SRCS "bq25896/bq25896.c"
+                            "buzzer/buzzer.c"
+                            "cc1101/cc1101.c"
+                            "pn7150/pn7150.c" 
+                            "st7789/st7789.c"
+               INCLUDE_DIRS "bq25896/include"
+                            "buzzer/include"
+                            "cc1101/include"
+                            "pn7150/include"
+                            "st7789/include"
+            REQUIRES driver)

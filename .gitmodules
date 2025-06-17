@@ -1,0 +1,3 @@
+[submodule "components/esp-idf-st7789"]
+	path = components/esp-idf-st7789
+	url = https://github.com/nopnop2002/esp-idf-st7789.git

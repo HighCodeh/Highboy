@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libService.a CMakeFiles/__idf_Service.dir/font/font.c.obj CMakeFiles/__idf_Service.dir/icons/icons.c.obj CMakeFiles/__idf_Service.dir/hb_sd/hb_sd.c.obj CMakeFiles/__idf_Service.dir/ir_transmitter/ir_transmitter.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libService.a

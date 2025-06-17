@@ -1,0 +1,165 @@
+[  1%] Built target _project_elf_src
+[  0%] Built target partition_table_bin
+[  1%] Built target memory_ld
+[  1%] Built target custom_bundle
+[  1%] Performing build step for 'bootloader'
+[  1%] Built target __idf_ulp
+[  1%] Built target __idf_esp_https_ota
+[  1%] Built target _project_elf_src
+[  4%] Built target __idf_log
+[  2%] Built target __idf_esp_http_server
+[ 14%] Built target __idf_esp_rom
+[  3%] Built target __idf_esp_http_client
+[ 16%] Built target __idf_esp_common
+[  4%] Built target __idf_tcp_transport
+[ 25%] Built target __idf_esp_hw_support
+[ 27%] Built target __idf_esp_system
+[  5%] Built target __idf_esp_gdbstub
+[ 36%] Built target __idf_efuse
+[  6%] Built target __idf_esp_eth
+[ 57%] Built target __idf_bootloader_support
+[  7%] Built target __idf_esp_adc
+[ 58%] Built target __idf_esp_app_format
+[  8%] Built target __idf_esp-tls
+[ 60%] Built target __idf_spi_flash
+[  8%] Built target __idf_http_parser
+[ 65%] Built target __idf_hal
+[  9%] Built target __idf_esp_wifi
+[ 68%] Built target __idf_micro-ecc
+[  9%] Built target __idf_esp_coex
+[ 91%] Built target __idf_soc
+[ 93%] Built target __idf_xtensa
+[ 95%] Built target __idf_main
+[ 18%] Built target __idf_wpa_supplicant
+[ 98%] Built target bootloader.elf
+[ 19%] Built target __idf_esp_netif
+[100%] Built target gen_project_binary
+Bootloader binary size 0x51c0 bytes. 0x2e40 bytes (36%) free.
+[ 28%] Built target __idf_lwip
+[100%] Built target bootloader_check_size
+[ 29%] Built target __idf_vfs
+[100%] Built target app
+[ 29%] No install step for 'bootloader'
+[ 29%] Built target __idf_esp_phy
+[ 29%] Completed 'bootloader'
+[ 30%] Built target __idf_nvs_flash
+[ 30%] Built target bootloader
+[ 30%] Built target __idf_esp_event
+[ 30%] Built target __idf_esp_timer
+[ 30%] Built target __idf_esp_common
+[ 30%] Built target __idf_cxx
+[ 32%] Built target __idf_newlib
+[ 34%] Built target __idf_freertos
+[ 38%] Built target __idf_esp_hw_support
+[ 41%] Built target __idf_soc
+[ 42%] Built target __idf_heap
+[ 43%] Built target __idf_log
+[ 48%] Built target __idf_hal
+[ 50%] Built target __idf_esp_rom
+[ 54%] Built target __idf_esp_system
+[ 55%] Built target __idf_pthread
+[ 57%] Built target __idf_spi_flash
+[ 57%] Built target __idf_esp_mm
+[ 58%] Built target __idf_app_update
+[ 59%] Built target __idf_esp_partition
+[ 60%] Built target __idf_bootloader_support
+[ 60%] Built target __idf_esp_app_format
+[ 62%] Built target mbedtls
+[ 63%] Built target mbedx509
+[ 74%] Built target mbedcrypto
+[ 74%] Built target p256m
+[ 74%] Built target everest
+[ 74%] Built target __idf_mbedtls
+[ 75%] Built target __idf_esp_pm
+[ 80%] Built target __idf_driver
+[ 81%] Built target __idf_efuse
+[ 81%] Built target __idf_esp_ringbuf
+[ 81%] Built target __idf_xtensa
+[ 81%] Built target __idf_app_trace
+[ 83%] Built target __idf_espressif__led_strip
+[ 83%] Built target __idf_wear_levelling
+[ 83%] Built target __idf_esp_hid
+[ 85%] Built target __idf_console
+[ 85%] Built target __idf_Drivers
+[ 85%] Built target __idf_sdmmc
+[ 87%] Built target __idf_esp_lcd
+[ 86%] Built target __idf_Core
+[ 88%] Built target __idf_unity
+[ 89%] Built target __idf_protobuf-c
+[ 90%] Built target __idf_touch_element
+[ 90%] Built target __idf_espcoredump
+[ 90%] Built target __idf_perfmon
+[ 90%] Built target __idf_json
+[ 91%] Built target __idf_spiffs
+[ 92%] Built target __idf_cmock
+[ 95%] Built target __idf_mqtt
+[ 95%] Built target __idf_fatfs
+[ 95%] Built target __idf_usb
+[ 96%] Built target __idf_protocomm
+[ 96%] Building C object esp-idf/Applications/CMakeFiles/__idf_Applications.dir/home/home.c.obj
+[ 97%] Built target __idf_esp_local_ctrl
+[ 98%] Built target __idf_wifi_provisioning
+[ 98%] Linking C static library libApplications.a
+[ 98%] Built target __idf_Applications
+[100%] Built target __idf_Service
+[100%] Built target __idf_main
+[100%] Generating ld/sections.ld
+[100%] Built target __ldgen_output_sections.ld
+[100%] Linking CXX executable highboy.elf
+[100%] Built target highboy.elf
+[100%] Generating binary image from built executable
+esptool.py v4.8.1
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Generated /home/vinibit/Projetos/Highboy-main/build/highboy.bin
+[100%] Built target gen_project_binary
+highboy.bin binary size 0x57c20 bytes. Smallest app partition is 0x100000 bytes. 0xa83e0 bytes (66%) free.
+[100%] Built target app_check_size
+[100%] Built target app
+esptool.py --chip esp32s3 -p /dev/ttyACM0 -b 460800 --before=default_reset --after=hard_reset write_flash --flash_mode dio --flash_freq 80m --flash_size 2MB 0x0 bootloader/bootloader.bin 0x10000 highboy.bin 0x8000 partition_table/partition-table.bin
+esptool.py v4.8.1
+Serial port /dev/ttyACM0
+Connecting...
+Chip is ESP32-S3 (QFN56) (revision v0.2)
+Features: WiFi, BLE, Embedded PSRAM 8MB (AP_3v3)
+Crystal is 40MHz
+MAC: e4:b0:63:91:c0:44
+Uploading stub...
+Running stub...
+Stub running...
+Changing baud rate to 460800
+Changed.
+Configuring flash size...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Flash will be erased from 0x00010000 to 0x00067fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+SHA digest in image updated
+Compressed 20928 bytes to 13290...
+Writing at 0x00000000... (100 %)
+Wrote 20928 bytes (13290 compressed) at 0x00000000 in 0.4 seconds (effective 469.0 kbit/s)...
+Hash of data verified.
+Compressed 359456 bytes to 196649...
+Writing at 0x00010000... (7 %)
+Writing at 0x0001aca5... (15 %)
+Writing at 0x00027bdc... (23 %)
+Writing at 0x0002d476... (30 %)
+Writing at 0x0003320e... (38 %)
+Writing at 0x000395f4... (46 %)
+Writing at 0x0003ec86... (53 %)
+Writing at 0x0004535f... (61 %)
+Writing at 0x0004b0e4... (69 %)
+Writing at 0x000514f4... (76 %)
+Writing at 0x00059d2e... (84 %)
+Writing at 0x00061588... (92 %)
+Writing at 0x00067c00... (100 %)
+Wrote 359456 bytes (196649 compressed) at 0x00010000 in 2.6 seconds (effective 1089.6 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 103...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (103 compressed) at 0x00008000 in 0.0 seconds (effective 502.2 kbit/s)...
+Hash of data verified.
+
+Leaving...
+Hard resetting via RTS pin...
+[100%] Built target flash

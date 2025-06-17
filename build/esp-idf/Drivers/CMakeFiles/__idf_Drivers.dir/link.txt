@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libDrivers.a CMakeFiles/__idf_Drivers.dir/bq25896/bq25896.c.obj CMakeFiles/__idf_Drivers.dir/buzzer/buzzer.c.obj CMakeFiles/__idf_Drivers.dir/cc1101/cc1101.c.obj CMakeFiles/__idf_Drivers.dir/pn7150/pn7150.c.obj CMakeFiles/__idf_Drivers.dir/st7789/st7789.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libDrivers.a

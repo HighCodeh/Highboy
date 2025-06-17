@@ -1,0 +1,6 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/../lib/gcc/xtensa-esp32s3-elf/12.2.0/../../../../xtensa-esp32s3-elf/bin/ld: esp-idf/Applications/libApplications.a(music_menu.c.obj):(.literal.play_pop+0x0): undefined reference to `play_pop_music'
+collect2: error: ld returned 1 exit status
+make[3]: *** [CMakeFiles/highboy.elf.dir/build.make:537: highboy.elf] Erro 1
+make[2]: *** [CMakeFiles/Makefile2:2070: CMakeFiles/highboy.elf.dir/all] Erro 2
+make[1]: *** [CMakeFiles/Makefile2:1972: CMakeFiles/flash.dir/rule] Erro 2
+make: *** [Makefile:273: flash] Erro 2

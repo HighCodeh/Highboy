@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc liblog.a CMakeFiles/__idf_log.dir/log.c.obj CMakeFiles/__idf_log.dir/log_buffers.c.obj CMakeFiles/__idf_log.dir/log_freertos.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib liblog.a

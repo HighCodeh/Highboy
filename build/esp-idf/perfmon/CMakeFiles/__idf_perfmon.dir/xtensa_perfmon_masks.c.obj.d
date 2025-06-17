@@ -1,0 +1,24 @@
+esp-idf/perfmon/CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_masks.c.obj: \
+ /home/vinibit/esp-idf-v5.1.2/components/perfmon/xtensa_perfmon_masks.c \
+ /home/vinibit/esp-idf-v5.1.2/components/perfmon/include/xtensa_perfmon_masks.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/inttypes.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/newlib.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/_newlib_version.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/sys/config.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/machine/ieeefp.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/sys/features.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/sys/_intsup.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/_ansi.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/lib/gcc/xtensa-esp32s3-elf/12.2.0/include/stdint.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/stdint.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/machine/_default_types.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/sys/_stdint.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/lib/gcc/xtensa-esp32s3-elf/12.2.0/include/stddef.h \
+ /home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/xtensa-esp32s3-elf/sys-include/sys/_locale.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/include/xtensa/xt_perf_consts.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/esp32s3/include/xtensa/config/core.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/include/xtensa/hal.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/include/xtensa/xtensa-versions.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/esp32s3/include/xtensa/config/core-isa.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/esp32s3/include/xtensa/config/core-matmap.h \
+ /home/vinibit/esp-idf-v5.1.2/components/xtensa/esp32s3/include/xtensa/config/tie.h

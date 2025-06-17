@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libCore.a CMakeFiles/__idf_Core.dir/hb_hal_button/hb_hal_button.c.obj CMakeFiles/__idf_Core.dir/hb_hal_i2c/hb_hal_i2c.c.obj CMakeFiles/__idf_Core.dir/hb_hal_gpio/hb_hal_gpio.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libCore.a

@@ -1,0 +1,7 @@
+-- git describe returned 'fatal: bad revision 'HEAD''
+-- Could not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32s3
+NOTICE: Processing 2 dependencies:
+NOTICE: [1/2] espressif/led_strip (2.5.5)
+NOTICE: [2/2] idf (5.1.2)
+-- Configuring incomplete, errors occurred!

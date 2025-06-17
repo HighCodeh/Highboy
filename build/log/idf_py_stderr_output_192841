@@ -1,0 +1,51 @@
+Compiler supported targets: xtensa-esp32s3-elf
+
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c: In function 'battery_info_screen':
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:73:10: warning: unused variable 'buffer' [-Wunused-variable]
+   73 |     char buffer[32];
+      |          ^~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:72:14: warning: unused variable 'last_blink_time' [-Wunused-variable]
+   72 |     uint32_t last_blink_time = 0;
+      |              ^~~~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:71:10: warning: unused variable 'blink' [-Wunused-variable]
+   71 |     bool blink = true;
+      |          ^~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:70:10: warning: unused variable 'last_charging' [-Wunused-variable]
+   70 |     bool last_charging = false;
+      |          ^~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:69:13: warning: unused variable 'last_percent' [-Wunused-variable]
+   69 |     uint8_t last_percent = 0xFF;
+      |             ^~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:67:26: warning: unused variable 'last_charge_status' [-Wunused-variable]
+   67 |     bq25896_chg_status_t last_charge_status = BQ25896_CHG_STATUS_NOT_CHARGING;
+      |                          ^~~~~~~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:66:26: warning: unused variable 'charge_status' [-Wunused-variable]
+   66 |     bq25896_chg_status_t charge_status = BQ25896_CHG_STATUS_NOT_CHARGING;
+      |                          ^~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:65:28: warning: unused variable 'last_info' [-Wunused-variable]
+   65 |     bq25896_battery_info_t last_info = {0};
+      |                            ^~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:64:28: warning: unused variable 'info' [-Wunused-variable]
+   64 |     bq25896_battery_info_t info = {0};
+      |                            ^~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c: At top level:
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:42:13: warning: 'draw_battery_icon' defined but not used [-Wunused-function]
+   42 | static void draw_battery_icon(int x, int y, uint8_t percent, bool charging, bool blink) {
+      |             ^~~~~~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:38:13: warning: 'clear_area' defined but not used [-Wunused-function]
+   38 | static void clear_area(int x, int y, int w, int h) {
+      |             ^~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Applications/menu_battery/menu_battery.c:25:16: warning: 'voltage_to_percent_precise' defined but not used [-Wunused-function]
+   25 | static uint8_t voltage_to_percent_precise(uint16_t mV, bool charge_done) {
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c: In function 'mark':
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:26:9: error: implicit declaration of function 'ets_delay_us'; did you mean 'esp_rom_delay_us'? [-Werror=implicit-function-declaration]
+   26 |         ets_delay_us(high_time);
+      |         ^~~~~~~~~~~~
+      |         esp_rom_delay_us
+cc1: some warnings being treated as errors
+make[3]: *** [esp-idf/Service/CMakeFiles/__idf_Service.dir/build.make:118: esp-idf/Service/CMakeFiles/__idf_Service.dir/ir_transmitter/ir_transmitter.c.obj] Erro 1
+make[3]: ** Esperando que outros processos terminem.
+make[2]: *** [CMakeFiles/Makefile2:4789: esp-idf/Service/CMakeFiles/__idf_Service.dir/all] Erro 2
+make[1]: *** [CMakeFiles/Makefile2:1972: CMakeFiles/flash.dir/rule] Erro 2
+make: *** [Makefile:273: flash] Erro 2

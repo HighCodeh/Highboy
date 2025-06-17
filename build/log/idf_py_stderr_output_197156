@@ -1,0 +1,10 @@
+CMake Error at /home/vinibit/esp-idf-v5.1.2/tools/cmake/build.cmake:266 (message):
+  Failed to resolve component 'ir_transmitter'.
+Call Stack (most recent call first):
+  /home/vinibit/esp-idf-v5.1.2/tools/cmake/build.cmake:302 (__build_resolve_and_add_req)
+  /home/vinibit/esp-idf-v5.1.2/tools/cmake/build.cmake:595 (__build_expand_requirements)
+  /home/vinibit/esp-idf-v5.1.2/tools/cmake/project.cmake:547 (idf_build_process)
+  CMakeLists.txt:10 (project)
+
+
+make: *** [Makefile:1866: cmake_check_build_system] Erro 1

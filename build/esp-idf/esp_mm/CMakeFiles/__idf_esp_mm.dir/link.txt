@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_mm.a CMakeFiles/__idf_esp_mm.dir/esp_mmu_map.c.obj CMakeFiles/__idf_esp_mm.dir/port/esp32s3/ext_mem_layout.c.obj CMakeFiles/__idf_esp_mm.dir/esp_cache.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_mm.a

@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_event.a CMakeFiles/__idf_esp_event.dir/default_event_loop.c.obj CMakeFiles/__idf_esp_event.dir/esp_event.c.obj CMakeFiles/__idf_esp_event.dir/esp_event_private.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_event.a

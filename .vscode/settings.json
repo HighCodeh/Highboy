@@ -1,0 +1,14 @@
+{
+    "idf.portWin": "COM23",
+    "idf.flashType": "UART",
+    "idf.port": "/dev/ttyACM0",
+    "idf.customExtraVars": {
+        "IDF_TARGET": "esp32s3"
+    },
+    "idf.openOcdConfigs": [
+        "board/esp32s3-builtin.cfg"
+    ],
+    "files.associations": {
+        "stdio.h": "c"
+    }
+}

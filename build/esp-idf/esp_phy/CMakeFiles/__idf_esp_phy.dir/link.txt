@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_phy.a CMakeFiles/__idf_esp_phy.dir/src/phy_override.c.obj CMakeFiles/__idf_esp_phy.dir/src/lib_printf.c.obj CMakeFiles/__idf_esp_phy.dir/src/phy_common.c.obj CMakeFiles/__idf_esp_phy.dir/src/phy_init.c.obj CMakeFiles/__idf_esp_phy.dir/src/btbb_init.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_phy.a

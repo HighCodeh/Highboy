@@ -1,0 +1,306 @@
+/home/vinibit/Projetos/Highboy-main/main/main.c:29:14: error: unknown type name 'Note'
+   29 | static const Note pop_music[] = {
+      |              ^~~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: warning: braces around scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: note: (near initialization for 'pop_music[0]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:11: warning: excess elements in scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |           ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:11: note: (near initialization for 'pop_music[0]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: warning: braces around scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: note: (near initialization for 'pop_music[1]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:21: warning: excess elements in scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |                     ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:21: note: (near initialization for 'pop_music[1]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: warning: braces around scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: note: (near initialization for 'pop_music[2]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:32: warning: excess elements in scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |                                ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:32: note: (near initialization for 'pop_music[2]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: warning: braces around scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:5: note: (near initialization for 'pop_music[3]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:42: warning: excess elements in scalar initializer
+   30 |     {440, 120}, {0, 30}, {880, 120}, {0, 30},
+      |                                          ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:30:42: note: (near initialization for 'pop_music[3]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: warning: braces around scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: note: (near initialization for 'pop_music[4]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:11: warning: excess elements in scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |           ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:11: note: (near initialization for 'pop_music[4]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: warning: braces around scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: note: (near initialization for 'pop_music[5]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:21: warning: excess elements in scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |                     ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:21: note: (near initialization for 'pop_music[5]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: warning: braces around scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: note: (near initialization for 'pop_music[6]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:32: warning: excess elements in scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |                                ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:32: note: (near initialization for 'pop_music[6]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: warning: braces around scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:5: note: (near initialization for 'pop_music[7]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:42: warning: excess elements in scalar initializer
+   31 |     {660, 100}, {0, 30}, {990, 100}, {0, 30},
+      |                                          ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:31:42: note: (near initialization for 'pop_music[7]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: warning: braces around scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: note: (near initialization for 'pop_music[8]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:11: warning: excess elements in scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |           ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:11: note: (near initialization for 'pop_music[8]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: warning: braces around scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: note: (near initialization for 'pop_music[9]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:21: warning: excess elements in scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |                     ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:21: note: (near initialization for 'pop_music[9]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: warning: braces around scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: note: (near initialization for 'pop_music[10]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:33: warning: excess elements in scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |                                 ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:33: note: (near initialization for 'pop_music[10]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: warning: braces around scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:5: note: (near initialization for 'pop_music[11]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:43: warning: excess elements in scalar initializer
+   32 |     {550, 100}, {0, 20}, {1100, 130}, {0, 50},
+      |                                           ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:32:43: note: (near initialization for 'pop_music[11]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: warning: braces around scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: note: (near initialization for 'pop_music[12]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:11: warning: excess elements in scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |           ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:11: note: (near initialization for 'pop_music[12]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: warning: braces around scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: note: (near initialization for 'pop_music[13]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:21: warning: excess elements in scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |                     ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:21: note: (near initialization for 'pop_music[13]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: warning: braces around scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: note: (near initialization for 'pop_music[14]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:33: warning: excess elements in scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |                                 ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:33: note: (near initialization for 'pop_music[14]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: warning: braces around scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:5: note: (near initialization for 'pop_music[15]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:43: warning: excess elements in scalar initializer
+   33 |     {880, 100}, {0, 30}, {1320, 150}, {0, 40},
+      |                                           ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:33:43: note: (near initialization for 'pop_music[15]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: warning: braces around scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: note: (near initialization for 'pop_music[16]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:11: warning: excess elements in scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |           ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:11: note: (near initialization for 'pop_music[16]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: warning: braces around scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: note: (near initialization for 'pop_music[17]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:20: warning: excess elements in scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |                    ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:20: note: (near initialization for 'pop_music[17]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: warning: braces around scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: note: (near initialization for 'pop_music[18]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:31: warning: excess elements in scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |                               ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:31: note: (near initialization for 'pop_music[18]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: warning: braces around scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: note: (near initialization for 'pop_music[19]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:40: warning: excess elements in scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |                                        ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:40: note: (near initialization for 'pop_music[19]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: warning: braces around scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: note: (near initialization for 'pop_music[20]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:51: warning: excess elements in scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |                                                   ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:51: note: (near initialization for 'pop_music[20]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: warning: braces around scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:5: note: (near initialization for 'pop_music[21]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:60: warning: excess elements in scalar initializer
+   36 |     {330, 80}, {0, 20}, {330, 80}, {0, 20}, {330, 80}, {0, 40},
+      |                                                            ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:36:60: note: (near initialization for 'pop_music[21]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: warning: braces around scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: note: (near initialization for 'pop_music[22]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:11: warning: excess elements in scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |           ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:11: note: (near initialization for 'pop_music[22]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: warning: braces around scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: note: (near initialization for 'pop_music[23]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:21: warning: excess elements in scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |                     ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:21: note: (near initialization for 'pop_music[23]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: warning: braces around scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: note: (near initialization for 'pop_music[24]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:32: warning: excess elements in scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |                                ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:32: note: (near initialization for 'pop_music[24]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: warning: braces around scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:5: note: (near initialization for 'pop_music[25]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:42: warning: excess elements in scalar initializer
+   37 |     {660, 150}, {0, 30}, {550, 120}, {0, 30},
+      |                                          ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:37:42: note: (near initialization for 'pop_music[25]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: warning: braces around scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: note: (near initialization for 'pop_music[26]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:11: warning: excess elements in scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |           ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:11: note: (near initialization for 'pop_music[26]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: warning: braces around scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: note: (near initialization for 'pop_music[27]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:22: warning: excess elements in scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |                      ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:22: note: (near initialization for 'pop_music[27]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: warning: braces around scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: note: (near initialization for 'pop_music[28]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:33: warning: excess elements in scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |                                 ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:33: note: (near initialization for 'pop_music[28]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: warning: braces around scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:5: note: (near initialization for 'pop_music[29]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:44: warning: excess elements in scalar initializer
+   40 |     {880, 80}, {660, 80}, {990, 80}, {660, 80},
+      |                                            ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:40:44: note: (near initialization for 'pop_music[29]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: warning: braces around scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: note: (near initialization for 'pop_music[30]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:11: warning: excess elements in scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |           ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:11: note: (near initialization for 'pop_music[30]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: warning: braces around scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: note: (near initialization for 'pop_music[31]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:21: warning: excess elements in scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |                     ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:21: note: (near initialization for 'pop_music[31]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: warning: braces around scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: note: (near initialization for 'pop_music[32]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:33: warning: excess elements in scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |                                 ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:33: note: (near initialization for 'pop_music[32]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: warning: braces around scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:5: note: (near initialization for 'pop_music[33]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:43: warning: excess elements in scalar initializer
+   41 |     {880, 150}, {0, 50}, {1100, 100}, {0, 40},
+      |                                           ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:41:43: note: (near initialization for 'pop_music[33]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:5: warning: braces around scalar initializer
+   42 |     {1320, 200}, {0, 80}
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:5: note: (near initialization for 'pop_music[34]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:12: warning: excess elements in scalar initializer
+   42 |     {1320, 200}, {0, 80}
+      |            ^~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:12: note: (near initialization for 'pop_music[34]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:5: warning: braces around scalar initializer
+   42 |     {1320, 200}, {0, 80}
+      |     ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:5: note: (near initialization for 'pop_music[35]')
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:22: warning: excess elements in scalar initializer
+   42 |     {1320, 200}, {0, 80}
+      |                      ^~
+/home/vinibit/Projetos/Highboy-main/main/main.c:42:22: note: (near initialization for 'pop_music[35]')
+/home/vinibit/Projetos/Highboy-main/main/main.c: In function 'play_pop_music':
+/home/vinibit/Projetos/Highboy-main/main/main.c:48:50: error: 'Note' undeclared (first use in this function)
+   48 |     int total_notes = sizeof(pop_music) / sizeof(Note);
+      |                                                  ^~~~
+/home/vinibit/Projetos/Highboy-main/main/main.c:48:50: note: each undeclared identifier is reported only once for each function it appears in
+/home/vinibit/Projetos/Highboy-main/main/main.c:50:38: error: request for member 'freq' in something not a structure or union
+   50 |         buzzer_play_tone(pop_music[i].freq, pop_music[i].duration_ms);
+      |                                      ^
+/home/vinibit/Projetos/Highboy-main/main/main.c:50:57: error: request for member 'duration_ms' in something not a structure or union
+   50 |         buzzer_play_tone(pop_music[i].freq, pop_music[i].duration_ms);
+      |                                                         ^
+make[3]: *** [esp-idf/main/CMakeFiles/__idf_main.dir/build.make:76: esp-idf/main/CMakeFiles/__idf_main.dir/main.c.obj] Erro 1
+make[2]: *** [CMakeFiles/Makefile2:4879: esp-idf/main/CMakeFiles/__idf_main.dir/all] Erro 2
+make[1]: *** [CMakeFiles/Makefile2:1972: CMakeFiles/flash.dir/rule] Erro 2
+make: *** [Makefile:273: flash] Erro 2

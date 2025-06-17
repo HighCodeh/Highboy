@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_hid.a CMakeFiles/__idf_esp_hid.dir/src/esp_hidd.c.obj CMakeFiles/__idf_esp_hid.dir/src/esp_hidh.c.obj CMakeFiles/__idf_esp_hid.dir/src/esp_hid_common.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_hid.a

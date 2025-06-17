@@ -1,0 +1,10 @@
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c: In function 'mark':
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:28:9: error: implicit declaration of function 'ets_delay_us'; did you mean 'esp_rom_delay_us'? [-Werror=implicit-function-declaration]
+   28 |         ets_delay_us(high_time);
+      |         ^~~~~~~~~~~~
+      |         esp_rom_delay_us
+cc1: some warnings being treated as errors
+make[3]: *** [esp-idf/Service/CMakeFiles/__idf_Service.dir/build.make:118: esp-idf/Service/CMakeFiles/__idf_Service.dir/ir_transmitter/ir_transmitter.c.obj] Erro 1
+make[2]: *** [CMakeFiles/Makefile2:4789: esp-idf/Service/CMakeFiles/__idf_Service.dir/all] Erro 2
+make[1]: *** [CMakeFiles/Makefile2:1972: CMakeFiles/flash.dir/rule] Erro 2
+make: *** [Makefile:273: flash] Erro 2

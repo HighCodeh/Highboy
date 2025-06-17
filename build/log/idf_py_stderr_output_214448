@@ -1,0 +1,62 @@
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c: In function 'ir_init':
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:28:5: error: unknown type name 'rmt_carrier_encoder_config_t'; did you mean 'rmt_copy_encoder_config_t'?
+   28 |     rmt_carrier_encoder_config_t carrier_cfg = {
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |     rmt_copy_encoder_config_t
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:29:9: error: field name not in record or union initializer
+   29 |         .resolution = RMT_RESOLUTION_HZ,
+      |         ^
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:29:9: note: (near initialization for 'carrier_cfg')
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:30:9: error: field name not in record or union initializer
+   30 |         .frequency_hz = CARRIER_FREQ_HZ,
+      |         ^
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:30:9: note: (near initialization for 'carrier_cfg')
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:8:25: warning: excess elements in scalar initializer
+    8 | #define CARRIER_FREQ_HZ 38000
+      |                         ^~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:30:25: note: in expansion of macro 'CARRIER_FREQ_HZ'
+   30 |         .frequency_hz = CARRIER_FREQ_HZ,
+      |                         ^~~~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:8:25: note: (near initialization for 'carrier_cfg')
+    8 | #define CARRIER_FREQ_HZ 38000
+      |                         ^~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:30:25: note: in expansion of macro 'CARRIER_FREQ_HZ'
+   30 |         .frequency_hz = CARRIER_FREQ_HZ,
+      |                         ^~~~~~~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:31:9: error: field name not in record or union initializer
+   31 |         .duty_cycle = DUTY_CYCLE,
+      |         ^
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:31:9: note: (near initialization for 'carrier_cfg')
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:9:20: warning: excess elements in scalar initializer
+    9 | #define DUTY_CYCLE 33
+      |                    ^~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:31:23: note: in expansion of macro 'DUTY_CYCLE'
+   31 |         .duty_cycle = DUTY_CYCLE,
+      |                       ^~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:9:20: note: (near initialization for 'carrier_cfg')
+    9 | #define DUTY_CYCLE 33
+      |                    ^~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:31:23: note: in expansion of macro 'DUTY_CYCLE'
+   31 |         .duty_cycle = DUTY_CYCLE,
+      |                       ^~~~~~~~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:32:9: error: field name not in record or union initializer
+   32 |         .flags.polarity_active_high = true,
+      |         ^
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:32:9: note: (near initialization for 'carrier_cfg')
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:32:39: warning: excess elements in scalar initializer
+   32 |         .flags.polarity_active_high = true,
+      |                                       ^~~~
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:32:39: note: (near initialization for 'carrier_cfg')
+In file included from /home/vinibit/esp-idf-v5.1.2/components/driver/rmt/include/driver/rmt_tx.h:11,
+                 from /home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:2:
+/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:34:21: error: implicit declaration of function 'rmt_new_carrier_encoder'; did you mean 'rmt_new_copy_encoder'? [-Werror=implicit-function-declaration]
+   34 |     ESP_ERROR_CHECK(rmt_new_carrier_encoder(&carrier_cfg, &nec_encoder));
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~
+/home/vinibit/esp-idf-v5.1.2/components/esp_common/include/esp_err.h:117:30: note: in definition of macro 'ESP_ERROR_CHECK'
+  117 |         esp_err_t err_rc_ = (x);                                        \
+      |                              ^
+cc1: some warnings being treated as errors
+make[3]: *** [esp-idf/Service/CMakeFiles/__idf_Service.dir/build.make:118: esp-idf/Service/CMakeFiles/__idf_Service.dir/ir_transmitter/ir_transmitter.c.obj] Erro 1
+make[2]: *** [CMakeFiles/Makefile2:4789: esp-idf/Service/CMakeFiles/__idf_Service.dir/all] Erro 2
+make[1]: *** [CMakeFiles/Makefile2:1972: CMakeFiles/flash.dir/rule] Erro 2
+make: *** [Makefile:273: flash] Erro 2

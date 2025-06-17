@@ -1,0 +1,2 @@
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libperfmon.a CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_access.c.obj CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_apis.c.obj CMakeFiles/__idf_perfmon.dir/xtensa_perfmon_masks.c.obj
+/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libperfmon.a
