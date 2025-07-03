@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libxtensa.a CMakeFiles/__idf_xtensa.dir/eri.c.obj CMakeFiles/__idf_xtensa.dir/xt_trax.c.obj CMakeFiles/__idf_xtensa.dir/xtensa_intr.c.obj CMakeFiles/__idf_xtensa.dir/xtensa_intr_asm.S.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libxtensa.a

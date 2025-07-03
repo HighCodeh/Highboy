@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libesp_eth.a CMakeFiles/__idf_esp_eth.dir/src/esp_eth.c.obj CMakeFiles/__idf_esp_eth.dir/src/esp_eth_phy_802_3.c.obj CMakeFiles/__idf_esp_eth.dir/src/esp_eth_netif_glue.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libesp_eth.a

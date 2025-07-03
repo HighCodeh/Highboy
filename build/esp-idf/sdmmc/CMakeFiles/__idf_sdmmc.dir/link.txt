@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libsdmmc.a CMakeFiles/__idf_sdmmc.dir/sdmmc_cmd.c.obj CMakeFiles/__idf_sdmmc.dir/sdmmc_common.c.obj CMakeFiles/__idf_sdmmc.dir/sdmmc_init.c.obj CMakeFiles/__idf_sdmmc.dir/sdmmc_io.c.obj CMakeFiles/__idf_sdmmc.dir/sdmmc_mmc.c.obj CMakeFiles/__idf_sdmmc.dir/sdmmc_sd.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libsdmmc.a

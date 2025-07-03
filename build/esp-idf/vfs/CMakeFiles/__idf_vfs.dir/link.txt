@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libvfs.a CMakeFiles/__idf_vfs.dir/vfs.c.obj CMakeFiles/__idf_vfs.dir/vfs_eventfd.c.obj CMakeFiles/__idf_vfs.dir/vfs_uart.c.obj CMakeFiles/__idf_vfs.dir/vfs_semihost.c.obj CMakeFiles/__idf_vfs.dir/vfs_console.c.obj CMakeFiles/__idf_vfs.dir/vfs_usb_serial_jtag.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libvfs.a

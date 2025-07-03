@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libeverest.a CMakeFiles/everest.dir/library/everest.c.obj CMakeFiles/everest.dir/library/x25519.c.obj CMakeFiles/everest.dir/library/Hacl_Curve25519_joined.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libeverest.a

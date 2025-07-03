@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libespressif__led_strip.a CMakeFiles/__idf_espressif__led_strip.dir/src/led_strip_api.c.obj CMakeFiles/__idf_espressif__led_strip.dir/src/led_strip_rmt_dev.c.obj CMakeFiles/__idf_espressif__led_strip.dir/src/led_strip_rmt_encoder.c.obj CMakeFiles/__idf_espressif__led_strip.dir/src/led_strip_spi_dev.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libespressif__led_strip.a

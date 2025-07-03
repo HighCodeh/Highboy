@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libcxx.a CMakeFiles/__idf_cxx.dir/cxx_exception_stubs.cpp.obj CMakeFiles/__idf_cxx.dir/cxx_guards.cpp.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libcxx.a

@@ -2,6 +2,7 @@
 #include "menu.h"
 #include "st7789.h"
 #include "driver/gpio.h"
+#include "home.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "menu_battery.h"
@@ -9,22 +10,10 @@
 #include "sub_menu.h"
 #include "music_menu.h"
 #include "ir_menu.h"
+#include "pin_def.h"
 
-// ========== DEFINIÇÕES ==========
-#define BTN_UP     15
-#define BTN_DOWN   6
-#define BTN_OK     4
-#define BTN_BACK   7
-#define BTN_LEFT 5  
-
-#define SCROLL_BAR_WIDTH 4
-#define SCROLL_BAR_TOP 0
 
 // ========== PROTÓTIPOS ==========
-static int lerp(int start, int end, float t);
-static void drawMenuItem(int menuIndex, int posY, bool isSelected);
-static void drawScrollBar(void);
-static void executeMenuItem(int index);
 
 // ========== VARIÁVEIS ==========
 static int menuAtual = 0;
@@ -50,7 +39,7 @@ static const char* menuTexts[] = {
     "Infrared",
     "RF",
     "SD",
-    "MUsicas"
+    "Musicas"
 };
 
 static const int menuSize = sizeof(menuTexts) / sizeof(menuTexts[0]);
@@ -230,6 +219,43 @@ void handleMenuControls(void) {
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
+
+void menu_task(void *pvParameters) {
+    gpio_config_t io_conf = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_INPUT,
+        .pin_bit_mask = (1ULL << BTN_LEFT) | (1ULL << BTN_BACK),
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+    };
+    gpio_config(&io_conf);
+
+    menu_init();
+
+    while (1) {
+        switch (current_state) {
+            case STATE_HOME:
+                home();
+                while (1) {
+                    if (!gpio_get_level(BTN_LEFT)) {
+                        current_state = STATE_MENU;
+                        vTaskDelay(pdMS_TO_TICKS(200));
+                        break;
+                    }
+                    vTaskDelay(pdMS_TO_TICKS(50));
+                }
+                break;
+
+            case STATE_MENU:
+                showMenu();
+                handleMenuControls();
+                current_state = STATE_HOME;
+                break;
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+}
+
 
 // Executa item
 static void executeMenuItem(int index) {

@@ -1,6 +1,6 @@
 #include "sub_menu.h"
 #include "st7789.h"
-#include "ir_transmitter.h"
+#include "ir_transmiter.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"

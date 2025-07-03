@@ -5,6 +5,7 @@ idf_component_register(SRCS "home/home.c"
                             "ui_sd/ui_sd.c"
                             "music_menu/music_menu.c"
                             "ir_menu/ir_menu.c"
+                            "play/play.c"
                        INCLUDE_DIRS "home/include"
                                     "menu/include"
                                     "menu_battery/include"
@@ -12,6 +13,7 @@ idf_component_register(SRCS "home/home.c"
                                     "ui_sd/include"
                                     "music_menu/include"
                                     "ir_menu/include"
+                                    "play/include"
                        REQUIRES 
                     driver
                     Drivers

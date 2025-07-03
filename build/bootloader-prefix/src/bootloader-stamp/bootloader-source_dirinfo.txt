@@ -4,6 +4,6 @@
 
 method=source_dir
 command=
-source_dir=/home/vinibit/esp-idf-v5.1.2/components/bootloader/subproject
+source_dir=/home/outsyder/esp/v5.4.1/esp-idf/components/bootloader/subproject
 work_dir=
 

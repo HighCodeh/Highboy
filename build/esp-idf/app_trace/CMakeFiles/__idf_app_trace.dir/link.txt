@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libapp_trace.a CMakeFiles/__idf_app_trace.dir/app_trace.c.obj CMakeFiles/__idf_app_trace.dir/app_trace_util.c.obj CMakeFiles/__idf_app_trace.dir/host_file_io.c.obj CMakeFiles/__idf_app_trace.dir/port/port_uart.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libapp_trace.a

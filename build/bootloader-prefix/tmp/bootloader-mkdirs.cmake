@@ -1,22 +1,27 @@
 # Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
-# file Copyright.txt or https://cmake.org/licensing for details.
+# file LICENSE.rst or https://cmake.org/licensing for details.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 
+# If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
+# existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
+# would cause a fatal error, even though it would be a no-op.
+if(NOT EXISTS "/home/outsyder/esp/v5.4.1/esp-idf/components/bootloader/subproject")
+  file(MAKE_DIRECTORY "/home/outsyder/esp/v5.4.1/esp-idf/components/bootloader/subproject")
+endif()
 file(MAKE_DIRECTORY
-  "/home/vinibit/esp-idf-v5.1.2/components/bootloader/subproject"
-  "/home/vinibit/Projetos/Highboy-main/build/bootloader"
-  "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix"
-  "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix/tmp"
-  "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix/src/bootloader-stamp"
-  "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix/src"
-  "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix/src/bootloader-stamp"
+  "/home/outsyder/Developer/Highboy/Highboy/build/bootloader"
+  "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix"
+  "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix/tmp"
+  "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix/src/bootloader-stamp"
+  "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix/src"
+  "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix/src/bootloader-stamp"
 )
 
 set(configSubDirs )
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
+    file(MAKE_DIRECTORY "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix/src/bootloader-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "/home/vinibit/Projetos/Highboy-main/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "/home/outsyder/Developer/Highboy/Highboy/build/bootloader-prefix/src/bootloader-stamp${cfgdir}") # cfgdir has leading slash
 endif()

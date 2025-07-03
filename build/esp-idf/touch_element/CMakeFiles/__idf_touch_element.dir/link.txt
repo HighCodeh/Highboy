@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libtouch_element.a CMakeFiles/__idf_touch_element.dir/touch_element.c.obj CMakeFiles/__idf_touch_element.dir/touch_button.c.obj CMakeFiles/__idf_touch_element.dir/touch_slider.c.obj CMakeFiles/__idf_touch_element.dir/touch_matrix.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libtouch_element.a

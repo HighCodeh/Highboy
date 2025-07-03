@@ -1,2 +1,0 @@
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ar qc libusb.a CMakeFiles/__idf_usb.dir/hcd_dwc.c.obj CMakeFiles/__idf_usb.dir/hub.c.obj CMakeFiles/__idf_usb.dir/usb_helpers.c.obj CMakeFiles/__idf_usb.dir/usb_host.c.obj CMakeFiles/__idf_usb.dir/usb_private.c.obj CMakeFiles/__idf_usb.dir/usbh.c.obj CMakeFiles/__idf_usb.dir/usb_phy.c.obj
-/home/vinibit/tools/xtensa-esp32s3-elf/esp-12.2.0_20230208/xtensa-esp32s3-elf/bin/xtensa-esp32s3-elf-ranlib libusb.a

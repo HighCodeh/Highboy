@@ -1,4 +1,0 @@
-/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c: In function 'send_mark_and_space':
-/home/vinibit/Projetos/Highboy-main/components/Service/ir_transmitter/ir_transmitter.c:29:23: warning: unused variable 'item' [-Wunused-variable]
-   29 |     rmt_symbol_word_t item;
-      |                       ^~~~
