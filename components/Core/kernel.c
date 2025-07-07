@@ -18,9 +18,6 @@ typedef enum {
 
 static app_state_t current_state = STATE_HOME;
 // === ESTADOS DA INTERFACE ===
-void app_main(void) {
-}
-
 void kernel_init(void){
 
     ir_init();

@@ -23,28 +23,34 @@ const uint8_t  octo4[] = {0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
 
 
 void home(void) {
-    st7789_fill_screen(ST7789_COLOR_BLACK);  // Limpa a tela
+    // --- INÍCIO DO FRAME ---
+    // Todas as funções abaixo desenham na memória (rápido!)
 
+    // 1. Limpa o framebuffer com a cor de fundo
+    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+
+    // 2. Define o tamanho do texto para as próximas chamadas
     st7789_set_text_size(2);
 
-   
-    
-
+    // 3. Desenha as formas geométricas
     // Retângulo superior arredondado
-    st7789_draw_round_rect(8, 8, 224, 27, 8, 0x895F);
+    st7789_draw_round_rect_fb(8, 8, 224, 27, 8, 0x895F);
 
     // Bolinha no canto
-    st7789_fill_circle(22, 21, 4, 0x895F);
+    st7789_fill_circle_fb(22, 21, 4, 0x895F);
 
+    // 4. Desenha os ícones (bitmaps)
+    st7789_draw_bitmap_fb(202, 13, image_wifi_full_bits, 19, 16, 0x895F);
+    st7789_draw_bitmap_fb(171, 13, image_battery_charging_bits, 24, 16, 0x895F);
+    st7789_draw_bitmap_fb(151, 16, image_SDcardMounted_bits, 11, 8, 0x895F);
+    st7789_draw_bitmap_fb(117, 15, image_MHz_bits, 25, 11, 0x895F);
+    
+    // ATENÇÃO: O bitmap 'octo4' tem dados para uma imagem pequena, mas está sendo
+    // desenhado com 240x210. Isso provavelmente não produzirá o resultado esperado.
+    // Verifique os dados e as dimensões do seu bitmap.
+    st7789_draw_bitmap_fb(0, 30, octo4, 240, 210, 0x895F);
 
-
-    // Texto central
-   
-
-    // Ícones no topo direito
-    st7789_draw_bitmap(202, 13, image_wifi_full_bits, 19, 16, 0x895F);
-    st7789_draw_bitmap(171, 13, image_battery_charging_bits,  24, 16, 0x895F);
-    st7789_draw_bitmap(151, 16, image_SDcardMounted_bits, 11, 8, 0x895F);
-    st7789_draw_bitmap(117, 15, image_MHz_bits, 25, 11, 0x895F);
-    st7789_draw_bitmap(0, 30, octo4, 240, 210, 0x895F);
+    // --- FIM DO FRAME ---
+    // 5. Envia o framebuffer completo para a tela de uma só vez!
+    st7789_flush();
 }

@@ -19,13 +19,17 @@
 #define ST7789_CMD_RASET   0x2B  // Row Address Set (definir linha)
 #define ST7789_CMD_RAMWR   0x2C  // Memory Write (escrever memória)
 #define ST7789_CMD_RAMCTRL 0xB0  // RAM Control (controle de RAM)
+#define SPI_MAX_CHUNK_SIZE 32768
+
+#define SWAP_BYTES(color) ((((color) >> 8) & 0xFF) | (((color) << 8) & 0xFF00))
+
 static int text_size = 1; // 1x padrão
 static int dirty_x0 = 240, dirty_y0 = 240;
 static int dirty_x1 = 0, dirty_y1 = 0;
 
+static uint16_t *framebuffer;
 
-
-
+static const char *TAG = "ST7789";
 
 static uint16_t offset_x = ST7789_X_OFFSET;
 static uint16_t offset_y = ST7789_Y_OFFSET;
@@ -206,6 +210,45 @@ static void set_addr_window(int x, int y, int w, int h) {
     send_cmd(ST7789_CMD_RAMWR);
 }
 
+static void set_addr_window_direct(int x, int y, int w, int h) {
+    uint16_t x0 = x + offset_x;
+    uint16_t y0 = y + offset_y;
+    uint16_t x1 = x0 + w - 1;
+    uint16_t y1 = y0 + h - 1;
+    uint8_t data[4];
+
+    send_cmd(ST7789_CMD_CASET);
+    data[0] = x0 >> 8; data[1] = x0 & 0xFF;
+    data[2] = x1 >> 8; data[3] = x1 & 0xFF;
+    send_data(data, 4);
+
+    send_cmd(ST7789_CMD_RASET);
+    data[0] = y0 >> 8; data[1] = y0 & 0xFF;
+    data[2] = y1 >> 8; data[3] = y1 & 0xFF;
+    send_data(data, 4);
+
+    send_cmd(ST7789_CMD_RAMWR);
+}
+
+void st7789_flush() {
+    if (!framebuffer) {
+        ESP_LOGE(TAG, "Framebuffer não inicializado. Não é possível fazer o flush.");
+        return;
+    }
+
+    set_addr_window_direct(0, 0, ST7789_WIDTH, ST7789_HEIGHT);
+
+    const uint8_t *data_ptr = (const uint8_t *)framebuffer;
+    size_t bytes_to_send = ST7789_WIDTH * ST7789_HEIGHT * sizeof(uint16_t);
+
+    while (bytes_to_send > 0) {
+        size_t chunk_size = (bytes_to_send > SPI_MAX_CHUNK_SIZE) ? SPI_MAX_CHUNK_SIZE : bytes_to_send;
+        send_data(data_ptr, chunk_size);
+        data_ptr += chunk_size;
+        bytes_to_send -= chunk_size;
+    }
+}
+
 // Função auxiliar: preenche um quarto de círculo de raio `r` (usado para cantos arredondados preenchidos)
 static void fill_quarter_circle(int cx, int cy, int r, uint16_t color, int quadrant) {
     int r_sq = r * r;
@@ -313,62 +356,200 @@ void st7789_set_rotation(uint8_t rotation) {
 
 // Inicializa o display ST7789 (configura SPI e executa sequência de inicialização)
 void st7789_init(void) {
-    // >>> NÃO chama mais spi_bus_initialize() aqui <<<
-
+    // Configuração do SPI
     spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 40 * 1000 * 1000,  // 40 MHz
-        .mode = 0,                           // SPI mode 0
-        .spics_io_num = ST7789_PIN_CS,      // CS do display
-        .queue_size = 1,
+        .clock_speed_hz = 40 * 1000 * 1000, // 40 MHz
+        .mode = 0,
+        .spics_io_num = ST7789_PIN_CS,
+        .queue_size = 7, // Aumentado para melhor performance com DMA
         .flags = SPI_DEVICE_HALFDUPLEX
     };
+    // Assumindo que o bus SPI (SPI3_HOST) já foi inicializado externamente
+    ESP_ERROR_CHECK(spi_bus_add_device(SPI3_HOST, &devcfg, &spi_dev));
 
-    // Adiciona o display à SPI3 (host já deve estar inicializado externamente)
-    spi_bus_add_device(SPI3_HOST, &devcfg, &spi_dev);
-
-    // Configura os pinos de controle como saída
+    // Configuração dos GPIOs
     gpio_set_direction(ST7789_PIN_DC, GPIO_MODE_OUTPUT);
     gpio_set_direction(ST7789_PIN_RST, GPIO_MODE_OUTPUT);
     gpio_set_direction(ST7789_PIN_BL, GPIO_MODE_OUTPUT);
 
-    // Reset por hardware no display
-    gpio_set_level(ST7789_PIN_RST, 0);
-    vTaskDelay(pdMS_TO_TICKS(50));
-    gpio_set_level(ST7789_PIN_RST, 1);
-    vTaskDelay(pdMS_TO_TICKS(50));
+    // Reset por hardware
+    gpio_set_level(ST7789_PIN_RST, 0); vTaskDelay(pdMS_TO_TICKS(100));
+    gpio_set_level(ST7789_PIN_RST, 1); vTaskDelay(pdMS_TO_TICKS(100));
 
-    // Inicialização do ST7789
-    send_cmd(ST7789_CMD_SWRESET);    
-    vTaskDelay(pdMS_TO_TICKS(150));
-    send_cmd(ST7789_CMD_SLPOUT);     
-    vTaskDelay(pdMS_TO_TICKS(120));
-
-    uint8_t color_mode = 0x55;       
+    // Sequência de inicialização do ST7789
+    send_cmd(ST7789_CMD_SWRESET); vTaskDelay(pdMS_TO_TICKS(150));
+    send_cmd(ST7789_CMD_SLPOUT);  vTaskDelay(pdMS_TO_TICKS(255));
     send_cmd(ST7789_CMD_COLMOD);
-    send_data(&color_mode, 1);
+    uint8_t color_mode = 0x55; send_data(&color_mode, 1); // 16 bits por pixel
     vTaskDelay(pdMS_TO_TICKS(10));
-
-    uint8_t madctl = 0x00;           
     send_cmd(ST7789_CMD_MADCTL);
-    send_data(&madctl, 1);
+    uint8_t madctl = 0x00; send_data(&madctl, 1);
+    send_cmd(ST7789_CMD_INVON);   vTaskDelay(pdMS_TO_TICKS(10));
+    send_cmd(ST7789_CMD_NORON);   vTaskDelay(pdMS_TO_TICKS(10));
+    send_cmd(ST7789_CMD_DISPON);  vTaskDelay(pdMS_TO_TICKS(255));
 
-    uint8_t ramctrl_data[2] = {0x00, 0xC8};
-    send_cmd(ST7789_CMD_RAMCTRL);
-    send_data(ramctrl_data, 2);
-    vTaskDelay(pdMS_TO_TICKS(10));
+    // ✨ NOVO: Alocação do framebuffer na inicialização
+    size_t fb_size = ST7789_WIDTH * ST7789_HEIGHT * sizeof(uint16_t);
+    framebuffer = (uint16_t *)heap_caps_malloc(fb_size, MALLOC_CAP_DMA | MALLOC_CAP_32BIT);
+    if (!framebuffer) {
+        ESP_LOGE(TAG, "Falha ao alocar framebuffer!");
+        return;
+    }
+    ESP_LOGI(TAG, "Framebuffer alocado com sucesso (%d bytes)", fb_size);
 
-    send_cmd(ST7789_CMD_INVON);  
-    vTaskDelay(pdMS_TO_TICKS(10));
-    send_cmd(ST7789_CMD_NORON);  
-    vTaskDelay(pdMS_TO_TICKS(10));
-    send_cmd(ST7789_CMD_DISPON); 
-    vTaskDelay(pdMS_TO_TICKS(100));
-    st7789_set_rotation(4);  
-
+    // Limpa a tela e liga o backlight
+    st7789_enable_framebuffer();
+    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+    st7789_flush();
     gpio_set_level(ST7789_PIN_BL, 1);
-    st7789_fill_screen(ST7789_COLOR_BLACK);
+}
+// ✨ OTIMIZADO: Desenha linhas horizontais e verticais de forma muito eficiente.
+
+void st7789_draw_hline_fb(int x, int y, int w, uint16_t color) {
+    if (y < 0 || y >= ST7789_HEIGHT || w <= 0) return;
+    if (x < 0) { w += x; x = 0; }
+    if (x + w > ST7789_WIDTH) { w = ST7789_WIDTH - x; }
+    if (w <= 0) return;
+
+    uint16_t swapped_color = SWAP_BYTES(color);
+    for (int i = 0; i < w; i++) {
+        framebuffer[y * ST7789_WIDTH + x + i] = swapped_color;
+    }
 }
 
+void st7789_draw_vline_fb(int x, int y, int h, uint16_t color) {
+    if (x < 0 || x >= ST7789_WIDTH || h <= 0) return;
+    if (y < 0) { h += y; y = 0; }
+    if (y + h > ST7789_HEIGHT) { h = ST7789_HEIGHT - y; }
+    if (h <= 0) return;
+
+    uint16_t swapped_color = SWAP_BYTES(color);
+    for (int i = 0; i < h; i++) {
+        framebuffer[(y + i) * ST7789_WIDTH + x] = swapped_color;
+    }
+}
+
+// ✨ OTIMIZADO: Desenha retângulos preenchidos usando as linhas otimizadas.
+void st7789_fill_rect_fb(int x, int y, int w, int h, uint16_t color) {
+    if (w <= 0 || h <= 0) return;
+    // Clipping
+    if (x < 0) { w += x; x = 0; }
+    if (y < 0) { h += y; y = 0; }
+    if (x + w > ST7789_WIDTH) { w = ST7789_WIDTH - x; }
+    if (y + h > ST7789_HEIGHT) { h = ST7789_HEIGHT - y; }
+    if (w <= 0 || h <= 0) return;
+
+    for (int i = 0; i < h; i++) {
+        st7789_draw_hline_fb(x, y + i, w, color);
+    }
+}
+
+// ✨ OTIMIZADO: Desenha a borda de um retângulo.
+void st7789_draw_rect_fb(int x, int y, int w, int h, uint16_t color) {
+    st7789_draw_hline_fb(x, y, w, color);
+    st7789_draw_hline_fb(x, y + h - 1, w, color);
+    st7789_draw_vline_fb(x, y, h, color);
+    st7789_draw_vline_fb(x + w - 1, y, h, color);
+}
+
+// ✨ OTIMIZADO: Desenha um caractere no framebuffer.
+void st7789_draw_char_fb(int x, int y, char c, uint16_t color, uint16_t bg_color) {
+    if ((uint8_t)c < 32 || (uint8_t)c > 127) c = '?';
+    
+    const uint8_t *glyph = font5x7[(uint8_t)c - 32];
+    bool is_opaque = (color != bg_color);
+
+    for (int col = 0; col < 5; col++) {
+        uint8_t column_bits = glyph[col];
+        for (int row = 0; row < 7; row++) {
+            uint16_t pixel_color = (column_bits & (1 << row)) ? color : bg_color;
+            if (is_opaque || pixel_color == color) { // Desenha o pixel se for opaco ou se for a cor do texto
+                if (text_size == 1) {
+                    st7789_draw_pixel_fb(x + col, y + row, pixel_color);
+                } else {
+                    st7789_fill_rect_fb(x + (col * text_size), y + (row * text_size), text_size, text_size, pixel_color);
+                }
+            }
+        }
+    }
+}
+
+// ✨ OTIMIZADO: Desenha texto no framebuffer.
+void st7789_draw_text_fb(int x, int y, const char *text, uint16_t color, uint16_t bg_color) {
+    if (!text) return;
+    int current_x = x;
+    while (*text) {
+        if (*text == '\n') {
+            y += 8 * text_size;
+            current_x = x;
+        } else {
+            st7789_draw_char_fb(current_x, y, *text, color, bg_color);
+            current_x += 6 * text_size;
+        }
+        text++;
+    }
+}
+
+// ✨ OTIMIZADO: Desenha uma imagem (bitmap RGB565) no framebuffer.
+void st7789_draw_image_fb(int x, int y, int w, int h, const uint16_t *image) {
+    if (!image || w <= 0 || h <= 0) return;
+    
+    // Clipping
+    int x_start = x > 0 ? x : 0;
+    int y_start = y > 0 ? y : 0;
+    int x_end = (x + w < ST7789_WIDTH) ? x + w : ST7789_WIDTH;
+    int y_end = (y + h < ST7789_HEIGHT) ? y + h : ST7789_HEIGHT;
+
+    for (int j = y_start; j < y_end; j++) {
+        for (int i = x_start; i < x_end; i++) {
+            int src_x = i - x;
+            int src_y = j - y;
+            st7789_draw_pixel_fb(i, j, image[src_y * w + src_x]);
+        }
+    }
+}
+
+// --- Outras Funções de Desenho (Adaptadas para Framebuffer) ---
+
+void st7789_draw_line_fb(int x0, int y0, int x1, int y1, uint16_t color) {
+    int dx = abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
+    int dy = -abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy, e2;
+
+    for (;;) {
+        st7789_draw_pixel_fb(x0, y0, color);
+        if (x0 == x1 && y0 == y1) break;
+        e2 = 2 * err;
+        if (e2 >= dy) { err += dy; x0 += sx; }
+        if (e2 <= dx) { err += dx; y0 += sy; }
+    }
+}
+
+void st7789_draw_circle_fb(int x0, int y0, int r, uint16_t color) {
+    if (r <= 0) return;
+    int x = -r, y = 0, err = 2 - 2 * r;
+    do {
+        st7789_draw_pixel_fb(x0 - x, y0 + y, color);
+        st7789_draw_pixel_fb(x0 + x, y0 + y, color);
+        st7789_draw_pixel_fb(x0 + x, y0 - y, color);
+        st7789_draw_pixel_fb(x0 - x, y0 - y, color);
+        r = err;
+        if (r <= y) err += ++y * 2 + 1;
+        if (r > x || err > y) err += ++x * 2 + 1;
+    } while (x < 0);
+}
+
+void st7789_fill_circle_fb(int x0, int y0, int r, uint16_t color) {
+    if (r <= 0) return;
+    int x = -r, y = 0, err = 2 - 2 * r;
+    do {
+        st7789_draw_hline_fb(x0 + x, y0 - y, 2 * (-x) + 1, color);
+        st7789_draw_hline_fb(x0 + x, y0 + y, 2 * (-x) + 1, color);
+        r = err;
+        if (r <= y) err += ++y * 2 + 1;
+        if (r > x || err > y) err += ++x * 2 + 1;
+    } while (x < 0);
+}
 
 // Liga ou desliga o backlight do display
 void st7789_set_backlight(bool on) {
@@ -435,6 +616,41 @@ void st7789_draw_line(int x0, int y0, int x1, int y1, uint16_t color) {
     }
 }
 
+static void draw_quarter_circle_fb(int x, int y, int r, int corner, uint16_t color) {
+    int f = 1 - r;
+    int ddF_x = 1;
+    int ddF_y = -2 * r;
+    int x_offset = 0;
+    int y_offset = r;
+
+    while (x_offset < y_offset) {
+        if (f >= 0) {
+            y_offset--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x_offset++;
+        ddF_x += 2;
+        f += ddF_x;
+
+        if (corner & 0x4) { // Canto superior esquerdo
+            st7789_draw_pixel_fb(x - y_offset, y - x_offset, color);
+            st7789_draw_pixel_fb(x - x_offset, y - y_offset, color);
+        }
+        if (corner & 0x2) { // Canto superior direito
+            st7789_draw_pixel_fb(x + x_offset, y - y_offset, color);
+            st7789_draw_pixel_fb(x + y_offset, y - x_offset, color);
+        }
+        if (corner & 0x8) { // Canto inferior esquerdo
+            st7789_draw_pixel_fb(x - y_offset, y + x_offset, color);
+            st7789_draw_pixel_fb(x - x_offset, y + y_offset, color);
+        }
+        if (corner & 0x1) { // Canto inferior direito
+            st7789_draw_pixel_fb(x + x_offset, y + y_offset, color);
+            st7789_draw_pixel_fb(x + y_offset, y + x_offset, color);
+        }
+    }
+}
 
 // Desenha um retângulo com cantos arredondados (apenas borda)
 // Desenha um retângulo com cantos arredondados (somente borda)
@@ -852,7 +1068,6 @@ void st7789_set_text_size(int size) {
 }
 
 
-
 // Desenha um caractere ASCII com escala configurável via text_size
 void st7789_draw_char_scaled(int x, int y, char c, uint16_t color) {
     if ((uint8_t)c < 32 || (uint8_t)c > 126) {
@@ -976,7 +1191,7 @@ void st7789_draw_pixel_fb(int x, int y, uint16_t color) {
     if (!framebuffer) return;
     if (x < 0 || x >= ST7789_WIDTH || y < 0 || y >= ST7789_HEIGHT) return;
 
-    framebuffer[y * ST7789_WIDTH + x] = color;
+    framebuffer[y * ST7789_WIDTH + x] = SWAP_BYTES(color);
 
     if (x < dirty_x0) dirty_x0 = x;
     if (y < dirty_y0) dirty_y0 = y;
@@ -997,11 +1212,38 @@ void st7789_draw_icon(int x, int y, const uint8_t *icon_bits, uint16_t fg, uint1
 }
 
 
-void st7789_fill_rect_fb(int x0, int y0, int w, int h, uint16_t color) {
-    for (int y = y0; y < y0 + h; y++) {
-        for (int x = x0; x < x0 + w; x++) {
-            st7789_draw_pixel_fb(x, y, color);
-        }
+void st7789_draw_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color) {
+    if (w <= 0 || h <= 0) return;
+    if (r > w / 2) r = w / 2;
+    if (r > h / 2) r = h / 2;
+
+    // Desenha as linhas retas
+    st7789_draw_hline_fb(x + r, y, w - 2 * r, color);         // Topo
+    st7789_draw_hline_fb(x + r, y + h - 1, w - 2 * r, color); // Base
+    st7789_draw_vline_fb(x, y + r, h - 2 * r, color);         // Esquerda
+    st7789_draw_vline_fb(x + w - 1, y + r, h - 2 * r, color); // Direita
+
+    // Desenha os cantos arredondados
+    draw_quarter_circle_fb(x + r, y + r, r, 1, color);             // Canto sup-dir
+    draw_quarter_circle_fb(x + w - r - 1, y + r, r, 2, color);     // Canto sup-esq
+    draw_quarter_circle_fb(x + w - r - 1, y + h - r - 1, r, 4, color); // Canto inf-dir
+    draw_quarter_circle_fb(x + r, y + h - r - 1, r, 8, color);     // Canto inf-esq
+}
+
+// ✨ CORRIGIDO: Preenche a tela com a ordem de bytes correta.
+void st7789_fill_screen_fb(uint16_t color) {
+    if (!framebuffer) return;
+
+    uint16_t swapped_color = SWAP_BYTES(color);
+    uint32_t color32 = (swapped_color << 16) | swapped_color;
+    uint32_t *fb32 = (uint32_t *)framebuffer;
+    size_t num_pixels = ST7789_WIDTH * ST7789_HEIGHT;
+
+    for (size_t i = 0; i < num_pixels / 2; i++) {
+        fb32[i] = color32;
+    }
+    if (num_pixels % 2 != 0) {
+        framebuffer[num_pixels - 1] = swapped_color;
     }
 }
 
@@ -1017,6 +1259,20 @@ void st7789_draw_bitmap_1bit_fb(int x, int y, const uint8_t *bitmap, int w, int 
     }
 }
 
+void st7789_draw_bitmap_fb(int x, int y, const uint8_t *bitmap, int w, int h, uint16_t color) {
+    if (!bitmap || w <= 0 || h <= 0) return;
+
+    int bytes_per_row = (w + 7) / 8; // Calcula quantos bytes por linha no bitmap
+
+    for (int j = 0; j < h; j++) {
+        for (int i = 0; i < w; i++) {
+            // Verifica se o bit correspondente ao pixel está setado
+            if (bitmap[j * bytes_per_row + i / 8] & (128 >> (i % 8))) {
+                st7789_draw_pixel_fb(x + i, y + j, color);
+            }
+        }
+    }
+}
 
 
 void st7789_reset_dirty_rect(void) {
@@ -1026,32 +1282,6 @@ void st7789_reset_dirty_rect(void) {
     dirty_y1 = 0;
 }
 
-void st7789_draw_char_fb(int x, int y, char c, uint16_t color, uint16_t bg_color) {
-    if (!framebuffer) return;
-    if (x < -5*text_size || x >= ST7789_WIDTH || y < -7*text_size || y >= ST7789_HEIGHT) return;
-
-    if (c < 32 || c > 127) c = 127;
-    uint8_t font_index = c - 32;
-
-    for (int i = 0; i < 5; i++) {
-        uint8_t line = font5x7[font_index][i];
-        for (int j = 0; j < 7; j++) {
-            if (line & (1 << (6 - j))) {
-                for(int k=0; k<text_size; k++) {
-                  for(int l=0; l<text_size; l++) {
-                    st7789_draw_pixel_fb(x + i*text_size + k, y + j*text_size + l, color);
-                  }
-                }
-            } else if (bg_color != 0xFFFF) { // Opaque background
-                for(int k=0; k<text_size; k++) {
-                  for(int l=0; l<text_size; l++) {
-                    st7789_draw_pixel_fb(x + i*text_size + k, y + j*text_size + l, bg_color);
-                  }
-                }
-            }
-        }
-    }
-}
 
 
 void st7789_scroll_text(int x, int y, int offset_y, const char *text, uint16_t color, uint16_t bg_color) {

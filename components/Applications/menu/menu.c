@@ -12,14 +12,9 @@
 #include "ir_menu.h"
 #include "pin_def.h"
 
-
-// ========== PROTÓTIPOS ==========
-
 // ========== VARIÁVEIS ==========
 static int menuAtual = 0;
 static int menuOffset = 0;
-static int lastMenuAtual = -1;
-static bool fundoDesenhado = false;
 
 // ========== ÍCONES E TEXTOS ==========
 static const uint16_t* icons[] = {
@@ -28,8 +23,8 @@ static const uint16_t* icons[] = {
     nfc_main,
     infra_main,
     rf_main,
-   sd_main,
-   NULL
+    sd_main,
+    NULL // Placeholder for "Musicas" which might not have an icon
 };
 
 static const char* menuTexts[] = {
@@ -45,47 +40,53 @@ static const char* menuTexts[] = {
 static const int menuSize = sizeof(menuTexts) / sizeof(menuTexts[0]);
 
 
-// ========== FUNÇÕES AUXILIARES ========== // [demais funções seguem abaixo sem alterações] 
+// ========== FUNÇÕES AUXILIARES ==========
+static void executeMenuItem(int index); // Forward declaration
 
-
-
-// Interpolação linear
+// Interpolação linear (adicionada para evitar erro de linkagem)
 static int lerp(int start, int end, float t) {
     return start + (end - start) * t;
 }
 
-// Desenha 1 item
+// ✨ ATUALIZADO: Desenha um item do menu no framebuffer
 static void drawMenuItem(int menuIndex, int posY, bool isSelected) {
     const int itemWidth = 220;
     const int itemHeight = 45;
     const int iconSize = 24;
-    int textX = isSelected ? lerp(50, 65, 1.0) : 50;
-    int iconX = isSelected ? lerp(20, 35, 1.0) : 20;
+    const int itemX = 10;
+
+    // Cores baseadas na seleção
+    uint16_t rect_color = isSelected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_PURPLE;
+    uint16_t text_color = isSelected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_WHITE;
+
+    // Posições X e Y
+    int textX = itemX + 50;
+    int iconX = itemX + 20;
     int iconY = posY + (itemHeight - iconSize) / 2;
 
-    st7789_draw_rect(10, posY, itemWidth, itemHeight, ST7789_COLOR_BLACK);
-    st7789_draw_round_rect(10, posY, itemWidth, itemHeight, 8, isSelected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_PURPLE);
-    st7789_draw_text(textX, posY + 15, menuTexts[menuIndex], isSelected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_WHITE);
+    // Desenha o retângulo arredondado (apenas a borda)
+    st7789_draw_round_rect_fb(itemX, posY, itemWidth, itemHeight, 8, rect_color);
+    
+    // Desenha o texto com fundo transparente (cor do texto = cor do fundo)
+    st7789_draw_text_fb(textX, posY + 15, menuTexts[menuIndex], text_color, ST7789_COLOR_BLACK);
 
+    // Desenha o ícone
     if (icons[menuIndex] != NULL) {
-        st7789_draw_bitmapRGB(iconX, iconY, icons[menuIndex], iconSize, iconSize);  // ✅ CERTO
-
+        // ✨ CORRIGIDO: Ordem dos argumentos corrigida
+        st7789_draw_image_fb(iconX, iconY, iconSize, iconSize, icons[menuIndex]);
     }
 }
 
-// Barra de Scroll estilo Flipper
+// ✨ ATUALIZADO: Desenha a barra de rolagem no framebuffer
 static void drawScrollBar(void) {
     int screenHeight = ST7789_HEIGHT;
     int usableHeight = screenHeight - SCROLL_BAR_TOP;
     int maxVisibleItems = 4;
 
-    // Limpar a área da barra de rolagem
-    st7789_draw_rect(ST7789_WIDTH - SCROLL_BAR_WIDTH, SCROLL_BAR_TOP, SCROLL_BAR_WIDTH, usableHeight, ST7789_COLOR_BLACK);
-
     // Desenhar pontilhado lateral
     int spacing = 5;
     for (int y = SCROLL_BAR_TOP; y < screenHeight; y += spacing) {
-        st7789_draw_pixel(ST7789_WIDTH - SCROLL_BAR_WIDTH / 2, y, ST7789_COLOR_GRAY);
+        st7789_draw_pixel_fb(ST7789_WIDTH - SCROLL_BAR_WIDTH / 2, y, ST7789_COLOR_GRAY);
     }
 
     // Barra de progresso
@@ -96,7 +97,7 @@ static void drawScrollBar(void) {
     float scrollY = ((float)menuOffset / (menuSize - maxVisibleItems)) * maxScrollArea;
     if (scrollY > maxScrollArea) scrollY = maxScrollArea;
 
-    st7789_draw_rect(
+    st7789_fill_rect_fb(
         ST7789_WIDTH - SCROLL_BAR_WIDTH,
         SCROLL_BAR_TOP + (int)scrollY,
         SCROLL_BAR_WIDTH,
@@ -109,88 +110,45 @@ static void drawScrollBar(void) {
 
 // Inicializa Menu
 void menu_init(void) {
-    fundoDesenhado = false;
-
-    gpio_config_t io_conf = {
-        .intr_type = GPIO_INTR_DISABLE,
-        .mode = GPIO_MODE_INPUT,
-        .pin_bit_mask = (1ULL << BTN_UP) | (1ULL << BTN_DOWN) | (1ULL << BTN_OK) | (1ULL << BTN_BACK),
-        .pull_up_en = GPIO_PULLUP_ENABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-    };
-    gpio_config(&io_conf);
+    // A configuração dos GPIOs pode ser feita uma vez na task principal
 }
 
+// ✨ ATUALIZADO: Lógica de desenho totalmente refeita para usar framebuffer
 void showMenu(void) {
-
-    
-
     st7789_set_text_size(2);
 
     const int maxVisibleItems = 4;
     const int startY = 10;
     const int itemHeight = 60;
-    const int itemWidth = 220;
 
-    bool needFullRedraw = false;
+    // --- INÍCIO DO FRAME ---
+    
+    // 1. Limpa o framebuffer inteiro
+    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
 
-    static int lastMenuOffset = -1;
-
-
-
-    if (!fundoDesenhado) {
-        st7789_fill_screen(ST7789_COLOR_BLACK);
-        fundoDesenhado = true;
-        needFullRedraw = true;
-    }
-
-    // Detecta se houve scroll (mudança no menuOffset)
+    // 2. Ajusta o offset de rolagem se necessário
     if (menuAtual < menuOffset) {
         menuOffset = menuAtual;
     } else if (menuAtual >= menuOffset + maxVisibleItems) {
         menuOffset = menuAtual - maxVisibleItems + 1;
     }
 
-    if (menuOffset != lastMenuOffset) {
-        needFullRedraw = true;
-
-        // Limpar área dos itens antes de redesenhar
-        for (int i = 0; i < maxVisibleItems; i++) {
-            int y = startY + i * itemHeight;
-            st7789_draw_rect(10, y, itemWidth, itemHeight, ST7789_COLOR_BLACK);
+    // 3. Redesenha todos os itens visíveis no framebuffer
+    for (int i = 0; i < maxVisibleItems; i++) {
+        int menuIndex = i + menuOffset;
+        if (menuIndex < menuSize) {
+            drawMenuItem(menuIndex, startY + i * itemHeight, menuIndex == menuAtual);
         }
     }
 
-    if (needFullRedraw) {
-        // Redesenhar todos os itens visíveis
-        for (int i = 0; i < maxVisibleItems; i++) {
-            int menuIndex = i + menuOffset;
-            if (menuIndex < menuSize) {
-                drawMenuItem(menuIndex, startY + i * itemHeight, menuIndex == menuAtual);
-            }
-        }
-    } else {
-        // Não scrollou: redesenha apenas o item alterado
-        if (menuAtual != lastMenuAtual) {
-            int oldY = startY + (lastMenuAtual - menuOffset) * itemHeight;
-            int newY = startY + (menuAtual - menuOffset) * itemHeight;
+    // 4. Desenha a barra de rolagem no framebuffer
+    drawScrollBar();
 
-            if (lastMenuAtual >= menuOffset && lastMenuAtual < menuOffset + maxVisibleItems) {
-                drawMenuItem(lastMenuAtual, oldY, false); // Item antigo
-            }
-            if (menuAtual >= menuOffset && menuAtual < menuOffset + maxVisibleItems) {
-                drawMenuItem(menuAtual, newY, true); // Novo selecionado
-            }
-        }
-    }
-
-    drawScrollBar(); // Atualiza a barra de rolagem
-
-    lastMenuAtual = menuAtual;
-    lastMenuOffset = menuOffset;
+    // 5. Envia o framebuffer finalizado para a tela de uma só vez
+    st7789_flush();
+    
+    // --- FIM DO FRAME ---
 }
-
-
 
 // Controle
 void handleMenuControls(void) {
@@ -198,21 +156,21 @@ void handleMenuControls(void) {
     while (stayInMenu) {
         if (!gpio_get_level(BTN_UP)) {
             menuAtual = (menuAtual - 1 + menuSize) % menuSize;
-            showMenu();
+            showMenu(); // Redesenha a tela
             vTaskDelay(pdMS_TO_TICKS(150));
         }
         else if (!gpio_get_level(BTN_DOWN)) {
             menuAtual = (menuAtual + 1) % menuSize;
-            showMenu();
+            showMenu(); // Redesenha a tela
             vTaskDelay(pdMS_TO_TICKS(150));
         }
         else if (!gpio_get_level(BTN_OK)) {
-            fundoDesenhado = false;
             executeMenuItem(menuAtual);
             vTaskDelay(pdMS_TO_TICKS(200));
+            // Após sair de um submenu, a tela principal do menu será redesenhada
+            showMenu();
         }
         else if (!gpio_get_level(BTN_BACK)) {
-            fundoDesenhado = false;
             stayInMenu = false;
             vTaskDelay(pdMS_TO_TICKS(200));
         }
@@ -220,69 +178,71 @@ void handleMenuControls(void) {
     }
 }
 
+// Executa item
+static void executeMenuItem(int index) {
+    switch (index) {
+        case 0:
+            battery_info_screen();
+            break;
+        case 1:
+            show_wifi_menu();
+            break;
+        case 2:
+            // setupNFCMenu();
+            break;
+        case 3:
+            show_lg_menu();
+            break;
+        case 4:
+            // setupRFMenu();
+            break;
+        case 5:
+            sd_menu_screen();
+            break;
+        case 6:
+            show_music_menu();
+            break;
+        default:
+            break;
+    }
+}
+
+
 void menu_task(void *pvParameters) {
+    // Configura os GPIOs uma única vez aqui
     gpio_config_t io_conf = {
         .intr_type = GPIO_INTR_DISABLE,
         .mode = GPIO_MODE_INPUT,
-        .pin_bit_mask = (1ULL << BTN_LEFT) | (1ULL << BTN_BACK),
+        .pin_bit_mask = (1ULL << BTN_UP) | (1ULL << BTN_DOWN) | (1ULL << BTN_OK) | (1ULL << BTN_BACK) | (1ULL << BTN_LEFT),
         .pull_up_en = GPIO_PULLUP_ENABLE,
         .pull_down_en = GPIO_PULLDOWN_DISABLE,
     };
     gpio_config(&io_conf);
 
-    menu_init();
+    // Estado inicial
+    current_state = STATE_HOME;
 
     while (1) {
         switch (current_state) {
             case STATE_HOME:
-                home();
-                while (1) {
+                home(); // A função home() também deve usar _fb e terminar com flush()
+                while (current_state == STATE_HOME) {
                     if (!gpio_get_level(BTN_LEFT)) {
                         current_state = STATE_MENU;
                         vTaskDelay(pdMS_TO_TICKS(200));
-                        break;
+                        break; // Sai do loop interno para a máquina de estados reavaliar
                     }
                     vTaskDelay(pdMS_TO_TICKS(50));
                 }
                 break;
 
             case STATE_MENU:
-                showMenu();
-                handleMenuControls();
-                current_state = STATE_HOME;
+                showMenu(); // Mostra o estado inicial do menu
+                handleMenuControls(); // Entra no loop de controle do menu
+                current_state = STATE_HOME; // Ao sair do menu, volta para home
                 break;
         }
-        vTaskDelay(pdMS_TO_TICKS(100));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 
-
-// Executa item
-static void executeMenuItem(int index) {
-    switch (index) {
-        case 0:
-        battery_info_screen();
-
-            break;
-        case 1:
-        show_wifi_menu(); // <- ADICIONE ESTA LINHA
-            break;
-        case 2:
-            // setupNFCMenu();
-            break;
-        case 3:
-        show_lg_menu();
-            break;
-        case 4:
-            // setupRFMenu();
-            break;
-            case 5:
-            sd_menu_screen();  // chama a tela SD
-            break;
-            case 6:
-            show_music_menu();
-             break;
-        default:
-            break;
-    }
-} 
