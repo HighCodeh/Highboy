@@ -135,7 +135,7 @@ void st7789_draw_char_fb(int x, int y, char c, uint16_t color, uint16_t bg_color
 void st7789_scroll_text(int x, int y, int offset_y, const char *text, uint16_t color, uint16_t bg_color);
 
 
-static void set_addr_window_direct(int x, int y, int w, int h);
+//static void set_addr_window_direct(int x, int y, int w, int h);
 void st7789_flush();
 void st7789_draw_pixel_fb(int x, int y, uint16_t color);
 void st7789_fill_screen_fb(uint16_t color);
@@ -151,7 +151,9 @@ void st7789_draw_circle_fb(int x0, int y0, int r, uint16_t color);
 void st7789_fill_circle_fb(int x0, int y0, int r, uint16_t color);
 void st7789_draw_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color);
 void st7789_draw_bitmap_fb(int x, int y, const uint8_t *bitmap, int w, int h, uint16_t color);
-static void draw_quarter_circle_fb(int x, int y, int r, int corner, uint16_t color);
+//static void draw_quarter_circle_fb(int x, int y, int r, int corner, uint16_t color);
+void st7789_fill_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color);
+//static void fill_circle_helper_fb(int16_t x0, int16_t y0, int16_t r, uint8_t corner, int16_t delta, uint16_t color);
 
 uint16_t* st7789_get_framebuffer();
 

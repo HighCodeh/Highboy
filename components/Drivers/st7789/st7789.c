@@ -616,7 +616,7 @@ void st7789_draw_line(int x0, int y0, int x1, int y1, uint16_t color) {
     }
 }
 
-static void draw_quarter_circle_fb(int x, int y, int r, int corner, uint16_t color) {
+static void draw_quarter_circle_helper_fb(int x, int y, int r, int corner, uint16_t color) {
     int f = 1 - r;
     int ddF_x = 1;
     int ddF_y = -2 * r;
@@ -1211,6 +1211,46 @@ void st7789_draw_icon(int x, int y, const uint8_t *icon_bits, uint16_t fg, uint1
     }
 }
 
+static void fill_circle_helper_fb(int16_t x0, int16_t y0, int16_t r, uint8_t corner, int16_t delta, uint16_t color) {
+    int16_t f = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x = 0;
+    int16_t y = r;
+
+    while (x < y) {
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+
+        if (corner & 0x1) { // top left
+            st7789_draw_vline_fb(x0 - y, y0 - x, 2 * x + 1 + delta, color);
+            st7789_draw_vline_fb(x0 - x, y0 - y, 2 * y + 1 + delta, color);
+        }
+        if (corner & 0x2) { // top right
+            st7789_draw_vline_fb(x0 + x, y0 - y, 2 * y + 1 + delta, color);
+            st7789_draw_vline_fb(x0 + y, y0 - x, 2 * x + 1 + delta, color);
+        }
+    }
+}
+
+void st7789_fill_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color) {
+    if (w <= 0 || h <= 0) return;
+    if (r > w / 2) r = w / 2;
+    if (r > h / 2) r = h / 2;
+
+    // Retângulo central
+    st7789_fill_rect_fb(x + r, y, w - 2 * r, h, color);
+
+    // Preenche os cantos
+    fill_circle_helper_fb(x + w - r - 1, y + r, r, 1, h - 2 * r - 1, color);
+    fill_circle_helper_fb(x + r, y + r, r, 1, h - 2 * r - 1, color);
+}
 
 void st7789_draw_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color) {
     if (w <= 0 || h <= 0) return;
@@ -1224,10 +1264,10 @@ void st7789_draw_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color
     st7789_draw_vline_fb(x + w - 1, y + r, h - 2 * r, color); // Direita
 
     // Desenha os cantos arredondados
-    draw_quarter_circle_fb(x + r, y + r, r, 1, color);             // Canto sup-dir
-    draw_quarter_circle_fb(x + w - r - 1, y + r, r, 2, color);     // Canto sup-esq
-    draw_quarter_circle_fb(x + w - r - 1, y + h - r - 1, r, 4, color); // Canto inf-dir
-    draw_quarter_circle_fb(x + r, y + h - r - 1, r, 8, color);     // Canto inf-esq
+    draw_quarter_circle_helper_fb(x + r, y + r, r, 4, color);                         // Canto sup-esq 4
+    draw_quarter_circle_helper_fb(x + w - r - 1, y + r, r, 2, color);                 // Canto sup-dir
+    draw_quarter_circle_helper_fb(x + r, y + h - r - 1, r, 8, color);                 // Canto inf-esq
+    draw_quarter_circle_helper_fb(x + w - r - 1, y + h - r - 1, r, 1, color);         // Canto inf-dir 1
 }
 
 // ✨ CORRIGIDO: Preenche a tela com a ordem de bytes correta.
