@@ -2,7 +2,7 @@
 #include "led_strip.h"
 #include "esp_log.h"
 
-#define LED_RGB_GPIO 48 
+#define LED_RGB_GPIO 45 
 static const char *TAG = "led_control";
 
 static led_strip_handle_t led_strip;
@@ -43,4 +43,9 @@ void led_blink_green(void) {
 void led_blink_blue(void) {
     ESP_LOGI(TAG, "Piscando LED azul (info)");
     led_blink_color(0, 0, 255, 500); 
+}
+
+void led_blink_purple(void){
+  ESP_LOGI(TAG,"Piscando LED roxo (info)");
+  led_blink_color(200, 0, 220, 500);
 }
