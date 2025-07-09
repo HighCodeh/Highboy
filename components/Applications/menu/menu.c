@@ -11,6 +11,7 @@
 #include "music_menu.h"
 #include "ir_menu.h"
 #include "pin_def.h"
+#include "led_control.h"
 
 // ========== VARIÁVEIS ==========
 static int menuAtual = 0;
@@ -226,6 +227,7 @@ void menu_task(void *pvParameters) {
         switch (current_state) {
             case STATE_HOME:
                 home(); // A função home() também deve usar _fb e terminar com flush()
+                led_blink_blue();
                 while (current_state == STATE_HOME) {
                     if (!gpio_get_level(BTN_LEFT)) {
                         current_state = STATE_MENU;
@@ -238,6 +240,7 @@ void menu_task(void *pvParameters) {
 
             case STATE_MENU:
                 showMenu(); // Mostra o estado inicial do menu
+                led_blink_purple();
                 handleMenuControls(); // Entra no loop de controle do menu
                 current_state = STATE_HOME; // Ao sair do menu, volta para home
                 break;
