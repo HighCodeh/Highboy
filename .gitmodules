@@ -1,3 +1,6 @@
 [submodule "components/esp-idf-st7789"]
 	path = components/esp-idf-st7789
 	url = https://github.com/nopnop2002/esp-idf-st7789.git
+[submodule "components/Service/components/Service/cJSON"]
+	path = components/Service/components/Service/cJSON
+	url = https://github.com/DaveGamble/cJSON
