@@ -12,6 +12,15 @@
 #include "ir_menu.h"
 #include "pin_def.h"
 #include "led_control.h"
+#include "wifi.h"
+
+ #define ITEM_HEIGHT         55
+ #define ITEM_WIDTH          220
+ #define START_Y             40
+ #define ITEM_SPACING        8
+ #define SCROLL_BAR_WIDTH    5
+ #define SCROLL_BAR_TOP      START_Y
+
 
 // ========== VARIÁVEIS ==========
 static int menuAtual = 0;
@@ -183,10 +192,11 @@ void handleMenuControls(void) {
 static void executeMenuItem(int index) {
     switch (index) {
         case 0:
-            battery_info_screen();
+            //battery_info_screen();
+            show_wifi_menu();
             break;
         case 1:
-            show_wifi_menu();
+            //show_wifi_menu();
             break;
         case 2:
             // setupNFCMenu();
