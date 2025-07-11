@@ -4,3 +4,6 @@
 [submodule "components/Service/components/Service/cJSON"]
 	path = components/Service/components/Service/cJSON
 	url = https://github.com/DaveGamble/cJSON
+[submodule "components/Service/cJSON"]
+	path = components/Service/cJSON
+	url = https://github.com/DaveGamble/cJSON
