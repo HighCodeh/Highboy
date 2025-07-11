@@ -10,10 +10,6 @@
 #define BTN_BACK   7
 #define BTN_LEFT 5  
 
-// home scroll bar
-#define SCROLL_BAR_WIDTH 4
-#define SCROLL_BAR_TOP 0
-
 // led
 #define LED_GPIO     45
 #define LED_COUNT    1
