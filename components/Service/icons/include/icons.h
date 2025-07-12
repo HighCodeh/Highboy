@@ -10,6 +10,11 @@ extern const uint16_t nfc_main[];
 extern const uint16_t infra_main[];
 extern const uint16_t rf_main[];
 extern const uint16_t sd_main[];
+extern const uint16_t brilho[];
+extern const uint16_t bad[];
+extern const uint16_t Music[];
+extern const uint16_t inatividade[];
+extern const uint16_t conf_main[];
 
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
