@@ -8,4 +8,5 @@ idf_component_register(SRCS "menu.c"
                     icons
                     sub_menu
                     music_menu
-                    ir_menu)
+                    ir_menu
+                    menu_generic)
