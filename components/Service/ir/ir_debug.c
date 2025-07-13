@@ -21,9 +21,9 @@ void debug_show_symbols(const rmt_symbol_word_t* symbols, size_t count, size_t m
 // Função para exibir informações decodificadas
 void debug_show_decoded_info(const ir_decoded_data_t* decoded) {
     ESP_LOGI(TAG, "=== DADOS DECODIFICADOS ===");
-    ESP_LOGI(TAG, "📄 Protocolo: %s", decoded->protocol);
-    ESP_LOGI(TAG, "📄 Endereço: 0x%08X", (unsigned int)decoded->address);
-    ESP_LOGI(TAG, "📄 Comando: 0x%08X", (unsigned int)decoded->command);
+    ESP_LOGI(TAG, "Protocolo: %s", decoded->protocol);
+    ESP_LOGI(TAG, "Endereço: 0x%08X", (unsigned int)decoded->address);
+    ESP_LOGI(TAG, "Comando: 0x%08X", (unsigned int)decoded->command);
 }
 
 // Função para verificar arquivo salvo
@@ -32,20 +32,20 @@ void debug_verify_saved_file(const char* filename, const char* original_content)
     char read_buffer[1024];
     
     if (ir_path_read_file(filename, read_buffer, sizeof(read_buffer)) == IR_PATH_OK) {
-        ESP_LOGI(TAG, "✅ Arquivo lido com sucesso!");
-        ESP_LOGI(TAG, "📖 === CONTEÚDO LIDO DO ARQUIVO ===");
+        ESP_LOGI(TAG, "Arquivo lido com sucesso!");
+        ESP_LOGI(TAG, "=== CONTEÚDO LIDO DO ARQUIVO ===");
         printf("%s", read_buffer);
-        ESP_LOGI(TAG, "📖 === FIM DO ARQUIVO LIDO ===");
+        ESP_LOGI(TAG, "=== FIM DO ARQUIVO LIDO ===");
         
         // Verifica se o conteúdo lido é igual ao escrito
         if (strcmp(original_content, read_buffer) == 0) {
-            ESP_LOGI(TAG, "✅ Verificação OK: Conteúdo escrito = Conteúdo lido");
+            ESP_LOGI(TAG, "Verificação OK: Conteúdo escrito = Conteúdo lido");
         } else {
-            ESP_LOGW(TAG, "⚠️ Diferença detectada entre escrito e lido!");
+            ESP_LOGW(TAG, "Diferença detectada entre escrito e lido!");
             ESP_LOGW(TAG, "Tamanho escrito: %d, Tamanho lido: %d", 
                      strlen(original_content), strlen(read_buffer));
         }
     } else {
-        ESP_LOGE(TAG, "❌ Erro ao ler arquivo para verificação");
+        ESP_LOGE(TAG, "Erro ao ler arquivo para verificação");
     }
 }

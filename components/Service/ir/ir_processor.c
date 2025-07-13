@@ -14,7 +14,7 @@ void process_ir_signal(const rmt_symbol_word_t* symbols, size_t count) {
     
     // DETECÇÃO DO PROTOCOLO
     const char* protocol = detect_ir_protocol(symbols, count);
-    ESP_LOGI(TAG, "🎯 PROTOCOLO DETECTADO: %s", protocol);
+    ESP_LOGI(TAG, "PROTOCOLO DETECTADO: %s", protocol);
     
     // ANÁLISE DETALHADA
     analyze_your_signal(symbols, count);
@@ -29,9 +29,9 @@ void process_ir_signal(const rmt_symbol_word_t* symbols, size_t count) {
     
     // SALVAR ARQUIVO
     if (save_ir_file(protocol, &decoded_data)) {
-        ESP_LOGI(TAG, "✅ Processamento completo com sucesso!");
+        ESP_LOGI(TAG, "Processamento completo com sucesso!");
     } else {
-        ESP_LOGE(TAG, "❌ Erro no processamento do sinal");
+        ESP_LOGE(TAG, "Erro no processamento do sinal");
     }
 }
 
@@ -48,18 +48,18 @@ bool save_ir_file(const char* protocol, const ir_decoded_data_t* decoded) {
     char* file_content = generate_ir_file_content(signal_name, decoded);
     
     // Salva o arquivo
-    ESP_LOGI(TAG, "💾 Salvando arquivo: %s", filename);
-    ESP_LOGI(TAG, "📄 Nome do sinal: %s", signal_name);
+    ESP_LOGI(TAG, "Salvando arquivo: %s", filename);
+    ESP_LOGI(TAG, "Nome do sinal: %s", signal_name);
     
     if (ir_path_write_file(filename, file_content, false) == IR_PATH_OK) {
-        ESP_LOGI(TAG, "✅ Arquivo .ir salvo com sucesso!");
+        ESP_LOGI(TAG, "Arquivo .ir salvo com sucesso!");
         
         // Verifica o arquivo salvo
         debug_verify_saved_file(filename, file_content);
         
         return true;
     } else {
-        ESP_LOGE(TAG, "❌ Erro ao salvar arquivo .ir");
+        ESP_LOGE(TAG, "Erro ao salvar arquivo .ir");
         return false;
     }
 }
