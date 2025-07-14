@@ -9,4 +9,5 @@ idf_component_register(SRCS "menu.c"
                     sub_menu
                     music_menu
                     ir_menu
-                    menu_generic)
+                    menu_generic
+                    brigthtness_ui)

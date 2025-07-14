@@ -9,10 +9,6 @@ typedef enum {
 } app_state_t;
 
 
-
-
-
-
 void menu_task(void *pvParameters);
 
-#endif // MENU_H
+#endif 

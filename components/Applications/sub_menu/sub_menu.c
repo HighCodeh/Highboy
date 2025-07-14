@@ -1,199 +1,209 @@
+// Arquivo: sub_menu.c (Versão Unificada)
 #include "sub_menu.h"
-#include "st7789.h"
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "icons.h"
 #include "pin_def.h"
-// Definições dos botões e layout
-#define MAX_VISIBLE_ITEMS   4
-#define ITEM_HEIGHT         55
-#define ITEM_WIDTH          220
-#define START_Y             40
-#define ITEM_SPACING        8
-#define SCROLL_BAR_WIDTH    5
-#define SCROLL_BAR_TOP      START_Y
+#include <string.h>
 
-// Variáveis de estado do menu
+// --- Constantes de Layout ---
+#define MAX_VISIBLE_ITEMS 4
+#define ITEM_HEIGHT 45
+#define ITEM_WIDTH 220
+#define START_Y 40
+#define ITEM_SPACING 5
+#define SCROLL_BAR_WIDTH 5
+#define HEADER_HEIGHT 30
+#define ICON_SIZE 24
+
+
+#define COLOR_BACKGROUND ST7789_COLOR_BLACK
+#define COLOR_PURPLE 0x991D
+#define COLOR_TEXT ST7789_COLOR_WHITE
+#define COLOR_SCROLL_TRACK ST7789_COLOR_DARKGRAY
+#define COLOR_SCROLL_THUMB COLOR_PURPLE
+
+
 static int currentSelection = 0;
 static int offset = 0;
-static const MenuItem *currentMenuItems = NULL;
+static const SubMenuItem *currentMenuItems = NULL;
 static int currentMenuSize = 0;
 static const char *currentMenuTitle = NULL;
 
-// Declarações de funções estáticas
-static void render_current_menu(void);
-static void draw_header_fb(const char *title);
-static void draw_menu_items_fb(void);
-static void draw_menu_item_fb(const MenuItem *item, int y, bool selected);
-static void draw_scroll_bar_fb(void);
-static void executeMenuItem(int index); // Adicionada declaração
 
-// Função principal que desenha a tela inteira e a envia para o display
-static void render_current_menu(void) {
-    // 1. Limpa o framebuffer
-    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+static void draw_header(void);
+static void draw_menu_items(void);
+static void draw_menu_item(int menuIndex, int y, bool selected);
+static void draw_scroll_bar(void);
+static void render_full_menu(void);
 
-    // 2. Desenha o cabeçalho
-    draw_header_fb(currentMenuTitle);
+// --- A NOVA FUNÇÃO DE CONTROLE ÚNICA ---
+static int handle_menu_controls(void) {
 
-    // 3. Desenha os itens do menu
-    draw_menu_items_fb();
+    static bool botoes_ja_configurados = false;
+    if (!botoes_ja_configurados) {
+        gpio_config_t io_conf = {
+            .pin_bit_mask = (1ULL << BTN_UP) | (1ULL << BTN_DOWN) | (1ULL << BTN_OK) | (1ULL << BTN_BACK),
+            .mode = GPIO_MODE_INPUT,
+            .pull_up_en = GPIO_PULLUP_ENABLE,
+            .pull_down_en = GPIO_PULLDOWN_DISABLE,
+            .intr_type = GPIO_INTR_DISABLE
+        };
+        gpio_config(&io_conf);
+        botoes_ja_configurados = true;
+    }
     
-    // 4. Desenha a barra de rolagem
-    draw_scroll_bar_fb();
+    // Aguarda soltar qualquer botão pressionado ao entrar
+    while (!gpio_get_level(BTN_OK) || !gpio_get_level(BTN_DOWN) || !gpio_get_level(BTN_UP) || !gpio_get_level(BTN_BACK)) {
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
 
-    // 5. Envia o buffer completo para a tela
-    st7789_flush();
-}
+    // Loop principal de controle de input
+    while (1) {
+        bool needs_redraw = false;
 
-// Prepara e exibe um novo menu
-void show_menu(const MenuItem *items, int itemCount, const char *title) {
-    // Reseta o estado para o novo menu
-    currentSelection = 0;
-    offset = 0;
-    currentMenuItems = items;
-    currentMenuSize = itemCount;
-    currentMenuTitle = title;
-
-    // Desenha o estado inicial do menu
-    render_current_menu();
-}
-
-// Loop de controle do menu
-void handle_menu_controls(void) {
-    bool stayInMenu = true;
-    while (stayInMenu) {
-        bool updated = false;
-
-        if (!gpio_get_level(BTN_UP)) {
-            currentSelection = (currentSelection - 1 + currentMenuSize) % currentMenuSize;
-            updated = true;
-            vTaskDelay(pdMS_TO_TICKS(150));
-        }
-        else if (!gpio_get_level(BTN_DOWN)) {
+        if (!gpio_get_level(BTN_DOWN)) {
+            while (!gpio_get_level(BTN_DOWN)) vTaskDelay(pdMS_TO_TICKS(20));
             currentSelection = (currentSelection + 1) % currentMenuSize;
-            updated = true;
-            vTaskDelay(pdMS_TO_TICKS(150));
-        }
-        else if (!gpio_get_level(BTN_OK)) {
-            // Executa a ação e redesenha o menu ao retornar
-            executeMenuItem(currentSelection);
-            render_current_menu();
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-        else if (!gpio_get_level(BTN_BACK)) {
-            stayInMenu = false;
-            vTaskDelay(pdMS_TO_TICKS(200));
-        }
-
-        // Se a seleção mudou, redesenha a tela
-        if (updated) {
-            render_current_menu();
+            needs_redraw = true;
+        } else if (!gpio_get_level(BTN_UP)) {
+            while (!gpio_get_level(BTN_UP)) vTaskDelay(pdMS_TO_TICKS(20));
+            currentSelection = (currentSelection > 0) ? currentSelection - 1 : currentMenuSize - 1;
+            needs_redraw = true;
+        } else if (!gpio_get_level(BTN_OK)) {
+            while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(20));
+            return currentSelection; // Retorna o índice selecionado
+        } else if (!gpio_get_level(BTN_BACK)) {
+            while (!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(20));
+            return -1; // Retorna -1 para "Voltar"
         }
 
+        if (needs_redraw) {
+            draw_menu_items();
+            draw_scroll_bar();
+            st7789_flush();
+        }
         vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
 
-// Desenha o cabeçalho no framebuffer
-static void draw_header_fb(const char *title) {
-    st7789_fill_rect_fb(0, 0, 240, 30, ST7789_COLOR_PURPLE);
-    st7789_set_text_size(2);
-    st7789_draw_text_fb(40, 7, title, ST7789_COLOR_WHITE, ST7789_COLOR_PURPLE);
+
+void show_submenu(const SubMenuItem *items, int itemCount, const char *title) {
+
+    while (1) {
+        currentMenuItems = items;
+        currentMenuSize = itemCount;
+        currentMenuTitle = title;
+        currentSelection = 0; 
+        offset = 0;
+
+        render_full_menu();
+        
+        int selected_index = handle_menu_controls();
+
+        if (selected_index == -1) {
+            break; 
+        }
+
+        if (items[selected_index].action != NULL) {
+            items[selected_index].action();
+        }
+        
+    }
+
+    currentMenuItems = NULL;
+    currentMenuSize = 0;
+    currentMenuTitle = NULL;
 }
 
-// Desenha os itens visíveis no framebuffer
-static void draw_menu_items_fb(void) {
-    // Ajusta o offset para manter o item selecionado visível
+
+int show_selection_menu(const SubMenuItem *items, int itemCount, const char *title) {
+    currentMenuItems = items;
+    currentMenuSize = itemCount;
+    currentMenuTitle = title;
+    currentSelection = 0;
+    offset = 0;
+
+    render_full_menu();
+    int result = handle_menu_controls();
+
+    currentMenuItems = NULL;
+    currentMenuSize = 0;
+    currentMenuTitle = NULL;
+
+    return result;
+}
+
+
+static void render_full_menu(void) {
+    st7789_fill_screen_fb(COLOR_BACKGROUND);
+    draw_header();
+    draw_scroll_bar();
+    draw_menu_items();
+    st7789_flush();
+}
+
+static void draw_header(void) {
+    st7789_fill_rect_fb(0, 0, ST7789_WIDTH, HEADER_HEIGHT, COLOR_PURPLE);
+    if (currentMenuTitle != NULL) {
+        st7789_set_text_size(2);
+        int text_width = strlen(currentMenuTitle) * 12;
+        int text_x = (ST7789_WIDTH - text_width) / 2;
+        int text_y = (HEADER_HEIGHT - 16) / 2;
+        if (text_x < 0) text_x = 2;
+        st7789_draw_text_fb(text_x, text_y, currentMenuTitle, COLOR_TEXT, COLOR_PURPLE);
+    }
+}
+
+static void draw_menu_items(void) {
+    if (currentMenuSize == 0) return; // Proteção contra divisão por zero
     if (currentSelection < offset) {
         offset = currentSelection;
     } else if (currentSelection >= offset + MAX_VISIBLE_ITEMS) {
         offset = currentSelection - MAX_VISIBLE_ITEMS + 1;
     }
-
-    // Desenha cada item visível
+    st7789_fill_rect_fb(0, START_Y, ST7789_WIDTH, ST7789_HEIGHT - START_Y, COLOR_BACKGROUND);
     for (int i = 0; i < MAX_VISIBLE_ITEMS; i++) {
         int menuIndex = i + offset;
         if (menuIndex < currentMenuSize) {
             int posY = START_Y + i * (ITEM_HEIGHT + ITEM_SPACING);
-            draw_menu_item_fb(&currentMenuItems[menuIndex], posY, menuIndex == currentSelection);
+            draw_menu_item(menuIndex, posY, menuIndex == currentSelection);
         }
     }
 }
 
-// Desenha um único item no framebuffer
-static void draw_menu_item_fb(const MenuItem *item, int posY, bool selected) {
-    int iconSize = 24;
-    int textX = selected ? 65 : 50;
-    int iconX = selected ? 35 : 20;
-    int iconY = posY + (ITEM_HEIGHT - iconSize) / 2;
-    uint16_t rect_color = selected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_PURPLE;
-    uint16_t text_color = selected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_WHITE;
-
-    st7789_draw_round_rect_fb(10, posY, ITEM_WIDTH, ITEM_HEIGHT, 10, rect_color);
-    st7789_draw_text_fb(textX, posY + 15, item->label, text_color, ST7789_COLOR_BLACK);
-
-    if (item->icon != NULL) {
-        st7789_draw_image_fb(iconX, iconY, iconSize, iconSize, item->icon);
+static void draw_menu_item(int menuIndex, int y, bool selected) {
+    const SubMenuItem *item = &currentMenuItems[menuIndex];
+    int item_x = 10;
+    int icon_x = item_x + 10;
+    int text_x = icon_x + ICON_SIZE + 10;
+    int text_y = y + (ITEM_HEIGHT - 16) / 2;
+    int icon_y = y + (ITEM_HEIGHT - ICON_SIZE) / 2;
+    if (selected) {
+        st7789_draw_round_rect_fb(item_x, y, ITEM_WIDTH, ITEM_HEIGHT, 10, COLOR_TEXT);
+        int circle_x = item_x + ITEM_WIDTH - 20;
+        int circle_y = y + ITEM_HEIGHT / 2;
+        st7789_fill_circle_fb(circle_x, circle_y, 4, COLOR_TEXT);
+    } else {
+        st7789_draw_round_rect_fb(item_x, y, ITEM_WIDTH, ITEM_HEIGHT, 10, COLOR_PURPLE);
     }
+    if (item->icon) {
+        st7789_draw_image_fb(icon_x, icon_y, ICON_SIZE, ICON_SIZE, item->icon);
+    }
+    st7789_set_text_size(2);
+    st7789_draw_text_fb(text_x, text_y, item->label, COLOR_TEXT, COLOR_BACKGROUND);
 }
 
-// Desenha a barra de rolagem no framebuffer
-static void draw_scroll_bar_fb(void) {
-    if (currentMenuSize <= MAX_VISIBLE_ITEMS) return; // Não desenha se não há rolagem
-
-    int usableHeight = ST7789_HEIGHT - START_Y;
-    int spacing = 5;
-
-    for (int y = START_Y; y < ST7789_HEIGHT; y += spacing) {
-        st7789_draw_pixel_fb(ST7789_WIDTH - SCROLL_BAR_WIDTH / 2, y, ST7789_COLOR_DARKGRAY);
+static void draw_scroll_bar(void) {
+    st7789_fill_rect_fb(ST7789_WIDTH - SCROLL_BAR_WIDTH - 2, 0, SCROLL_BAR_WIDTH + 2, ST7789_HEIGHT, COLOR_BACKGROUND);
+    if (currentMenuSize <= MAX_VISIBLE_ITEMS) return;
+    for (int y = 0; y < ST7789_HEIGHT; y += 5) {
+        st7789_draw_pixel_fb(ST7789_WIDTH - SCROLL_BAR_WIDTH / 2 - 1, y, COLOR_SCROLL_TRACK);
     }
-
-    float scrollBarHeight = (float)usableHeight * ((float)MAX_VISIBLE_ITEMS / currentMenuSize);
-    if (scrollBarHeight < 8) scrollBarHeight = 8;
-
-    float maxScrollArea = usableHeight - scrollBarHeight;
-    float scrollY = ((float)offset / (currentMenuSize - MAX_VISIBLE_ITEMS)) * maxScrollArea;
-    if (scrollY > maxScrollArea) scrollY = maxScrollArea;
-
-    st7789_fill_round_rect_fb(
-        ST7789_WIDTH - SCROLL_BAR_WIDTH,
-        START_Y + (int)scrollY,
-        SCROLL_BAR_WIDTH,
-        (int)scrollBarHeight,
-        3,
-        ST7789_COLOR_WHITE
-    );
+    int scroll_area_height = ST7789_HEIGHT - START_Y;
+    float thumb_height = (float)scroll_area_height * ((float)MAX_VISIBLE_ITEMS / currentMenuSize);
+    if (thumb_height < 10) thumb_height = 10;
+    float scroll_track_space = scroll_area_height - thumb_height;
+    float scroll_y_pos = (currentMenuSize > MAX_VISIBLE_ITEMS) ? ((float)offset / (currentMenuSize - MAX_VISIBLE_ITEMS)) * scroll_track_space : 0;
+    st7789_fill_round_rect_fb(ST7789_WIDTH - SCROLL_BAR_WIDTH - 1, START_Y + (int)scroll_y_pos, SCROLL_BAR_WIDTH, (int)thumb_height, 2, COLOR_SCROLL_THUMB);
 }
-
-// Função de exemplo para o menu WiFi
-// void wifi_scan(void) {
-//     // Limpa a tela para mostrar a mensagem de scan
-//     st7789_fill_screen_fb(ST7789_COLOR_BLACK);
-//     st7789_draw_text_fb(20, 100, "Escaneando WiFi...", ST7789_COLOR_WHITE, ST7789_COLOR_BLACK);
-//     st7789_flush();
-//     vTaskDelay(pdMS_TO_TICKS(2000)); // Simula o scan
-// }
-
-// Monta e exibe o menu WiFi
-// void show_wifi_menu() {
-//     MenuItem wifiItems[] = {
-//         { "Scan", wifi_main, wifi_scan },
-//         { "Ataque", wifi_main, NULL },
-//         { "Info", wifi_main, NULL },
-//         { "Outro", wifi_main, NULL },
-//         { "Item 5", wifi_main, NULL },
-//     };
-//     int itemCount = sizeof(wifiItems) / sizeof(wifiItems[0]);
-//     show_menu(wifiItems, itemCount, "WiFi");
-//     handle_menu_controls();
-// }
-
-// Executa a ação do item de menu selecionado
-static void executeMenuItem(int index) {
-    if (currentMenuItems && index < currentMenuSize && currentMenuItems[index].action) {
-        currentMenuItems[index].action();
-    }
-}
-

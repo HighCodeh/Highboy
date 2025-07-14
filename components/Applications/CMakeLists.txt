@@ -1,22 +1,32 @@
 idf_component_register(SRCS "home/home.c"
                             "menu/menu.c"
-                            "menu_battery/menu_battery.c"
                             "sub_menu/sub_menu.c"
                             "ui_sd/ui_sd.c"
-                            "music_menu/music_menu.c"
+                         
                             "menu_generic/menu_generic.c"
                             "play/play.c"
                             "wifi/wifi.c"
+                            "wifi/wifi_deauther.c"
+                            "wifi/evil_twin.c"
+                            "brightness_ui/brightness_ui.c"
+                            "led_ui/led_ui.c"
+                            "info_device/info_device.c"
+                            "buzzer_ui/buzzer_ui.c"
+                            "battery_ui/battery_ui.c"
                        INCLUDE_DIRS "home/include"
                                     "menu/include"
-                                    "menu_battery/include"
                                     "sub_menu/include"
                                     "ui_sd/include"
-                                    "music_menu/include"
+                                  
                                     "menu_generic/include"
                                     "play/include"
                                     "wifi/include" 
-                       REQUIRES 
+                                    "brightness_ui/include"
+                                    "led_ui/include"
+                                    "info_device/include"
+                                    "buzzer_ui/include"
+                                    "battery_ui/include"
+                  REQUIRES 
                     driver
                     Drivers
                     Service
