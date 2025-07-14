@@ -15,6 +15,12 @@ extern const uint16_t bad[];
 extern const uint16_t Music[];
 extern const uint16_t inatividade[];
 extern const uint16_t conf_main[];
+extern const uint16_t led_main[];
+extern const uint16_t bat_main[];
+extern const uint16_t scan[];
+extern const uint16_t deauth[];
+extern const uint16_t portal[];
+
 
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24
