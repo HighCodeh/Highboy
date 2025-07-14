@@ -6,5 +6,6 @@
 
 void wifi_init(void);
 void wifi_service_init(void);
+void wifi_change_to_hotspot(const char *new_ssid);
 
 #endif // WIFI_SERVICE_H

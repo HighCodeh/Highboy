@@ -1,17 +1,18 @@
 idf_component_register(SRCS "font/font.c"
                             "icons/icons.c"
                             "hb_sd/hb_sd.c"
-                            "ir_transmiter/ir_transmiter.c"
+                      
                             "wifi/wifi_service.c"
                             "http_server/http_server_service.c"
-                            "cJSON/cJSON.c"
+                            "dns_server/dns_server.c"
                     INCLUDE_DIRS "font/include"
                                  "hb_sd/include"
                                  "icons/include"
-                                 "ir_transmiter/include"
+                              
                                  "wifi/include"
                                  "http_server/include"
-                                 "cJSON/."
+           
+                                 "dns_server/include"
                     REQUIRES sdmmc
                     driver  
                     vfs

@@ -7,5 +7,6 @@
 esp_err_t start_web_server(void);
 esp_err_t stop_web_server(void);
 esp_err_t http_server_register_uri(const httpd_uri_t *uri_handler);
+esp_err_t stop_http_server(void); // Declaração da nova função
 
 #endif // !HTTP_SERVER_SERVICE_H

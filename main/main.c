@@ -9,7 +9,6 @@
 #include "home.h"
 #include "buzzer.h"
 #include "menu.h"
-#include "ir_transmiter.h"
 #include "kernel.h"
 
 

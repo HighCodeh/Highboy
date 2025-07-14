@@ -25,3 +25,20 @@ esp_err_t http_server_register_uri(const httpd_uri_t *uri_handler) {
     ESP_LOGE(TAG, "Servidor não iniciado, impossível registrar URI '%s'", uri_handler->uri);
     return ESP_FAIL;
 }
+
+esp_err_t stop_http_server(void) {
+    if (server == NULL) {
+        ESP_LOGW(TAG, "Servidor HTTP já está parado ou não foi iniciado.");
+        return ESP_OK; // Retorna ESP_OK, pois o servidor já está parado
+    }
+
+    esp_err_t err = httpd_stop(server);
+    if (err == ESP_OK) {
+        ESP_LOGI(TAG, "Servidor HTTP parado com sucesso.");
+        server = NULL; // Limpa a handle do servidor após parar
+    } else {
+        ESP_LOGE(TAG, "Falha ao parar o servidor HTTP: %s", esp_err_to_name(err));
+    }
+
+    return err;
+}
