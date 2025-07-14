@@ -1,22 +1,21 @@
+// Arquivo: buzzer.h
+
 #ifndef BUZZER_H
 #define BUZZER_H
 
+#include "esp_err.h"
 #include <stdint.h>
-#include "driver/ledc.h"
 
-// Pino do buzzer (configurar conforme seu hardware)
-#define BUZZER_GPIO 46
 
-// Configuração do LEDC (PWM)
-#define LEDC_CHANNEL         LEDC_CHANNEL_0
-#define LEDC_TIMER           LEDC_TIMER_0
-#define LEDC_MODE            LEDC_LOW_SPEED_MODE
+// --- DEFINIÇÕES DE HARDWARE PARA O BUZZER ---
+// Para evitar conflitos, usamos um timer e canal diferente do backlight
+#define BUZZER_LEDC_TIMER           LEDC_TIMER_1
+#define BUZZER_LEDC_CHANNEL         LEDC_CHANNEL_1
+#define BUZZER_LEDC_MODE            LEDC_LOW_SPEED_MODE
+#define BUZZER_LEDC_DUTY_RESOLUTION LEDC_TIMER_13_BIT // Resolução para volume/duty
+#define BUZZER_GPIO                 GPIO_NUM_46 // Confirme se este é o pino correto
 
-#define LEDC_DUTY_RESOLUTION LEDC_TIMER_13_BIT
-#define LEDC_FREQ            4000  // Frequência PWM inicial (Hz)
 
-// Mapeamento de notas musicais (frequências em Hz)
-#define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
 #define NOTE_D1  37
@@ -106,10 +105,14 @@
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
 
-// Protótipos das funções
 esp_err_t buzzer_init(void);
-
 void buzzer_play_tone(uint32_t freq_hz, uint32_t duration_ms);
+
+// NOVA FUNÇÃO: Toca um som contínuo com volume variável
+void buzzer_set_continuous_tone(uint8_t volume, uint32_t freq_hz);
+
+// NOVA FUNÇÃO: Para o som contínuo
+void buzzer_stop(void);
 void buzzer_beep(void);
 void buzzer_error(void);
 void buzzer_click(void);
@@ -132,6 +135,8 @@ void buzzer_scroll_tick(void);
 void buzzer_hacker_confirm(void);
 void buzzer_flipper_granted(void);
 void buzzer_flipper_denied(void);
+void buzzer_start_tone(uint32_t freq_hz, uint8_t volume);
+void buzzer_stop_tone(void);
 
 
 #endif // BUZZER_H

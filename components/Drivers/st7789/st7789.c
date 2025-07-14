@@ -5,6 +5,7 @@
 #include "esp_heap_caps.h"
 #include "freertos/task.h"
 #include "esp_log.h"
+#include "backlight.h"
 
 // Comandos do controlador ST7789
 #define ST7789_CMD_SWRESET 0x01  // Software reset
@@ -401,7 +402,9 @@ void st7789_init(void) {
     st7789_enable_framebuffer();
     st7789_fill_screen_fb(ST7789_COLOR_BLACK);
     st7789_flush();
-    gpio_set_level(ST7789_PIN_BL, 1);
+    backlight_init();
+    backlight_set_brightness(255);
+
 }
 // ✨ OTIMIZADO: Desenha linhas horizontais e verticais de forma muito eficiente.
 
@@ -476,7 +479,7 @@ void st7789_draw_char_fb(int x, int y, char c, uint16_t color, uint16_t bg_color
 
 // ✨ OTIMIZADO: Desenha texto no framebuffer.
 void st7789_draw_text_fb(int x, int y, const char *text, uint16_t color, uint16_t bg_color) {
-    if (!text) return;
+    if (!text) return;  // Ok, protege contra NULL
     int current_x = x;
     while (*text) {
         if (*text == '\n') {
@@ -489,6 +492,7 @@ void st7789_draw_text_fb(int x, int y, const char *text, uint16_t color, uint16_
         text++;
     }
 }
+
 
 // ✨ OTIMIZADO: Desenha uma imagem (bitmap RGB565) no framebuffer.
 void st7789_draw_image_fb(int x, int y, int w, int h, const uint16_t *image) {
@@ -1334,3 +1338,7 @@ void st7789_scroll_text(int x, int y, int offset_y, const char *text, uint16_t c
     st7789_update_dirty();
 }
 
+// Adicione esta função em st7789.c
+uint16_t st7789_rgb_to_color(uint8_t r, uint8_t g, uint8_t b) {
+    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+}

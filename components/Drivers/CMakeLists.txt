@@ -5,6 +5,8 @@ idf_component_register(SRCS "bq25896/bq25896.c"
                             "st7789/st7789.c"
                             "led/led_control.c"
                             "display/display.c"
+                            "backlight/backlight.c"
+                            "i2c_init/i2c_init.c"
                INCLUDE_DIRS "bq25896/include"
                             "buzzer/include"
                             "cc1101/include"
@@ -13,5 +15,8 @@ idf_component_register(SRCS "bq25896/bq25896.c"
                             "led/include"
                             "pins/include"
                             "display/include"
-            REQUIRES driver
-            PRIV_REQUIRES "espressif__led_strip")
+                            "backlight/include"
+                            "i2c_init/include"
+            REQUIRES 
+            driver 
+            espressif__led_strip)

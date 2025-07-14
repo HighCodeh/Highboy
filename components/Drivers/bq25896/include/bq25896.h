@@ -1,75 +1,48 @@
+// bq25896.h
+#ifndef BQ25896_H
+#define BQ25896_H
 
-#pragma once
-
-#include "esp_err.h"
-#include <stdbool.h>
-#include <stdint.h>
 #include "driver/i2c.h"
+#include <stdbool.h>
 
+// Endereço I2C do BQ25896
+#define BQ25896_I2C_ADDR 0x6B
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-// Enum de status de carregamento
+// Enum para o Status de Carregamento (conforme datasheet)
 typedef enum {
-    BQ25896_CHG_STATUS_NOT_CHARGING = 0,
-    BQ25896_CHG_STATUS_PRE_CHARGE,
-    BQ25896_CHG_STATUS_FAST_CHARGE,
-    BQ25896_CHG_STATUS_CHARGE_DONE
-} bq25896_chg_status_t;
+    CHARGE_STATUS_NOT_CHARGING = 0,
+    CHARGE_STATUS_PRECHARGE = 1,
+    CHARGE_STATUS_FAST_CHARGE = 2,
+    CHARGE_STATUS_CHARGE_DONE = 3
+} bq25896_charge_status_t;
 
-// Estrutura com informações completas da bateria
-typedef struct {
-    uint16_t battery_mV;
-    uint16_t charge_current_mA;
-    uint16_t vbus_mV;
-    bq25896_chg_status_t status;
-    bool power_good;
-} bq25896_battery_info_t;
-
-typedef struct {
-    bool fault_watchdog;
-    bool fault_thermal;
-    bool fault_input;
-    bool charge_complete;
-} bq25896_fault_flags_t;
-
-typedef struct {
-    bool vbus_present;
-    bool charging_enabled;
-    bool otg_enabled;
-} bq25896_status_flags_t;
-
-typedef struct {
-    uint16_t charge_current_mA;
-    uint16_t charge_voltage_mV;
-    bool otg_enabled;
-} bq25896_config_t;
-
-// === FUNÇÕES PRINCIPAIS ===
-
-esp_err_t bq25896_attach_to_bus(void);
-esp_err_t bq25896_get_battery_voltage(uint16_t *mV);
-esp_err_t bq25896_get_vbus_voltage(uint16_t *mV);
-esp_err_t bq25896_get_charge_current(uint16_t *mA);
-
-esp_err_t bq25896_is_power_good(bool *pg);
+// Enum para o Status do VBUS (conforme datasheet)
+typedef enum {
+    VBUS_STATUS_UNKNOWN = 0,
+    VBUS_STATUS_USB_HOST = 1,
+    VBUS_STATUS_ADAPTER_PORT = 2,
+    VBUS_STATUS_OTG = 3
+} bq25896_vbus_status_t;
 
 
-// === FUNÇÕES AVANÇADAS ===
+// --- Declaração das Funções Públicas ---
 
-esp_err_t bq25896_get_battery_temp(int8_t *temp_c);
-esp_err_t bq25896_read_all_registers(uint8_t *regs, size_t len);
-esp_err_t bq25896_write_raw_register(uint8_t reg, uint8_t value);
-esp_err_t bq25896_set_charge_current(uint16_t mA);
-esp_err_t bq25896_set_charge_voltage(uint16_t mV);
-esp_err_t bq25896_get_fault_flags(bq25896_fault_flags_t *flags);
-esp_err_t bq25896_reset_chip(void);
-esp_err_t bq25896_get_status_flags(bq25896_status_flags_t *flags);
-esp_err_t bq25896_init_config(const bq25896_config_t *cfg);
-esp_err_t bq25896_read_raw_register(uint8_t reg, uint8_t *data);
+// Inicializa o BQ25896
+esp_err_t bq25896_init(void);
 
-#ifdef __cplusplus
-}
-#endif
+// Obtém o status de carregamento
+bq25896_charge_status_t bq25896_get_charge_status(void);
+
+// Obtém a tensão da bateria em mV
+uint16_t bq25896_get_battery_voltage(void);
+
+// Obtém o status do VBUS (se o carregador está conectado)
+bq25896_vbus_status_t bq25896_get_vbus_status(void);
+
+// Retorna 'true' se estiver carregando (pré-carga ou carga rápida)
+bool bq25896_is_charging(void);
+
+// Estima a porcentagem da bateria com base na tensão
+int bq25896_get_battery_percentage(uint16_t voltage_mv);
+
+#endif // BQ25896_H

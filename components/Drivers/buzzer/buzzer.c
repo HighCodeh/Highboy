@@ -3,45 +3,65 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+static TaskHandle_t music_task_handle = NULL;
+
 // Inicializa o LEDC para controle do buzzer
 esp_err_t buzzer_init(void) {
+    // Configura o TIMER do buzzer (usando as definições do .h)
     ledc_timer_config_t timer_conf = {
-        .duty_resolution = LEDC_DUTY_RESOLUTION, // 13 bits
-        .freq_hz = LEDC_FREQ,                    // freq inicial (pode ser alterada dinamicamente)
-        .speed_mode = LEDC_MODE,
-        .timer_num = LEDC_TIMER,
+        .duty_resolution = BUZZER_LEDC_DUTY_RESOLUTION,
+        .freq_hz = 1000, // Frequência inicial padrão
+        .speed_mode = BUZZER_LEDC_MODE,
+        .timer_num = BUZZER_LEDC_TIMER,
         .clk_cfg = LEDC_AUTO_CLK
     };
     esp_err_t err = ledc_timer_config(&timer_conf);
     if (err != ESP_OK) {
         return err;
     }
+
+    // Configura o CANAL do buzzer (usando as definições do .h)
     ledc_channel_config_t ch_conf = {
-        .channel    = LEDC_CHANNEL,
+        .channel    = BUZZER_LEDC_CHANNEL,
         .duty       = 0,
         .gpio_num   = BUZZER_GPIO,
-        .speed_mode = LEDC_MODE,
+        .speed_mode = BUZZER_LEDC_MODE,
         .hpoint     = 0,
-        .timer_sel  = LEDC_TIMER
+        .timer_sel  = BUZZER_LEDC_TIMER
     };
     err = ledc_channel_config(&ch_conf);
     return err;
 }
 
-// Toca um tom na frequência (Hz) por duração (ms)
-void buzzer_play_tone(uint32_t freq_hz, uint32_t duration_ms) {
-    if (freq_hz > 0) {
-        // Ajusta a frequência do timer LEDC e aplica 50% de duty
-        ledc_set_freq(LEDC_MODE, LEDC_TIMER, freq_hz);
-        uint32_t duty = (1 << (LEDC_DUTY_RESOLUTION - 1)); // duty = metade do máximo
-        ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty);
-        ledc_update_duty(LEDC_MODE, LEDC_CHANNEL);
+
+
+
+// --- NOSSAS NOVAS FUNÇÕES ---
+
+// Toca um som CONTÍNUO com volume e frequência definidos
+void buzzer_set_continuous_tone(uint8_t volume, uint32_t freq_hz) {
+    if (volume == 0 || freq_hz == 0) {
+        buzzer_stop();
+        return;
     }
-    // Toca pelo tempo especificado
-    vTaskDelay(duration_ms / portTICK_PERIOD_MS);
-    // Pára o tom (duty = 0 -> silêncio)
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, 0);
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL);
+
+    // 1. Ajusta a frequência do som
+    ledc_set_freq(BUZZER_LEDC_MODE, BUZZER_LEDC_TIMER, freq_hz);
+
+    // 2. Converte o volume (0-255) para o duty cycle
+    // Mapeia o volume para um duty de 0% a 50% (máximo volume)
+    uint32_t max_duty = (1 << (BUZZER_LEDC_DUTY_RESOLUTION - 1)); // 50% de duty
+    uint32_t duty = (volume * max_duty) / 255;
+    
+    // 3. Aplica o volume (duty) e deixa tocando
+    ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, duty);
+    ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
+}
+
+// Para completamente qualquer som que esteja tocando
+void buzzer_stop(void) {
+    ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, 0);
+    ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
 }
 
 // Efeito: beep simples
@@ -195,6 +215,47 @@ void buzzer_flipper_denied(void) {
     buzzer_play_tone(NOTE_B3, 120);
 }
 
+
+void buzzer_stop_music(void) {
+    if (music_task_handle != NULL) {
+        vTaskDelete(music_task_handle);
+        music_task_handle = NULL;
+        // Garante que o buzzer pare
+        ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, 0);
+        ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
+    }
+}
+void buzzer_start_tone(uint32_t freq_hz, uint8_t volume) {
+    if (volume == 0 || freq_hz == 0) {
+        buzzer_stop_tone();
+        return;
+    }
+
+    ledc_set_freq(BUZZER_LEDC_MODE, BUZZER_LEDC_TIMER, freq_hz);
+    
+    uint32_t max_duty = (1 << (BUZZER_LEDC_DUTY_RESOLUTION - 1));
+    uint32_t duty = (volume * max_duty) / 255;
+    
+    ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, duty);
+    ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
+}
+
+void buzzer_stop_tone(void) {
+    ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, 0);
+    ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
+}
+
+void buzzer_play_tone(uint32_t freq_hz, uint32_t duration_ms) {
+    if (freq_hz > 0) {
+        ledc_set_freq(BUZZER_LEDC_MODE, BUZZER_LEDC_TIMER, freq_hz);
+        uint32_t duty = (1 << (BUZZER_LEDC_DUTY_RESOLUTION - 1));
+        ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, duty);
+        ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
+    }
+    vTaskDelay(duration_ms / portTICK_PERIOD_MS);
+    ledc_set_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL, 0);
+    ledc_update_duty(BUZZER_LEDC_MODE, BUZZER_LEDC_CHANNEL);
+}
 // Música: Tema do Super Mario Bros (Overworld)
 void buzzer_play_mario_theme(void) {
     const uint16_t melody[] = {

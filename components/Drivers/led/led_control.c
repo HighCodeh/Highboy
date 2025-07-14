@@ -1,12 +1,17 @@
+// Arquivo: led_control.c (VERSÃO CORRIGIDA E COMPLETA)
+
 #include "led_control.h"
-#include "led_strip.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 #define LED_RGB_GPIO 45 
 static const char *TAG = "led_control";
 
-static led_strip_handle_t led_strip;
+// A variável do LED, acessível externamente
+led_strip_handle_t led_strip;
 
+// Inicializa o LED
 void led_rgb_init(void) {
     led_strip_config_t strip_config = {
         .strip_gpio_num = LED_RGB_GPIO,
@@ -22,30 +27,37 @@ void led_rgb_init(void) {
     ESP_LOGI(TAG, "LED RGB inicializado no GPIO %d", LED_RGB_GPIO);
 }
 
-static void led_blink_color(uint8_t r, uint8_t g, uint8_t b, int duration_ms) {
-    ESP_ERROR_CHECK(led_strip_set_pixel(led_strip, 0, r, g, b));
-    ESP_ERROR_CHECK(led_strip_refresh(led_strip));
-    vTaskDelay(duration_ms / portTICK_PERIOD_MS);
-    ESP_ERROR_CHECK(led_strip_clear(led_strip));
-    ESP_ERROR_CHECK(led_strip_refresh(led_strip));
+// Define uma cor estática no LED
+void led_set_color(uint8_t r, uint8_t g, uint8_t b) {
+    if (led_strip) {
+        ESP_ERROR_CHECK(led_strip_set_pixel(led_strip, 0, r, g, b));
+        ESP_ERROR_CHECK(led_strip_refresh(led_strip));
+    }
 }
 
+// Pisca o LED com uma cor e duração específicas
+static void led_blink_color(uint8_t r, uint8_t g, uint8_t b, int duration_ms) {
+    led_set_color(r, g, b);
+    vTaskDelay(duration_ms / portTICK_PERIOD_MS);
+    if (led_strip) {
+        ESP_ERROR_CHECK(led_strip_clear(led_strip));
+    }
+}
+
+// --- CÓDIGO FALTANDO ADICIONADO AQUI ---
+
 void led_blink_red(void) {
-    ESP_LOGI(TAG, "Piscando LED vermelho (erro)");
-    led_blink_color(255, 0, 0, 500); 
+    led_blink_color(255, 0, 0, 500);
 }
 
 void led_blink_green(void) {
-    ESP_LOGI(TAG, "Piscando ROXO verde (sucesso)");
-    led_blink_color(0, 150, 0, 220); 
+    led_blink_color(0, 255, 0, 500);
 }
 
 void led_blink_blue(void) {
-    ESP_LOGI(TAG, "Piscando LED azul (info)");
-    led_blink_color(0, 0, 255, 500); 
+    led_blink_color(0, 0, 255, 500);
 }
 
-void led_blink_purple(void){
-  ESP_LOGI(TAG,"Piscando LED roxo (info)");
-  led_blink_color(200, 0, 220, 500);
+void led_blink_purple(void) {
+    led_blink_color(128, 0, 128, 500);
 }
