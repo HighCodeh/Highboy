@@ -6,10 +6,11 @@
 #include "driver/spi_master.h"
 #include "buzzer.h"
 #include "display.h"
-#include "ir_transmiter.h"
 #include "home.h"
 #include "led_control.h"
 #include "pin_def.h" 
+#include "i2c_init.h"
+#include "bq25896.h"
 
 typedef enum {
     STATE_HOME,
@@ -19,14 +20,11 @@ typedef enum {
 static app_state_t current_state = STATE_HOME;
 // === ESTADOS DA INTERFACE ===
 void kernel_init(void){
-
-    ir_init();
-
+    i2c_master_init();
+    bq25896_init();
     buzzer_init();
-    buzzer_boot_sequence(); // Beep de boot (bonito e correto)
-
+    buzzer_boot_sequence(); 
     led_rgb_init();
     init_display();
 
-    // xTaskCreate(menu_task, "menu_task", 4096, NULL, 5, NULL); //adicionar depois no main
 }
