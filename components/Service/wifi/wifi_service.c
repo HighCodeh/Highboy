@@ -8,6 +8,8 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "virtual_display_client.h" // Adicionar este include
+
 
 static const char *TAG = "wifi_service";
 
@@ -79,8 +81,6 @@ void wifi_change_to_hotspot(const char *new_ssid) {
 }
 
 void wifi_init(void) {
-    
-    
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -90,13 +90,19 @@ void wifi_init(void) {
 
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_ap();
+    esp_netif_create_default_wifi_ap(); // Cria a interface AP
+    esp_netif_create_default_wifi_sta(); // Cria a interface STA (importante para o display virtual)
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
+    // Registra o handler de eventos do wifi_service
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_AP_STAIPASSIGNED, &wifi_event_handler, NULL, NULL));
+
+    // **** NOVO: Registra o handler de eventos do virtual_display_client para os eventos STA ****
+    // ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, virtual_display_wifi_event_handler, NULL, NULL)); 
+    // ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, virtual_display_wifi_event_handler, NULL, NULL)); 
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
 
@@ -106,18 +112,31 @@ void wifi_init(void) {
             .password = "MyPassword123",
             .ssid_len = strlen("Darth Maul"),
             .channel = 1,
-            .authmode = WIFI_AUTH_WPA2_PSK,
+            .authmode = WIFI_AUTH_WPA_WPA2_PSK,
             .max_connection = 4,
+            .beacon_interval = 100,
         },
     };
-    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
+    ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &ap_config));
+
+    // Configuração do modo STA para o display virtual
+    // wifi_config_t sta_config = {
+    //     .sta = {
+    //         .ssid = WIFI_SSID_VIRTUAL_DISPLAY,     
+    //         .password = WIFI_PASS_VIRTUAL_DISPLAY, 
+    //     },
+    // };
+    // ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &sta_config));
 
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(84)); 
+    // Conecta no modo STA para o display virtual
+    //esp_wifi_connect(); 
 
-    ESP_LOGI(TAG, "Wi-Fi inicializado no modo APSTA");
-    led_blink_green();
+    // NOVO: Inicia a lógica de envio de frames do display virtual
+    //virtual_display_start_frame_sending(); 
+
+    ESP_LOGI(TAG, "Inicialização do Wi-Fi em modo APSTA concluída.");
 }
 
 void wifi_service_init(void) {
