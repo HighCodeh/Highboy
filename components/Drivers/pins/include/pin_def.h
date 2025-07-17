@@ -9,6 +9,7 @@
 #define BTN_OK     4
 #define BTN_BACK   7
 #define BTN_LEFT 5  
+#define BTN_RIGHT 16
 
 // led
 #define LED_GPIO     45
