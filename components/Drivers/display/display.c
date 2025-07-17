@@ -22,19 +22,7 @@ void init_display(void) {
         return;
     }
 
-    // A função st7789_init() agora faz tudo:
-    // - Inicializa o display
-    // - Aloca o framebuffer
-    // - Limpa a tela com preto
-    // - Atualiza a tela (flush)
-    // - Liga o backlight
-    st7789_init();
 
-    // ✨ REMOVIDO: As linhas abaixo não são mais necessárias.
-    // st7789_enable_framebuffer();
-    // st7789_set_backlight(true);
-    // st7789_fill_screen(ST7789_COLOR_BLACK);
-    
-    // Você pode manter esta linha se quiser que o tamanho padrão do texto seja 2.
+
     st7789_set_text_size(2);
 }

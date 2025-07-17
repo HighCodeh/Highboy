@@ -6,6 +6,9 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "backlight.h"
+#include "virtual_display_client.h" // ADICIONE ESTE INCLUDE AQUI
+
+// ... resto dos includes ...
 
 // Comandos do controlador ST7789
 #define ST7789_CMD_SWRESET 0x01  // Software reset
@@ -231,12 +234,25 @@ static void set_addr_window_direct(int x, int y, int w, int h) {
     send_cmd(ST7789_CMD_RAMWR);
 }
 
+
+// Em st7789.c
+
 void st7789_flush() {
     if (!framebuffer) {
         ESP_LOGE(TAG, "Framebuffer não inicializado. Não é possível fazer o flush.");
         return;
     }
 
+    // --- NOVO: Envia o framebuffer para o servidor no PC ---
+    // Esta chamada é o ponto central da nossa funcionalidade de display virtual.
+   // ...
+// Linha 248:
+virtual_display_notify_frame_ready();
+// ...
+    // --- FIM DA MODIFICAÇÃO ---
+
+    // O código abaixo atualiza a tela física do dispositivo.
+    // Ele não precisa ser alterado.
     set_addr_window_direct(0, 0, ST7789_WIDTH, ST7789_HEIGHT);
 
     const uint8_t *data_ptr = (const uint8_t *)framebuffer;
@@ -389,7 +405,6 @@ void st7789_init(void) {
     send_cmd(ST7789_CMD_NORON);   vTaskDelay(pdMS_TO_TICKS(10));
     send_cmd(ST7789_CMD_DISPON);  vTaskDelay(pdMS_TO_TICKS(255));
 
-    // ✨ NOVO: Alocação do framebuffer na inicialização
     size_t fb_size = ST7789_WIDTH * ST7789_HEIGHT * sizeof(uint16_t);
     framebuffer = (uint16_t *)heap_caps_malloc(fb_size, MALLOC_CAP_DMA | MALLOC_CAP_32BIT);
     if (!framebuffer) {
@@ -398,13 +413,12 @@ void st7789_init(void) {
     }
     ESP_LOGI(TAG, "Framebuffer alocado com sucesso (%d bytes)", fb_size);
 
-    // Limpa a tela e liga o backlight
-    st7789_enable_framebuffer();
-    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+    // Limpa o framebuffer com a cor preta
+    memset(framebuffer, 0, fb_size); // <-- CORREÇÃO: Apenas limpa a memória já alocada
+
+    st7789_set_text_size(2);
     st7789_flush();
     backlight_init();
-    backlight_set_brightness(255);
-
 }
 // ✨ OTIMIZADO: Desenha linhas horizontais e verticais de forma muito eficiente.
 
@@ -479,7 +493,7 @@ void st7789_draw_char_fb(int x, int y, char c, uint16_t color, uint16_t bg_color
 
 // ✨ OTIMIZADO: Desenha texto no framebuffer.
 void st7789_draw_text_fb(int x, int y, const char *text, uint16_t color, uint16_t bg_color) {
-    if (!text) return;  // Ok, protege contra NULL
+    if (!text) return;
     int current_x = x;
     while (*text) {
         if (*text == '\n') {
@@ -492,7 +506,6 @@ void st7789_draw_text_fb(int x, int y, const char *text, uint16_t color, uint16_
         text++;
     }
 }
-
 
 // ✨ OTIMIZADO: Desenha uma imagem (bitmap RGB565) no framebuffer.
 void st7789_draw_image_fb(int x, int y, int w, int h, const uint16_t *image) {
@@ -1338,7 +1351,3 @@ void st7789_scroll_text(int x, int y, int offset_y, const char *text, uint16_t c
     st7789_update_dirty();
 }
 
-// Adicione esta função em st7789.c
-uint16_t st7789_rgb_to_color(uint8_t r, uint8_t g, uint8_t b) {
-    return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-}
