@@ -58,6 +58,15 @@ Exemplo de layout:
 
 ---
 
+---
+
+## 🤝 Nossos Apoiadores
+
+Agradecemos especialmente aos parceiros que apoiam este projeto:
+
+[![PCBWay](pics/PCBway.png)](https://www.pcbway.com)
+
+
 # 📡 HighBoy Firmware (Beta)
 
 This repository contains a **firmware in development** for the **HighBoy** platform.
@@ -116,3 +125,12 @@ Example layout:
 
 - The project is in its **beta** phase, subject to frequent changes.
 - Contributions and feedback are welcome to evolve the project.
+
+---
+
+## 🤝 Our Supporters
+
+Special thanks to the partners supporting this project:
+
+[![PCBWay](pics/PCBway.png)](https://www.pcbway.com)
+
