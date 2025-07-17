@@ -108,4 +108,4 @@ void evil_twin_stop_attack(void) {
     wifi_service_init(); // Restaura o modo Wi-Fi padrão
     ESP_LOGI(TAG_ET, "Lógica do Evil Twin parada.");
 }
-    
+

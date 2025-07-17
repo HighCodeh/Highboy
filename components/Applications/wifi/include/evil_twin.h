@@ -19,3 +19,4 @@ void evil_twin_start_attack(const char* ssid);
 void evil_twin_stop_attack(void);
 
 #endif // EVIL_TWIN_H
+

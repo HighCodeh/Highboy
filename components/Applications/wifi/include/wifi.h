@@ -20,6 +20,8 @@
 // void wifi_deauther_send_raw_frame(const uint8_t *frame_buffer, int size);
 // void wifi_deauther_scan(void);
 
-void show_wifi_submenu(void);
+
+void show_wifi_menu(void);
 
 #endif // WIFI__H
+

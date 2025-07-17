@@ -1,10 +1,9 @@
 #include "wifi.h"
 #include "driver/gpio.h"
-#include "esp_log.h" // Certifique-se que este arquivo contém o ícone 'wifi_main'
+#include "esp_log.h"
 #include "esp_netif.h"
 #include "esp_wifi.h"
 #include "freertos/FreeRTOS.h"
-#include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "icons.h"
 #include "led_control.h"
@@ -15,238 +14,279 @@
 #include "wifi_service.h"
 #include "evil_twin.h"
 #include <string.h>
-#include "sub_menu.h"
-// =================================================================
-// Definições e Variáveis Globais
-// =================================================================
+#include "virtual_display_client.h" // ADICIONAR ESTE INCLUDE
 
-// Definições de layout do menu
-#define MAX_VISIBLE_ITEMS   4
-#define ITEM_HEIGHT         55
-#define ITEM_WIDTH          220
-#define START_Y             40
-#define ITEM_SPACING        8
-#define SCROLL_BAR_WIDTH    5 
-#define SCROLL_BAR_TOP      START_Y 
+// static const char *TAG = "wifi";
 
-
-
-// Variáveis de estado do menu principal
-static int currentSelection = 0;
-static int offset = 0;
-
-
-
-
-
-static const char *TAG = "wifi";
-static SemaphoreHandle_t wifi_mutex = NULL;
-
-
-// =================================================================
-// Protótipos das Funções
-// =================================================================
+// --- Protótipos das Ações ---
 static void wifi_action_scan(void);
 static void wifi_action_attack(void);
+static void wifi_action_evil_twin(void);
+
+// --- Itens do Menu WiFi ---
+static const SubMenuItem wifiMenuItems[] = {
+    { "Scan Redes", scan, wifi_action_scan },
+    { "Atacar Alvo",   deauth, wifi_action_attack },
+    { "Evil Twin",     evil, wifi_action_evil_twin },
+};
+static const int wifiMenuSize = sizeof(wifiMenuItems) / sizeof(SubMenuItem);
+static bool g_is_scanning = false; // Sinalizador para controlar a tarefa de animação
+static TaskHandle_t animation_task_handle = NULL; // Handle para a tarefa
+// --- Função Principal do Módulo ---
+void show_wifi_menu(void) {
+    wifi_init(); // REMOVER ESTA LINHA - JÁ FOI INICIALIZADA NO KERNEL
+    wifi_service_init(); // Já é chamado, mas não inicializa o Wi-Fi novamente, apenas o serviço.
+    show_submenu(wifiMenuItems, wifiMenuSize, "Menu WiFi");
+}
+
+// ✨ ALTERADO: Tarefa de animação que limpa a tela a cada frame
+void scan_animation_task(void *pvParameters) {
+    bool show_first_image = true;
+    
+    while (g_is_scanning) {
+        // 1. Limpa completamente a tela para apagar a imagem anterior
+        st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+
+        // 2. Redesenha o texto estático "Escaneando..." para que ele permaneça visível
+        st7789_draw_text_fb(20, 40, "Escaneando redes...", DESIGN_PURPLE_COLOR, ST7789_COLOR_BLACK);
+
+        // 3. Desenha a imagem correspondente a este frame da animação
+        if (show_first_image) {
+            st7789_draw_bitmap_fb(-17, 79, octo_ant, 200, 179, ST7789_COLOR_PURPLE);
+        } else {
+            st7789_draw_bitmap_fb(-17, 79, octo_ant1, 200, 179, ST7789_COLOR_PURPLE);
+        }
+        
+        // 4. Envia o frame completo (fundo preto + texto + imagem) para o ecrã
+        st7789_flush(); 
+        virtual_display_notify_frame_ready(); // NOVO: Notifica a tarefa de envio de frame
+
+        // 5. Prepara para o próximo frame
+        show_first_image = !show_first_image; // Alterna para a próxima imagem
+        vTaskDelay(pdMS_TO_TICKS(150)); // Controle a velocidade da animação
+    }
+    // Garante que a tela seja limpa quando a animação parar
+    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+    st7789_flush();
+    animation_task_handle = NULL; // Sinaliza que a tarefa terminou
+    vTaskDelete(NULL);
+}
 
 
-
-static void draw_header_fb(const char *title);
-
-static void draw_menu_item_fb(const SubMenuItem *item, int y, bool selected);
-
-// =================================================================
-// Itens do Menu WiFi
-// =================================================================
-
-
-// (As funções de ataque como 'get_deauth_frame_template' e 'wifi_deauther_send_deauth_frame' permanecem as mesmas)
-// ... (código de ataque omitido por brevidade, mas deve ser mantido no seu arquivo) ...
-
-
-// =================================================================
-// Ações dos Itens do Menu
-// =================================================================
-
-// Ação para "Scannear Rede"
+// --- ✨ ALTERADO: Função de scan agora gerencia a animação ---
 static void wifi_action_scan(void) {
-    wifi_init();
-    wifi_service_init();
+    g_is_scanning = true; // Ativa o sinalizador para a animação começar
+
+    // Cria e inicia a tarefa de animação
+    xTaskCreate(scan_animation_task, "scan_anim_task", 4096, NULL, 5, &animation_task_handle);
+
+    // --- Esta função é bloqueante. A animação corre em paralelo ---
+    wifi_deauther_scan(); 
+    // ----------------------------------------------------------------
+
+    g_is_scanning = false; // Desativa o sinalizador para parar a animação
+    
+    // Pequeno delay para garantir que a tarefa de animação termine
+    vTaskDelay(pdMS_TO_TICKS(100)); 
+
+    // Opcional: Mostrar uma mensagem de conclusão
     st7789_fill_screen_fb(ST7789_COLOR_BLACK);
     st7789_set_text_size(2);
-    st7789_draw_text_fb(20, 110, "Escaneando redes...", ST7789_COLOR_PURPLE, ST7789_COLOR_BLACK);
+    st7789_draw_text_fb(30, 110, "Scan Concluido!", ST7789_COLOR_GREEN, ST7789_COLOR_BLACK);
     st7789_flush();
-    
-    wifi_deauther_scan(); // Executa o scan
-    
-    vTaskDelay(pdMS_TO_TICKS(500)); // Pequeno delay para mostrar a mensagem
+    vTaskDelay(pdMS_TO_TICKS(1500));
 }
-
-// Ação para "Atacar Alvo" (agora um submenu)
-// Arquivo: wifi.c
-
-// Ação para "Atacar Alvo" com o fluxo de retorno corrigido
+// Ação para "Atacar Alvo" com menu de seleção manual
 static void wifi_action_attack(void) {
-    while (true) { // <-- NOVO: Loop principal para manter o usuário nesta seção
-        // 1. Verificar se existem redes escaneadas
-        if (get_stored_ap_count() == 0) {
-            st7789_fill_screen_fb(ST7789_COLOR_BLACK);
-            st7789_draw_text_fb(15, 110, "Nenhuma rede escaneada!", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
-            st7789_flush();
-            vTaskDelay(pdMS_TO_TICKS(2000));
-            return; // Se não há redes, sai da função
-        }
+    // Espera o botão OK ser liberado para não entrar na seleção imediatamente
+    while (!gpio_get_level(BTN_OK)) {
+        vTaskDelay(pdMS_TO_TICKS(200));
+    }
 
-        // 2. Preparar os itens do menu a partir das redes encontradas
-        int ap_count = get_stored_ap_count();
-        SubMenuItem ap_menu_items[ap_count];
-        char ap_labels[ap_count][33];
-
-        for (int i = 0; i < ap_count; i++) {
-            const wifi_ap_record_t* ap = get_stored_ap_record(i);
-            strncpy(ap_labels[i], (const char*)ap->ssid, 32);
-            ap_labels[i][32] = '\0';
-            
-            ap_menu_items[i].label = ap_labels[i];
-            ap_menu_items[i].icon = wifi_main;
-            ap_menu_items[i].action = NULL;
-        }
-
-        // 3. Chamar o menu de seleção
-        int selected_index = show_selection_menu(ap_menu_items, ap_count, "Selecionar Alvo");
-
-        // 4. Agir com base na seleção
-        if (selected_index == -1) {
-            break; // <-- NOVO: Se o usuário apertar "Voltar" na lista, sai do loop e da função
-        }
-        
-        // Se um alvo foi selecionado, mostra a tela de ataque
-        const wifi_ap_record_t* target = get_stored_ap_record(selected_index);
-        
+    const int ap_count = get_stored_ap_count();
+    if (ap_count == 0) {
         st7789_fill_screen_fb(ST7789_COLOR_BLACK);
-        char attack_msg[64];
-        snprintf(attack_msg, sizeof(attack_msg), "Atacando %s...", target->ssid);
         st7789_set_text_size(2);
-        st7789_draw_text_fb(20, 110, attack_msg, ST7789_COLOR_RED, ST7789_COLOR_BLACK);
-        st7789_draw_text_fb(20, 140, "Pressione BACK", ST7789_COLOR_GRAY, ST7789_COLOR_BLACK);
+        st7789_draw_text_fb(15, 110, "Nenhuma rede escaneada!", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
         st7789_flush();
-        
-        // Loop de ataque (só sai quando o usuário aperta BACK)
-        while (gpio_get_level(BTN_BACK)) {
-            wifi_deauther_send_deauth_frame(target, DEAUTH_INVALID_AUTH);
-            vTaskDelay(pdMS_TO_TICKS(5));
-        }
-        while(!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(20));
-
-        // <-- NOVO: Ao sair do loop de ataque, o loop `while(true)` recomeçará,
-        // mostrando a lista de seleção de redes novamente.
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        return;
     }
-}
 
-// Ação para "Evil Twin" com o fluxo de retorno corrigido
-static void wifi_action_evil_twin(void) {
-    while (true) { // <-- NOVO: Loop principal
-        // 1. Verificar redes
-        if (get_stored_ap_count() == 0) {
-            st7789_fill_screen_fb(ST7789_COLOR_BLACK);
-            st7789_draw_text_fb(15, 110, "Nenhuma rede escaneada!", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
-            st7789_flush();
-            vTaskDelay(pdMS_TO_TICKS(2000));
-            return;
+    SubMenuItem ap_menu[ap_count];
+    char ap_labels[ap_count][33];
+
+    for (int i = 0; i < ap_count; i++) {
+        const wifi_ap_record_t *ap = get_stored_ap_record(i);
+        if (ap) {
+            strncpy(ap_labels[i], (const char *)ap->ssid, sizeof(ap_labels[i]) - 1);
+            ap_labels[i][sizeof(ap_labels[i]) - 1] = '\0';
+            ap_menu[i].label = ap_labels[i];
+            ap_menu[i].icon = wifi_main;
+            ap_menu[i].action = NULL; // Ação não é necessária para um seletor
         }
+    }
 
-        // 2. Preparar menu de redes
-        int ap_count = get_stored_ap_count();
-        SubMenuItem ap_menu_items[ap_count];
-        char ap_labels[ap_count][33];
+    int ap_selection = 0;
+    int ap_offset = 0;
+    bool stay_in_ap_menu = true;
 
-        for (int i = 0; i < ap_count; i++) {
-            const wifi_ap_record_t* ap = get_stored_ap_record(i);
-            strncpy(ap_labels[i], (const char*)ap->ssid, 32);
-            ap_labels[i][32] = '\0';
-
-            ap_menu_items[i].label = ap_labels[i];
-            ap_menu_items[i].icon = portal;
-            ap_menu_items[i].action = NULL;
-        }
-
-        // 3. Chamar menu de seleção
-        int selected_index = show_selection_menu(ap_menu_items, ap_count, "Alvo para Evil Twin");
-
-        // 4. Agir com base na seleção
-        if (selected_index == -1) {
-            break; // <-- NOVO: Sai do loop e volta para o menu Wi-Fi
-        }
-        
-        // Se um alvo foi selecionado, inicia o ataque
-        const wifi_ap_record_t* target = get_stored_ap_record(selected_index);
-        
-        evil_twin_start_attack((const char*)target->ssid);
-
+    while (stay_in_ap_menu) {
+        // 1. Renderiza o menu de seleção de APs
         st7789_fill_screen_fb(ST7789_COLOR_BLACK);
-        st7789_draw_text_fb(10, 80, "Ataque Ativo:", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
-        st7789_draw_text_fb(10, 110, (const char*)target->ssid, ST7789_COLOR_WHITE, ST7789_COLOR_BLACK);
-        st7789_draw_text_fb(10, 150, "Pressione BACK para parar", ST7789_COLOR_GRAY, ST7789_COLOR_BLACK);
+        menu_draw_header("Selecionar Alvo"); // Usa a função pública
+
+        if (ap_selection < ap_offset)
+            ap_offset = ap_selection;
+        else if (ap_selection >= ap_offset + MAX_VISIBLE_ITEMS)
+            ap_offset = ap_selection - MAX_VISIBLE_ITEMS + 1;
+
+        for (int i = 0; i < MAX_VISIBLE_ITEMS; i++) {
+            int menuIndex = i + ap_offset;
+            if (menuIndex < ap_count) {
+                int posY = START_Y + i * (ITEM_HEIGHT + ITEM_SPACING);
+                menu_draw_item(&ap_menu[menuIndex], posY, menuIndex == ap_selection); // Usa a função pública
+            }
+        }
+        menu_draw_scrollbar(ap_offset, ap_count, ap_selection); // Usa a função pública
         st7789_flush();
 
-        while (gpio_get_level(BTN_BACK)) {
-            vTaskDelay(pdMS_TO_TICKS(100));
+        // 2. Lida com a entrada do usuário
+        bool input_processed = false;
+        while (!input_processed) {
+            if (!gpio_get_level(BTN_UP)) {
+                while (!gpio_get_level(BTN_UP)) vTaskDelay(pdMS_TO_TICKS(200));
+                ap_selection = (ap_selection - 1 + ap_count) % ap_count;
+                input_processed = true;
+            } else if (!gpio_get_level(BTN_DOWN)) {
+                while (!gpio_get_level(BTN_DOWN)) vTaskDelay(pdMS_TO_TICKS(200));
+                ap_selection = (ap_selection + 1) % ap_count;
+                input_processed = true;
+            } else if (!gpio_get_level(BTN_OK)) {
+                while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(200));
+                const wifi_ap_record_t *target_ap = get_stored_ap_record(ap_selection);
+                if (target_ap) {
+                    // UI: Mostra mensagem de ataque
+                    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+                    char attack_msg[64];
+                    snprintf(attack_msg, sizeof(attack_msg), "Atacando %s...", target_ap->ssid);
+                    st7789_set_text_size(2);
+                    st7789_draw_text_fb(20, 110, attack_msg, ST7789_COLOR_RED, ST7789_COLOR_BLACK);
+                    st7789_set_text_size(1);
+                    st7789_draw_text_fb(20, 220, "Pressione BACK para parar", ST7789_COLOR_GRAY, ST7789_COLOR_BLACK);
+                    st7789_flush();
+
+                    // Loop de ataque
+                    while (gpio_get_level(BTN_BACK)) {
+                        wifi_deauther_send_deauth_frame(target_ap, 1); // Envia frame
+                        vTaskDelay(pdMS_TO_TICKS(5));
+                    }
+                    while(!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(200)); // Aguarda liberação do botão
+                }
+                stay_in_ap_menu = false;
+                input_processed = true;
+            } else if (!gpio_get_level(BTN_BACK)) {
+                while (!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(200));
+                stay_in_ap_menu = false;
+                input_processed = true;
+            }
+            vTaskDelay(pdMS_TO_TICKS(200));
         }
-        while(!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(20));
-        evil_twin_stop_attack();
-
-        // <-- NOVO: Ao parar o ataque, o loop recomeça e mostra a lista de novo.
-    }
-}
-// =================================================================
-// Lógica de Desenho e Controle do Menu
-// =================================================================
-
-// ✨ RESTAURADO: Funções de desenho que foram omitidas
-
-// Função principal que desenha a tela inteira
-
-
-static void draw_header_fb(const char *title) {
-    st7789_fill_rect_fb(0, 0, 240, 30, ST7789_COLOR_PURPLE);
-    st7789_set_text_size(2);
-    st7789_draw_text_fb(10, 7, title, ST7789_COLOR_WHITE, ST7789_COLOR_PURPLE);
-}
-
-
-
-static void draw_menu_item_fb(const SubMenuItem *item, int y, bool selected) {
-    int iconSize = 24;
-    int textX = selected ? 65 : 50;
-    int iconX = selected ? 35 : 20;
-    int iconY = y + (ITEM_HEIGHT - iconSize) / 2;
-    uint16_t rect_color = selected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_PURPLE;
-    uint16_t text_color = selected ? ST7789_COLOR_LIGHT_PURPLE : ST7789_COLOR_WHITE;
-
-    st7789_draw_round_rect_fb(10, y, ITEM_WIDTH, ITEM_HEIGHT, 10, rect_color);
-    st7789_draw_text_fb(textX, y + 15, item->label, text_color, ST7789_COLOR_BLACK);
-
-    if (item->icon != NULL) {
-        st7789_draw_image_fb(iconX, iconY, iconSize, iconSize, item->icon);
     }
 }
 
 
+// Ação para "Evil Twin" com menu de seleção manual
+static void wifi_action_evil_twin(void) {
+    while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(20));
 
+    const int ap_count = get_stored_ap_count();
+    if (ap_count == 0) {
+        st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+        st7789_set_text_size(2);
+        st7789_draw_text_fb(15, 110, "Nenhuma rede escaneada!", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
+        st7789_flush();
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        return;
+    }
 
-void show_wifi_submenu(void) {
+    SubMenuItem ap_menu[ap_count];
+    char ap_labels[ap_count][33];
 
+    for (int i = 0; i < ap_count; i++) {
+        const wifi_ap_record_t *ap = get_stored_ap_record(i);
+        if (ap) {
+            strncpy(ap_labels[i], (const char *)ap->ssid, sizeof(ap_labels[i]) - 1);
+            ap_labels[i][sizeof(ap_labels[i]) - 1] = '\0';
+            ap_menu[i].label = ap_labels[i];
+            ap_menu[i].icon = wifi_main;
+            ap_menu[i].action = NULL;
+        }
+    }
 
-    // Array de itens para o submenu de IR
-    const SubMenuItem wifi_items[] = {
-        // { "Label",       Icone,  Ação Final          },
-        { "Scan Redes",         scan, wifi_action_scan   },
-        { "Atacar Alvo",           deauth, wifi_action_attack },
-        { "Evil-Twin", portal, wifi_action_evil_twin},
-   
-    };
-    int item_count = sizeof(wifi_items) / sizeof(wifi_items[0]);
+    int ap_selection = 0;
+    int ap_offset = 0;
+    bool stay_in_menu = true;
 
-    // Chama a função da biblioteca para exibir este submenu
-    show_submenu(wifi_items, item_count, " Wifi");
+    while (stay_in_menu) {
+        st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+        menu_draw_header("Alvo para Evil Twin"); // Usa a função pública
+
+        if (ap_selection < ap_offset) ap_offset = ap_selection;
+        else if (ap_selection >= ap_offset + MAX_VISIBLE_ITEMS) ap_offset = ap_selection - MAX_VISIBLE_ITEMS + 1;
+
+        for (int i = 0; i < MAX_VISIBLE_ITEMS; i++) {
+            int menuIndex = i + ap_offset;
+            if (menuIndex < ap_count) {
+                int posY = START_Y + i * (ITEM_HEIGHT + ITEM_SPACING);
+                menu_draw_item(&ap_menu[menuIndex], posY, menuIndex == ap_selection); // Usa a função pública
+            }
+        }
+        menu_draw_scrollbar(ap_offset, ap_count, ap_selection); // Usa a função pública
+        st7789_flush();
+
+        bool input_processed = false;
+        while (!input_processed) {
+            if (!gpio_get_level(BTN_UP)) {
+                while (!gpio_get_level(BTN_UP)) vTaskDelay(pdMS_TO_TICKS(50));
+                ap_selection = (ap_selection - 1 + ap_count) % ap_count;
+                input_processed = true;
+            } else if (!gpio_get_level(BTN_DOWN)) {
+                while (!gpio_get_level(BTN_DOWN)) vTaskDelay(pdMS_TO_TICKS(50));
+                ap_selection = (ap_selection + 1) % ap_count;
+                input_processed = true;
+            } else if (!gpio_get_level(BTN_OK)) {
+                while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(50));
+                const wifi_ap_record_t *target = get_stored_ap_record(ap_selection);
+                if (target) {
+                    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+                    st7789_draw_text_fb(10, 80, "Iniciando Evil Twin...", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
+                    st7789_flush();
+
+                    evil_twin_start_attack((const char *)target->ssid);
+
+                    st7789_fill_screen_fb(ST7789_COLOR_BLACK);
+                    st7789_set_text_size(2);
+                    st7789_draw_text_fb(10, 80, "Ataque Ativo:", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
+                    st7789_draw_text_fb(10, 110, (const char *)target->ssid, ST7789_COLOR_WHITE, ST7789_COLOR_BLACK);
+                     st7789_set_text_size(1);
+                    st7789_draw_text_fb(10, 150, "Pressione BACK para parar", ST7789_COLOR_GRAY, ST7789_COLOR_BLACK);
+                    st7789_flush();
+
+                    while (gpio_get_level(BTN_BACK)) {
+                        vTaskDelay(pdMS_TO_TICKS(100));
+                    }
+                    while(!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(20));
+                    evil_twin_stop_attack();
+                }
+                input_processed = true;
+                stay_in_menu = false;
+            } else if (!gpio_get_level(BTN_BACK)) {
+                while (!gpio_get_level(BTN_BACK)) vTaskDelay(pdMS_TO_TICKS(50));
+                stay_in_menu = false;
+                input_processed = true;
+            }
+            vTaskDelay(pdMS_TO_TICKS(50));
+        }
+    }
 }
