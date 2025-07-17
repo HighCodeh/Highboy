@@ -1,130 +1,150 @@
 #include "bq25896.h"
 #include "driver/i2c.h"
 #include "esp_log.h"
-#include "esp_err.h" // Inclua esp_err.h para ESP_OK e ESP_FAIL
-#include "freertos/FreeRTOS.h" // Para pdMS_TO_TICKS
-#include "freertos/task.h"    // Para vTaskDelay
+#include <string.h>
 
 #define I2C_PORT I2C_NUM_0
-#define BQ25896_I2C_ADDR 0x6B// Endereço I2C do BQ25896. VERIFIQUE O SEU DATASHEET!
+
+// Endereço I2C do BQ25896
+#define BQ25896_I2C_ADDR 0x6B
+
+// Definições dos Registradores
+#define REG_ILIM        0x00
+#define REG_VINDPM      0x01
+#define REG_ADC_CTRL    0x02
+#define REG_CHG_CTRL_0  0x03
+#define REG_ICHG        0x04
+#define REG_IPRE_ITERM  0x05
+#define REG_VREG        0x06
+#define REG_CHG_CTRL_1  0x07
+#define REG_CHG_TIMER   0x08
+#define REG_BAT_COMP    0x09
+#define REG_CHG_CTRL_2  0x0A
+#define REG_STATUS      0x0B
+#define REG_FAULT       0x0C
+#define REG_VINDPM_OS   0x0D
+#define REG_BAT_VOLT    0x0E
+#define REG_SYS_VOLT    0x0F
+#define REG_TS_ADC      0x10
+#define REG_VBUS_ADC    0x11
+#define REG_ICHG_ADC    0x12
+#define REG_IDPM_ADC    0x13
+#define REG_CTRL_3      0x14
+
+// Máscaras para o Registrador de Status (0x0B)
+#define STATUS_VBUS_STAT_MASK  0b11100000
+#define STATUS_VBUS_STAT_SHIFT 5
+#define STATUS_CHG_STAT_MASK   0b00011000
+#define STATUS_CHG_STAT_SHIFT  3
+#define STATUS_PG_STAT_MASK    0b00000100
+#define STATUS_PG_STAT_SHIFT   2
+#define STATUS_VSYS_STAT_MASK  0b00000001
+
+// Máscaras do ADC (0x02)
+#define ADC_CTRL_CONV_RATE_MASK 0b10000000
+#define ADC_CTRL_ADC_EN_MASK    0b01000000
+
+// Máscara para tensão da bateria
+#define BATV_MASK 0b01111111
 
 static const char *TAG = "BQ25896";
 
-// A flag bq_initialized deve ser usada para controlar o estado geral do driver,
-// não para impedir a própria função de inicialização.
-static bool bq_driver_ready = false; // Nova flag para indicar se o driver está pronto após attach_to_bus
-
-// Função interna para ler um registrador I2C
-// Esta função agora assume que i2c_master_init() já foi chamado.
-static esp_err_t bq25896_read_reg_internal(uint8_t reg, uint8_t *data) {
+// Leitura de registrador
+static esp_err_t bq25896_read_reg(uint8_t reg, uint8_t *data) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BQ25896_I2C_ADDR << 1) | I2C_MASTER_WRITE, true);
     i2c_master_write_byte(cmd, reg, true);
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BQ25896_I2C_ADDR << 1) | I2C_MASTER_READ, true);
-    i2c_master_read_byte(cmd, data, I2C_MASTER_NACK);
+    i2c_master_read_byte(cmd, data, I2C_MASTER_LAST_NACK);
     i2c_master_stop(cmd);
-    esp_err_t ret = i2c_master_cmd_begin(I2C_PORT, cmd, pdMS_TO_TICKS(100));
+    esp_err_t ret = i2c_master_cmd_begin(I2C_PORT, cmd, 100 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
-    if (ret != ESP_OK) {
-        // Não logamos um erro aqui se bq_driver_ready for falso,
-        // pois a função de anexo fará o log.
-        if (bq_driver_ready) { // Só loga se já deveria estar pronto e falhou
-             ESP_LOGE(TAG, "Falha ao ler registrador 0x%02X: %s", reg, esp_err_to_name(ret));
-        }
-    }
     return ret;
 }
 
-// Função interna para escrever em um registrador I2C
-static esp_err_t bq25896_write_reg_internal(uint8_t reg, uint8_t data) {
+// Escrita de registrador
+static esp_err_t bq25896_write_reg(uint8_t reg, uint8_t data) {
     i2c_cmd_handle_t cmd = i2c_cmd_link_create();
     i2c_master_start(cmd);
     i2c_master_write_byte(cmd, (BQ25896_I2C_ADDR << 1) | I2C_MASTER_WRITE, true);
     i2c_master_write_byte(cmd, reg, true);
     i2c_master_write_byte(cmd, data, true);
     i2c_master_stop(cmd);
-    esp_err_t ret = i2c_master_cmd_begin(I2C_PORT, cmd, pdMS_TO_TICKS(100));
+    esp_err_t ret = i2c_master_cmd_begin(I2C_PORT, cmd, 100 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
-    if (ret != ESP_OK) {
-        if (bq_driver_ready) { // Só loga se já deveria estar pronto e falhou
-             ESP_LOGE(TAG, "Falha ao escrever no registrador 0x%02X com dado 0x%02X: %s", reg, data, esp_err_to_name(ret));
-        }
-    }
     return ret;
 }
 
-// Anexa o BQ25896 ao barramento I2C e verifica sua presença
-esp_err_t bq25896_attach_to_bus(void) {
-    // Tenta ler um registrador conhecido que geralmente tem um valor padrão,
-    // como o registrador de ID do dispositivo (se existir) ou um registrador de status.
-    // O registrador 0x0B (SYS_STAT) é um bom candidato para verificar comunicação.
-    uint8_t reg_val;
-    // Usamos a função interna de leitura que não verifica `bq_driver_ready` para a inicialização.
-    if (bq25896_read_reg_internal(BQ25896_REG_STATUS, &reg_val) == ESP_OK) {
-        bq_driver_ready = true; // Definimos a flag como true APENAS se a comunicação inicial for bem-sucedida
-        ESP_LOGI(TAG, "BQ25896 detectado e operacional. Status inicial: 0x%02X", reg_val);
-        return ESP_OK;
+// Inicializa o BQ25896
+esp_err_t bq25896_init(void) {
+    uint8_t data;
+    esp_err_t ret = bq25896_read_reg(REG_CTRL_3, &data);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Falha ao comunicar com o BQ25896.");
+        return ret;
     }
-    bq_driver_ready = false; // Garante que a flag é falsa em caso de falha na inicialização
-    ESP_LOGE(TAG, "Falha ao detectar BQ25896. Verifique as conexões I2C e o endereço (0x%02X).", BQ25896_I2C_ADDR);
-    return ESP_FAIL;
+
+    ret = bq25896_read_reg(REG_ADC_CTRL, &data);
+    if (ret != ESP_OK) return ret;
+
+    data |= ADC_CTRL_ADC_EN_MASK;
+    data &= ~ADC_CTRL_CONV_RATE_MASK;
+
+    ret = bq25896_write_reg(REG_ADC_CTRL, data);
+
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "BQ25896 inicializado com sucesso.");
+    }
+
+    return ret;
 }
 
-// Funções públicas que usarão a flag bq_driver_ready
-uint16_t bq25896_get_battery_voltage(void) {
-    if (!bq_driver_ready) {
-        ESP_LOGE(TAG, "BQ25896 não está pronto. Chame bq25896_attach_to_bus() primeiro.");
-        return 0;
-    }
-    uint8_t bat_voltage_reg_val;
-    if (bq25896_read_reg_internal(BQ25896_REG_BAT_VOLTAGE, &bat_voltage_reg_val) == ESP_OK) {
-        // VERIFIQUE O DATASHEET DO BQ25896 PARA O CÁLCULO CORRETO!
-        return ((uint16_t)bat_voltage_reg_val * 20) + 2304; // Em mV
-    }
-    return 0; // Retorna 0 em caso de erro
-}
-
+// Retorna status de carregamento
 bq25896_charge_status_t bq25896_get_charge_status(void) {
-    if (!bq_driver_ready) {
-        ESP_LOGE(TAG, "BQ25896 não está pronto. Chame bq25896_attach_to_bus() primeiro.");
-        return CHARGE_STATUS_UNKNOWN;
+    uint8_t data = 0;
+    if (bq25896_read_reg(REG_STATUS, &data) == ESP_OK) {
+        uint8_t status = (data & STATUS_CHG_STAT_MASK) >> STATUS_CHG_STAT_SHIFT;
+        return (bq25896_charge_status_t)status;
     }
-    uint8_t status_reg_val;
-    if (bq25896_read_reg_internal(BQ25896_REG_STATUS, &status_reg_val) == ESP_OK) {
-        uint8_t charge_status = (status_reg_val & BQ25896_CHRG_STAT_MASK) >> BQ25896_CHRG_STAT_SHIFT;
-        switch (charge_status) {
-            case 0b00: return CHARGE_STATUS_NOT_CHARGING;
-            case 0b01: return CHARGE_STATUS_PRECHARGE;
-            case 0b10: return CHARGE_STATUS_FAST_CHARGE;
-            case 0b11: return CHARGE_STATUS_CHARGE_DONE;
-            default: return CHARGE_STATUS_UNKNOWN;
-        }
-    }
-    return CHARGE_STATUS_UNKNOWN; // Retorna status desconhecido em caso de erro
+    return CHARGE_STATUS_NOT_CHARGING;
 }
 
-bool bq25896_is_charging(void) {
-    if (!bq_driver_ready) {
-        return false; // Não está carregando se o driver não estiver pronto
+// Retorna status do VBUS
+bq25896_vbus_status_t bq25896_get_vbus_status(void) {
+    uint8_t data = 0;
+    if (bq25896_read_reg(REG_STATUS, &data) == ESP_OK) {
+        uint8_t status = (data & STATUS_VBUS_STAT_MASK) >> STATUS_VBUS_STAT_SHIFT;
+        return (bq25896_vbus_status_t)status;
     }
+    return VBUS_STATUS_UNKNOWN;
+}
+
+// Verifica se está carregando
+bool bq25896_is_charging(void) {
     bq25896_charge_status_t status = bq25896_get_charge_status();
     return (status == CHARGE_STATUS_PRECHARGE || status == CHARGE_STATUS_FAST_CHARGE);
 }
 
-// Calcula a porcentagem da bateria com base na voltagem
+// Calcula porcentagem estimada da bateria
 int bq25896_get_battery_percentage(uint16_t voltage_mv) {
-    // Esta função não precisa de bq_driver_ready, pois opera nos dados já obtidos.
-    const uint16_t VOLTAGE_MAX = 4200; // 4.2V (100% carga)
-    const uint16_t VOLTAGE_MIN = 3000; // 3.0V (0% carga, ponto de corte)
+    const int min_voltage = 3200; // 0%
+    const int max_voltage = 4200; // 100%
 
-    if (voltage_mv >= VOLTAGE_MAX) {
-        return 100;
-    } else if (voltage_mv <= VOLTAGE_MIN) {
-        return 0;
-    } else {
-        int percentage = (int)(((float)(voltage_mv - VOLTAGE_MIN) / (VOLTAGE_MAX - VOLTAGE_MIN)) * 100.0f);
-        return percentage;
+    if (voltage_mv <= min_voltage) return 0;
+    if (voltage_mv >= max_voltage) return 100;
+
+    int percentage = ((voltage_mv - min_voltage) * 100) / (max_voltage - min_voltage);
+    return percentage > 100 ? 100 : percentage;
+}
+
+// Retorna tensão da bateria
+uint16_t bq25896_get_battery_voltage(void) {
+    uint8_t data = 0;
+    if (bq25896_read_reg(REG_BAT_VOLT, &data) == ESP_OK) {
+        uint16_t voltage = 2304 + ((data & BATV_MASK) * 20);
+        return voltage;
     }
+    return 0;
 }
