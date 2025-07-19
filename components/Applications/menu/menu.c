@@ -11,6 +11,7 @@
 #include "icons.h"
 #include "brightness_ui.h"
 #include "battery_ui.h"
+#include "GPIO.h"
 
 
 typedef enum {
@@ -30,7 +31,7 @@ MenuItem main_menu_items[] = {
     {"RF", rf_main, NULL},
     {"Infravermelho", infra_main, NULL},
     {"BadUSB", bad, show_bad_usb_menu},
-    {"GPIOS", conf_main, NULL},
+    {"GPIOS", conf_main, show_gpio_menu},
     {"MicroSD", sd_main, NULL},
 };
 
