@@ -23,6 +23,7 @@ extern const uint16_t evil[];
 extern const uint16_t learn[];
 extern const uint16_t controle[];
 extern const uint16_t raw[];
+extern const uint16_t UART[];
 
 
 #define ICON_WIDTH  24
