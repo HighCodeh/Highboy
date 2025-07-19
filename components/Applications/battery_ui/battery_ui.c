@@ -54,7 +54,6 @@ static void draw_battery_ui(int percentage, uint16_t voltage_mv, bq25896_charge_
     sprintf(buffer, "Tensao: %.2f V", voltage_mv / 1000.0f);
     st7789_draw_text_fb(20, 160, buffer, ST7789_COLOR_WHITE, ST7789_COLOR_BLACK);
 
-
     const char* status_text;
     switch(status) {
         case CHARGE_STATUS_NOT_CHARGING:
@@ -69,13 +68,12 @@ static void draw_battery_ui(int percentage, uint16_t voltage_mv, bq25896_charge_
         case CHARGE_STATUS_CHARGE_DONE:
             status_text = "Status: Carga Completa";
             break;
-        case CHARGE_STATUS_UNKNOWN: // Adicionado o novo status
-            status_text = "Status: Desconhecido/Erro";
-            break;
         default:
-            status_text = "Status: Desconhecido"; // Caso algum outro valor seja retornado
+            status_text = "Status: Desconhecido";
             break;
     }
+
+
     st7789_draw_text_fb(20, 180, status_text, ST7789_COLOR_WHITE, ST7789_COLOR_BLACK);
     
     st7789_draw_text_fb(40, 220, "Pressione VOLTAR", ST7789_COLOR_YELLOW, ST7789_COLOR_BLACK);
