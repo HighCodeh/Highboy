@@ -3,7 +3,8 @@ idf_component_register(SRCS "font/font.c"
                             "hb_sd/hb_sd.c"
                             "wifi/wifi_service.c"
                             "http_server/http_server_service.c"
-                         
+                           "storage_api/storage_api.c"
+                           "storage_thread/storage_thread.c"
                             "virtual_display_client/virtual_display_client.c"
                             "usb_stream/usb_stream.c"
                             "dns_server/dns_server.c"
@@ -15,6 +16,9 @@ idf_component_register(SRCS "font/font.c"
                                  "dns_server/include"
                                  "virtual_display_client/include"
                                  "usb_stream/include"
+                                 "storage_api/include"
+                                 "storage_thread/include"
+                                 "storage_message/include"
                     REQUIRES sdmmc
                     driver  
                     vfs

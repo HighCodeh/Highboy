@@ -10,7 +10,7 @@ void init_spi(void) {
     spi_bus_config_t buscfg = {
         .mosi_io_num = ST7789_PIN_MOSI,
         .sclk_io_num = ST7789_PIN_SCLK,
-        .miso_io_num = -1,        
+        .miso_io_num = 13,        
         .quadwp_io_num = -1,      
         .quadhd_io_num = -1,      
         .max_transfer_sz = 32768, 

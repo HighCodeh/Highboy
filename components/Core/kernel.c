@@ -15,6 +15,7 @@
 #include "driver/i2c.h"
 #include "nvs_flash.h" 
 #include "wifi_service.h" 
+#include "storage_thread.h" 
 
 
 
@@ -29,6 +30,7 @@ void kernel_init(void) {
  
     init_spi();
     init_i2c();
+    storage_thread_init(); 
     buzzer_init();
     led_rgb_init();
     buzzer_boot_sequence();

@@ -153,6 +153,8 @@ void st7789_draw_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color
 void st7789_draw_bitmap_fb(int x, int y, const uint8_t *bitmap, int w, int h, uint16_t color);
 //static void draw_quarter_circle_fb(int x, int y, int r, int corner, uint16_t color);
 void st7789_fill_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color);
+void st7789_draw_triangle_fb(int x0, int y0, int x1, int y1, int x2, int y2, uint16_t color);
+void st7789_fill_triangle_fb(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
 //static void fill_circle_helper_fb(int16_t x0, int16_t y0, int16_t r, uint8_t corner, int16_t delta, uint16_t color);
 
 uint16_t* st7789_get_framebuffer();
