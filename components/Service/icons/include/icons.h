@@ -24,7 +24,9 @@ extern const uint16_t learn[];
 extern const uint16_t controle[];
 extern const uint16_t raw[];
 extern const uint16_t UART[];
-
+extern const uint16_t icon_file[];
+extern const uint16_t icon_folder[];
+extern const uint16_t analyzer_main[];
 
 #define ICON_WIDTH  24
 #define ICON_HEIGHT 24

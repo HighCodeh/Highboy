@@ -14,6 +14,8 @@
 #include "wifi_service.h"
 #include "evil_twin.h"
 #include <string.h>
+#include "wifi_analyzer.h" 
+#include "traffic_analyzer.h"
 #include "virtual_display_client.h" // ADICIONAR ESTE INCLUDE
 
 // static const char *TAG = "wifi";
@@ -23,9 +25,12 @@ static void wifi_action_scan(void);
 static void wifi_action_attack(void);
 static void wifi_action_evil_twin(void);
 
+static void wifi_action_analyze(void); 
 // --- Itens do Menu WiFi ---
 static const SubMenuItem wifiMenuItems[] = {
     { "Scan Redes", scan, wifi_action_scan },
+    { "Analisar Redes", analyzer_main, wifi_action_analyze }, 
+    { "Analisar Trafego", analyzer_main, show_traffic_analyzer },
     { "Atacar Alvo",   deauth, wifi_action_attack },
     { "Evil Twin",     evil, wifi_action_evil_twin },
 };
@@ -96,6 +101,16 @@ static void wifi_action_scan(void) {
     st7789_flush();
     vTaskDelay(pdMS_TO_TICKS(1500));
 }
+
+static void wifi_action_analyze(void) {
+    // Espera o botão OK ser liberado para não processar duas vezes
+    while (!gpio_get_level(BTN_OK)) {
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+    // Chama a função principal da nossa nova interface
+    show_wifi_analyzer();
+}
+
 // Ação para "Atacar Alvo" com menu de seleção manual
 static void wifi_action_attack(void) {
     // Espera o botão OK ser liberado para não entrar na seleção imediatamente
@@ -194,6 +209,7 @@ static void wifi_action_attack(void) {
         }
     }
 }
+
 
 
 // Ação para "Evil Twin" com menu de seleção manual

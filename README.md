@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="pics/Highboy_repo.png" alt="HighBoy Banner" width="1000"/>
+</p>
+
+
+
 # 📡 Firmware HighBoy (Beta)
 
 Este repositório contém um **firmware em desenvolvimento** para a plataforma **HighBoy**.  
