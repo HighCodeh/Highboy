@@ -14,6 +14,10 @@ idf_component_register(SRCS "home/home.c"
                             "bad_usb/bad_usb_menu.c"
                             "battery_ui/battery_ui.c"
                             "keyboard_ui/keyboard_ui.c"
+                            "bluetooth/apple_spam.c"
+                            "bluetooth/bluetooth_scanner.c"
+                            "bluetooth/bluetooth_menu.c"
+                            "bluetooth/rssi_analyser.c"
                        INCLUDE_DIRS "home/include"
                                     "menu/include"
                                     "UART/include"
@@ -27,6 +31,7 @@ idf_component_register(SRCS "home/home.c"
                                     "brightness_ui/include"    
                                     "bad_usb/include"
                                     "battery_ui/include"
+                                    "bluetooth/include"
                        REQUIRES 
                     driver
                     Drivers
@@ -34,6 +39,8 @@ idf_component_register(SRCS "home/home.c"
                     esp_common
                     esp_wifi
                     esp_tinyusb
+                    
+                    PRIV_REQUIRES
                     bt
                  )
                  target_link_libraries(${COMPONENT_LIB} -Wl,-zmuldefs)

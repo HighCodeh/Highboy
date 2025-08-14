@@ -5,6 +5,7 @@
 #include "led_control.h"
 #include "home.h"
 #include "wifi.h"
+#include "bluetooth_menu.h"
 #include "bad_usb_menu.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -26,7 +27,7 @@ static app_state_t current_state = STATE_HOME;
 
 MenuItem main_menu_items[] = {
     {"WiFi", wifi_main, show_wifi_menu},
-    {"Bluetooth", blu_main, NULL},
+    {"Bluetooth", blu_main, show_bluetooth_menu},
     {"NFC", nfc_main, NULL},
     {"RF", rf_main, NULL},
     {"Infravermelho", infra_main, NULL},
