@@ -3,31 +3,13 @@
 #include "esp_log.h"
 #include "tinyusb.h"
 #include "class/hid/hid_device.h"
+#include "tusb_desc.h"
 #include "bad_usb.h"
 
 // TAG para logs
 static const char *TAG = "BAD_USB_MODULE";
 #define REPORT_ID_KEYBOARD 1
-static bool g_is_bad_usb_initialized = false;
 
-// --- 1. LÓGICA DE BAIXO NÍVEL USB (Descritores e Callbacks) ---
-static const uint8_t tud_hid_report_descriptor[] = {
-    TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(REPORT_ID_KEYBOARD))
-};
-
-static const uint8_t hid_configuration_descriptor[] = {
-    TUD_CONFIG_DESCRIPTOR(1, 1, 0, TUD_CONFIG_DESC_LEN + TUD_HID_DESC_LEN, TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP, 100),
-    TUD_HID_DESCRIPTOR(0, 0, HID_ITF_PROTOCOL_KEYBOARD, sizeof(tud_hid_report_descriptor), 0x81, 16, 10),
-};
-
-// --- Callbacks do TinyUSB ---
-uint16_t tud_hid_get_report_cb(uint8_t i, uint8_t r_id, hid_report_type_t r_type, uint8_t* b, uint16_t r_len) { return 0; }
-void tud_hid_set_report_cb(uint8_t i, uint8_t r_id, hid_report_type_t r_type, uint8_t const* b, uint16_t b_size) {}
-
-// FIX: Adicionada a implementação do callback que estava faltando
-uint8_t const *tud_hid_descriptor_report_cb(uint8_t instance) {
-    return tud_hid_report_descriptor;
-}
 
 // --- 2. FUNÇÕES AUXILIARES ESTÁTICAS ---
 static void send_key(uint8_t keycode, uint8_t modifier) {
@@ -202,30 +184,12 @@ static void wait_for_connection(void) {
 
 // --- 3. FUNÇÕES PÚBLICAS ---
 void bad_usb_init(void) {
-    if (g_is_bad_usb_initialized) {
-        ESP_LOGW(TAG, "Tentativa de inicializar o BadUSB, mas ja esta ativo.");
-        return;
-    }
-    ESP_LOGI(TAG, "Inicializando o driver TinyUSB para BadUSB...");
-    const tinyusb_config_t tusb_cfg = {
-        .device_descriptor = NULL,
-        .string_descriptor = NULL,
-        .external_phy = false,
-        .configuration_descriptor = hid_configuration_descriptor,
-    };
-    ESP_ERROR_CHECK(tinyusb_driver_install(&tusb_cfg));
-    g_is_bad_usb_initialized = true;
-    ESP_LOGI(TAG, "Driver TinyUSB instalado com sucesso.");
+  busb_init();
 }
 
 void bad_usb_deinit(void) {
-    if (!g_is_bad_usb_initialized) {
-        ESP_LOGW(TAG, "Tentativa de finalizar o BadUSB, mas nao esta ativo.");
-        return;
-    }
     ESP_LOGI(TAG, "Finalizando o modo BadUSB e desinstalando o driver...");
     ESP_ERROR_CHECK(tinyusb_driver_uninstall());
-    g_is_bad_usb_initialized = false;
     ESP_LOGI(TAG, "Driver TinyUSB desinstalado com sucesso.");
 }
 
