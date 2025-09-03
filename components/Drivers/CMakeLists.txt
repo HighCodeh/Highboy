@@ -4,10 +4,10 @@ idf_component_register(SRCS "bq25896/bq25896.c"
                             "pn7150/pn7150.c" 
                             "st7789/st7789.c"
                             "led/led_control.c"
-                       
                             "backlight/backlight.c"
                             "spi_init/spi_init.c"
                             "i2c_init/i2c_init.c"
+                            "tusb_desc/tusb_desc.c"
                INCLUDE_DIRS "bq25896/include"
                             "buzzer/include"
                             "cc1101/include"
@@ -18,7 +18,10 @@ idf_component_register(SRCS "bq25896/bq25896.c"
                             "spi_init/include"
                             "i2c_init/include"
                             "backlight/include"
+                            "tusb_desc/include"
             REQUIRES 
             driver
             Service
-            PRIV_REQUIRES "espressif__led_strip")
+            PRIV_REQUIRES 
+            esp_tinyusb
+            "espressif__led_strip")
