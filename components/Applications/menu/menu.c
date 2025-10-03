@@ -5,6 +5,7 @@
 #include "led_control.h"
 #include "home.h"
 #include "wifi.h"
+#include "infrared.h"
 #include "bluetooth_menu.h"
 #include "bad_usb_menu.h"
 #include "freertos/FreeRTOS.h"
@@ -43,7 +44,7 @@ MenuItem main_menu_items[] = {
     {"Bluetooth", blu_main, show_bluetooth_menu},
     {"NFC", nfc_main, NULL},
     {"RF", rf_main, NULL},
-    {"Infravermelho", infra_main, NULL},
+    {"Infravermelho", infra_main, show_infrared_menu},
     {"BadUSB", bad, show_bad_usb_menu},
     {"GPIOS", conf_main, show_gpio_menu},
     {"MicroSD", sd_main, show_sd_menu},
