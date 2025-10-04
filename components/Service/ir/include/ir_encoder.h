@@ -1,31 +1,118 @@
-#pragma once
+#ifndef IR_ENCODER_H
+#define IR_ENCODER_H
 
 #include "driver/rmt_encoder.h"
-#include "protocol_nec.h"
+#include "esp_err.h"
+#include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/**
+ * @brief Protocolos IR suportados
+ */
 typedef enum {
-    IR_PROTOCOL_NEC = 0,
-    // IR_PROTOCOL_RC5,
-    // IR_PROTOCOL_SONY,
-    // etc.
+    IR_PROTOCOL_NEC,
+    IR_PROTOCOL_RC6,
+    IR_PROTOCOL_RC5,
+    IR_PROTOCOL_SAMSUNG32,
+    IR_PROTOCOL_SIRC,
 } ir_protocol_t;
 
+/**
+ * @brief Configuração de encoder NEC
+ */
 typedef struct {
-    ir_protocol_t        protocol;
+    uint32_t resolution;  ///< Resolução do encoder em Hz
+} ir_nec_encoder_config_t;
+
+/**
+ * @brief Configuração de encoder RC6
+ */
+typedef struct {
+    uint32_t resolution;  ///< Resolução do encoder em Hz
+} ir_rc6_encoder_config_t;
+
+/**
+ * @brief Configuração de encoder RC5
+ */
+typedef struct {
+    uint32_t resolution;  ///< Resolução do encoder em Hz
+} ir_rc5_encoder_config_t;
+
+/**
+ * @brief Configuração de encoder Samsung32
+ */
+typedef struct {
+    uint32_t resolution;  ///< Resolução do encoder em Hz
+} ir_samsung32_encoder_config_t;
+
+/**
+ * @brief Configuração de encoder Sony SIRC
+ */
+typedef struct {
+    uint32_t resolution;  ///< Resolução do encoder em Hz
+} ir_sony_encoder_config_t;
+
+/**
+ * @brief Estrutura unificada de configuração de encoder
+ */
+typedef struct {
+    ir_protocol_t protocol;  ///< Protocolo a ser usado
     union {
         ir_nec_encoder_config_t nec;
-        // add other protocol configs here
+        ir_rc6_encoder_config_t rc6;
+        ir_rc5_encoder_config_t rc5;
+        ir_samsung32_encoder_config_t samsung32;
+        ir_sony_encoder_config_t sony;
     } config;
 } ir_encoder_config_t;
 
 /**
- * @brief Create a new RMT encoder for the selected IR protocol.
+ * @brief Cria um novo encoder IR baseado no protocolo especificado
  *
- * @param[in]  cfg          Generic IR encoder configuration (select protocol + params).
- * @param[out] ret_encoder  Receives the newly created rmt_encoder_handle_t.
- * @return
- *     - ESP_ERR_INVALID_ARG if arguments are NULL
- *     - ESP_ERR_NOT_SUPPORTED if protocol isn’t implemented
- *     - ESP_OK on success
+ * @param cfg Configuração do encoder
+ * @param ret_encoder Ponteiro para retornar o handle do encoder
+ * @return esp_err_t ESP_OK em sucesso
  */
-esp_err_t rmt_new_ir_encoder(const ir_encoder_config_t *cfg, rmt_encoder_handle_t *ret_encoder);
+esp_err_t rmt_new_ir_encoder(const ir_encoder_config_t *cfg, 
+                              rmt_encoder_handle_t *ret_encoder);
+
+/**
+ * @brief Converte protocolo para string
+ *
+ * @param protocol Protocolo
+ * @return const char* Nome do protocolo
+ */
+const char* ir_protocol_to_string(ir_protocol_t protocol);
+
+/**
+ * @brief Converte string para protocolo
+ *
+ * @param protocol_str String do protocolo
+ * @return ir_protocol_t Protocolo correspondente
+ */
+ir_protocol_t ir_string_to_protocol(const char* protocol_str);
+
+// Declarações das funções de criação de encoders
+esp_err_t rmt_new_ir_nec_encoder(const ir_nec_encoder_config_t *config,
+                                  rmt_encoder_handle_t *ret_encoder);
+
+esp_err_t rmt_new_ir_rc6_encoder(const ir_rc6_encoder_config_t *config,
+                                  rmt_encoder_handle_t *ret_encoder);
+
+esp_err_t rmt_new_ir_rc5_encoder(const ir_rc5_encoder_config_t *config,
+                                  rmt_encoder_handle_t *ret_encoder);
+
+esp_err_t rmt_new_ir_samsung32_encoder(const ir_samsung32_encoder_config_t *config,
+                                        rmt_encoder_handle_t *ret_encoder);
+
+esp_err_t rmt_new_ir_sony_encoder(const ir_sony_encoder_config_t *config,
+                                   rmt_encoder_handle_t *ret_encoder);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif // IR_ENCODER_H

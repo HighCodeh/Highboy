@@ -1,27 +1,23 @@
-/*
- * SPDX-FileCopyrightText: 2021-2022 Espressif Systems (Shanghai) CO LTD
- *
- * SPDX-License-Identifier: Apache-2.0
- */
-#pragma once
+#ifndef PROTOCOL_NEC_H
+#define PROTOCOL_NEC_H
 
-#include <stdint.h>
 #include "driver/rmt_encoder.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @brief IR NEC scan code representation
+ * @brief Estrutura de scan code NEC
  */
 typedef struct {
-    uint16_t address;
-    uint16_t command;
+    uint16_t address;  ///< Endereço NEC (16 bits)
+    uint16_t command;  ///< Comando NEC (16 bits)
 } ir_nec_scan_code_t;
 
 /**
- * @brief NEC timing spec
+ * @brief Timings do protocolo NEC
  */
 #define NEC_LEADING_CODE_DURATION_0  9000
 #define NEC_LEADING_CODE_DURATION_1  4500
@@ -31,19 +27,11 @@ typedef struct {
 #define NEC_PAYLOAD_ONE_DURATION_1   1690
 #define NEC_REPEAT_CODE_DURATION_0   9000
 #define NEC_REPEAT_CODE_DURATION_1   2250
-#define EXAMPLE_IR_NEC_DECODE_MARGIN 200
 
-/**
- * @brief Type of IR NEC encoder configuration
- */
-typedef struct {
-    uint32_t resolution; /*!< Encoder resolution, in Hz */
-} ir_nec_encoder_config_t;
-
-esp_err_t rmt_new_ir_nec_encoder(const ir_nec_encoder_config_t *config, rmt_encoder_handle_t *ret_encoder);
-
-void parse_nec_frame(rmt_symbol_word_t *rmt_nec_symbols, size_t symbol_num, const char* filename);
+#define EXAMPLE_IR_NEC_DECODE_MARGIN 200  ///< Margem de erro para decodificação (us)
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif // PROTOCOL_NEC_H

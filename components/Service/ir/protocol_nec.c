@@ -1,4 +1,5 @@
 #include "esp_check.h"
+#include "ir_encoder.h"  
 #include "protocol_nec.h"
 #include "ir_storage.h"
 
