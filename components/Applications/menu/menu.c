@@ -1,3 +1,4 @@
+// menu.c
 #include "menu_generic.h"
 #include "st7789.h"
 #include "pin_def.h"
@@ -14,8 +15,10 @@
 #include "brightness_ui.h"
 #include "battery_ui.h"
 #include "GPIO.h"
-#include "storage_api.h" // <-- GARANTA QUE ESTE INCLUDE ESTÁ CORRETO
-
+#include "sd_card_read.h"
+#include "sd_card_dir.h"
+#include <string.h>
+#include <stdlib.h>
 
 #define COLOR_BLACK       ST7789_COLOR_BLACK
 #define COLOR_WHITE       ST7789_COLOR_WHITE
@@ -121,6 +124,22 @@ void menu_task(void *pvParameters) {
     }
 }
 
+typedef struct {
+    char names[32][64];
+    bool is_dir[32];
+    int count;
+} file_list_t;
+
+static void list_callback(const char *name, bool is_dir, void *user_data) {
+    file_list_t *list = (file_list_t *)user_data;
+    if (list->count < 32) {
+        strncpy(list->names[list->count], name, 63);
+        list->names[list->count][63] = '\0';
+        list->is_dir[list->count] = is_dir;
+        list->count++;
+    }
+}
+
 void draw_file_list(const file_list_t *list, int selected_index) {
     st7789_fill_screen_fb(COLOR_BLACK);
     st7789_draw_text_fb(5, 5, "MicroSD", COLOR_WHITE, COLOR_BLACK);
@@ -173,9 +192,10 @@ void show_sd_menu(void) {
     file_list_t* file_list = malloc(sizeof(file_list_t));
     if (file_list == NULL) return;
 
+    file_list->count = 0;
     int selected_item = 0;
 
-    if (storage_list_files("/", file_list) != ESP_OK) {
+    if (sd_dir_list("/sdcard", list_callback, file_list) != ESP_OK) {
         st7789_fill_screen_fb(COLOR_BLACK);
         st7789_draw_text_fb(20, 100, "Erro ao ler o cartao SD!", COLOR_RED, COLOR_BLACK);
         st7789_flush();
@@ -197,11 +217,10 @@ void show_sd_menu(void) {
             if (file_list->count > 0 && !file_list->is_dir[selected_item]) {
                 char* file_content = malloc(2048);
                 if (file_content) {
-                    size_t bytes_read;
                     char file_path[256];
-                    snprintf(file_path, sizeof(file_path), "/%s", file_list->names[selected_item]);
+                    snprintf(file_path, sizeof(file_path), "/sdcard/%s", file_list->names[selected_item]);
 
-                    if (storage_read_file(file_path, file_content, 2048, &bytes_read) == ESP_OK) {
+                    if (sd_read_string(file_path, file_content, 2048) == ESP_OK) {
                         show_file_content_screen(file_list->names[selected_item], file_content);
                     } else {
                         st7789_fill_rect_fb(0, 100, 240, 40, COLOR_RED);
@@ -221,5 +240,3 @@ void show_sd_menu(void) {
     }
     free(file_list);
 }
-
- 

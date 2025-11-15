@@ -4,7 +4,9 @@
 #include "esp_wifi.h"
 #include "http_server_service.h"
 #include "wifi_service.h"
+#include "sd_card_read.h"
 #include <string.h>
+#include <stdlib.h>
 
 // TODO
 // load HTML files, remove hardcoded html []
@@ -30,15 +32,15 @@ static int password_count = 0;
 // =================================================================
 //
 // Le arquivo como string
-static const char *getHtmlBuffer(void) {
-  int lineCount = 0;
-  if (sd_count_lines(path, &lineCount) != 0 | lineCount <= 0) {
+static const char *getHtmlBuffer(const char *path) {
+  uint32_t lineCount = 0;
+  if (sd_count_lines(path, &lineCount) != ESP_OK || lineCount <= 0) {
     ESP_LOGE(TAG_ET, "Error to count line of empty file");
     return NULL;
   }
 
   const size_t predictLineSize = 80;
-  site_t predictTotalFileSize = lineCount * PredictLineSize;
+  size_t predictTotalFileSize = lineCount * predictLineSize;
 
   char *buffer = (char *)malloc(predictTotalFileSize);
   if (!buffer) {
@@ -46,10 +48,8 @@ static const char *getHtmlBuffer(void) {
     return NULL;
   }
 
-  int result = sd_read_string(path, buffer, sizeof(buffer + 1));
-
-  if (result != 0) {
-    ESP_LOGE(TAG_ET, "Error to read file <file> codigo: <code>");
+  if (sd_read_string(path, buffer, predictTotalFileSize) != ESP_OK) {
+    ESP_LOGE(TAG_ET, "Error to read file");
     free(buffer);
     return NULL;
   }
@@ -60,7 +60,7 @@ static const char *getHtmlBuffer(void) {
     buffer = finalBuffer;
   }
 
-  ESP_LOGI(TAG_ET, "Success Buffer Retrieved: <tam> bytes", realSize);
+  ESP_LOGI(TAG_ET, "Success Buffer Retrieved: %zu bytes", realSize);
   return buffer;
 }
 

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -15,10 +14,7 @@
 #include "driver/i2c.h"
 #include "nvs_flash.h" 
 #include "wifi_service.h" 
-#include "storage_thread.h" 
-#include "sd_manager.h"
-
-
+#include "sd_card_init.h"
 
 void kernel_init(void) {
     esp_err_t ret = nvs_flash_init();
@@ -30,16 +26,13 @@ void kernel_init(void) {
     
     init_spi();
     init_i2c();
-    //storage_thread_init(); 
-    sd_manager_init();
+    
+    sd_init();
     
     buzzer_init();
     led_rgb_init();
     buzzer_boot_sequence();
     bq25896_init();
-    
-    // SD Manager agora usa thread interna
-    //sd_manager_init(); // ← Chama UMA VEZ aqui
     
     st7789_init();
     

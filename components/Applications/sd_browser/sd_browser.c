@@ -1,5 +1,6 @@
 #include "sd_browser.h"
-#include "storage_api.h"
+#include "sd_card_read.h"
+#include "sd_card_dir.h"
 #include "sub_menu.h"
 #include "st7789.h"
 #include "icons.h"
@@ -9,6 +10,24 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "driver/gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+typedef struct {
+    char names[32][64];
+    bool is_dir[32];
+    int count;
+} file_list_t;
+
+static void list_callback(const char *name, bool is_dir, void *user_data) {
+    file_list_t *list = (file_list_t *)user_data;
+    if (list->count < 32) {
+        strncpy(list->names[list->count], name, 63);
+        list->names[list->count][63] = '\0';
+        list->is_dir[list->count] = is_dir;
+        list->count++;
+    }
+}
 
 // Função para mostrar o conteúdo do ficheiro (do seu código antigo)
 static void show_file_content_screen(const char* filename, const char* content) {
@@ -28,9 +47,11 @@ void sd_browser_start(void) {
     // Aloca memória para a lista
     file_list_t* file_list = malloc(sizeof(file_list_t));
     if (file_list == NULL) return;
+    
+    file_list->count = 0;
 
     // Tenta listar os ficheiros da raiz "/"
-    if (storage_list_files("/", file_list) != ESP_OK) {
+    if (sd_dir_list("/sdcard", list_callback, file_list) != ESP_OK) {
         menu_draw_header("Erro no SD Card");
         st7789_draw_text_fb(20, 100, "Erro ao ler o cartao SD!", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
         st7789_flush();
@@ -62,12 +83,11 @@ void sd_browser_start(void) {
         if (!file_list->is_dir[selected_index]) {
             char* file_content = malloc(2048);
             if (file_content) {
-                size_t bytes_read;
                 char file_path[256];
                 // Cria o caminho do ficheiro, sempre a partir da raiz "/"
-                snprintf(file_path, sizeof(file_path), "/%s", file_list->names[selected_index]);
+                snprintf(file_path, sizeof(file_path), "/sdcard/%s", file_list->names[selected_index]);
 
-                if (storage_read_file(file_path, file_content, 2048, &bytes_read) == ESP_OK) {
+                if (sd_read_string(file_path, file_content, 2048) == ESP_OK) {
                     show_file_content_screen(file_list->names[selected_index], file_content);
                 } else {
                      // Em caso de erro na leitura
