@@ -28,6 +28,42 @@ static int password_count = 0;
 // =================================================================
 // HTML do Portal Cativo e Páginas
 // =================================================================
+//
+// Le arquivo como string
+static const char *getHtmlBuffer(void) {
+  int lineCount = 0;
+  if (sd_count_lines(path, &lineCount) != 0 | lineCount <= 0) {
+    ESP_LOGE(TAG_ET, "Error to count line of empty file");
+    return NULL;
+  }
+
+  const size_t predictLineSize = 80;
+  site_t predictTotalFileSize = lineCount * PredictLineSize;
+
+  char *buffer = (char *)malloc(predictTotalFileSize);
+  if (!buffer) {
+    ESP_LOGE(TAG_ET, "Error to allocate bytes");
+    return NULL;
+  }
+
+  int result = sd_read_string(path, buffer, sizeof(buffer + 1));
+
+  if (result != 0) {
+    ESP_LOGE(TAG_ET, "Error to read file <file> codigo: <code>");
+    free(buffer);
+    return NULL;
+  }
+
+  size_t realSize = strlen(buffer);
+  char *finalBuffer = (char *)realloc(buffer, realSize + 1);
+  if (finalBuffer) {
+    buffer = finalBuffer;
+  }
+
+  ESP_LOGI(TAG_ET, "Success Buffer Retrieved: <tam> bytes", realSize);
+  return buffer;
+}
+
 static const char *captive_portal_html =
     "<!DOCTYPE html><html><head><title>Wi-Fi Login</title><meta "
     "name='viewport' content='width=device-width, "
