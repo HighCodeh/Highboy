@@ -21,6 +21,13 @@
                                 "ir/protocol_samsung32.c"
                                 "ir/protocol_sony.c"
                                 "ir/ir_burst.c"
+                                "sd_card/sd_card_read.c"
+                                "sd_card_init.c"
+                                "sd_card_info.c"
+                                "sd_card_write.c"
+                                "sd_card_file.c"
+                                "sd_card_dir.c"
+
                     INCLUDE_DIRS "font/include"
                                  "hb_sd/include"
                                  "icons/include"
@@ -35,6 +42,7 @@
                                  "bluetooth/include"
                                  "ir/include"
                                  "sd_manager/include"
+                                 "sd_card/include"
                     REQUIRES sdmmc
                     driver  
                     vfs
