@@ -336,3 +336,26 @@ esp_err_t sd_count_occurrences(const char *path, const char *search, uint32_t *c
     ESP_LOGD(TAG, "Ocorrências de '%s': %lu", search, *count);
     return ESP_OK;
 }
+
+esp_err_t sd_read_get_file_size(const char *path, size_t *size_out) {
+    char full_path[MAX_PATH_LEN];
+    format_path(path, full_path, sizeof(full_path));
+
+    FILE *f = fopen(full_path, "r");
+    if (f == NULL) {
+        ESP_LOGE(TAG, "Failed to open file to get size: %s", full_path);
+        return ESP_FAIL; 
+    }
+
+    fseek(f, 0, SEEK_END);
+    long temp_size = ftell(f);
+    fclose(f); 
+
+    if (temp_size < 0) {
+        return ESP_FAIL;
+    }
+
+    *size_out = (size_t)temp_size;
+
+    return ESP_OK;
+}

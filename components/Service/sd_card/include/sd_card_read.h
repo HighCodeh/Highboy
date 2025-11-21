@@ -145,6 +145,9 @@ esp_err_t sd_file_contains(const char *path, const char *search, bool *found);
  */
 esp_err_t sd_count_occurrences(const char *path, const char *search, uint32_t *count);
 
+esp_err_t sd_read_get_file_size(const char *path, size_t *size_out);
+
+
 #ifdef __cplusplus
 }
 #endif
