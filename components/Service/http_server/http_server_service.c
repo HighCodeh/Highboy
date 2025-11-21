@@ -150,7 +150,7 @@ esp_err_t http_service_query_key_value(const char *data_buffer, const char *key,
 
 
 
-esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer, size_t length) {
+esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer, ssize_t length) {
     if (buffer == NULL) {
         ESP_LOGW(TAG, "Attemp to sent NULL buffer. Sending empty response.");
         // return httpd_resp_send(req, NULL, 0);

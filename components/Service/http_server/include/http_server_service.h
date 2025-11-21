@@ -28,7 +28,7 @@ esp_err_t  http_service_req_recv(httpd_req_t *req, char *buffer, size_t buffer_s
 esp_err_t http_service_query_key_value(const char *data_buffer, const char *key, char *out_val, size_t out_size);
 
 // data send
-esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer, size_t length);
+esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer, ssize_t length);
 
 
 // misc 
