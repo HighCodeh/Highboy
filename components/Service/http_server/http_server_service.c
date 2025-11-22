@@ -50,7 +50,7 @@ esp_err_t stop_http_server(void) {
 }
 
 // use this function with sd_card lib
-static const char *get_html_buffer(const char *path) {
+const char *get_html_buffer(const char *path) {
     size_t file_size = 0; 
     
     esp_err_t err = sd_read_get_file_size(path, &file_size);

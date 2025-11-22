@@ -32,5 +32,5 @@ esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer, ssize
 
 
 // misc 
-static const char *get_html_buffer(const char *path);
+const char *get_html_buffer(const char *path);
 #endif // !HTTP_SERVER_SERVICE_H
