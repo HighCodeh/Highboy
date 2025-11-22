@@ -1,6 +1,5 @@
         idf_component_register(SRCS "font/font.c"
                                 "icons/icons.c"
-                                "hb_sd/hb_sd.c"
                                 "wifi/wifi_service.c"
                                 "http_server/http_server_service.c"
                                 "virtual_display_client/virtual_display_client.c"
@@ -28,7 +27,6 @@
                                 "ir/ir_burst.c"
 
                     INCLUDE_DIRS "font/include"
-                                 "hb_sd/include"
                                  "icons/include"
                                  "wifi/include"
                                  "http_server/include"
