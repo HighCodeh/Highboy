@@ -1,8 +1,3 @@
-/**
- * @file sd_card_init.h
- * @brief Funções de inicialização e controle do cartão SD
- */
-
 #ifndef SD_CARD_INIT_H
 #define SD_CARD_INIT_H
 
@@ -14,10 +9,10 @@ extern "C" {
 #endif
 
 /* Configurações de pinos */
-#define SD_PIN_MOSI             11
+#define SD_PIN_MOSI             13
 #define SD_PIN_MISO             13
 #define SD_PIN_CLK              12
-#define SD_PIN_CS               10
+#define SD_PIN_CS               14
 
 /* Configurações gerais */
 #define SD_MOUNT_POINT          "/sdcard"
