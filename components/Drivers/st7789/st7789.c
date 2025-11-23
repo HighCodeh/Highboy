@@ -6,7 +6,9 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "backlight.h"
-#include "virtual_display_client.h" // ADICIONE ESTE INCLUDE AQUI
+#include "virtual_display_client.h"
+#include "spi.h"
+#include "pin_def.h"
 
 // ... resto dos includes ...
 
@@ -373,16 +375,27 @@ void st7789_set_rotation(uint8_t rotation) {
 
 // Inicializa o display ST7789 (configura SPI e executa sequência de inicialização)
 void st7789_init(void) {
-    // Configuração do SPI
-    spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 40 * 1000 * 1000, // 40 MHz
+    // ========== ADICIONA ST7789 NO DRIVER SPI ==========
+    spi_device_config_t st7789_cfg = {
+        .cs_pin = ST7789_CS_PIN,
+        .clock_speed_hz = 40 * 1000 * 1000,  // 40 MHz
         .mode = 0,
-        .spics_io_num = ST7789_PIN_CS,
-        .queue_size = 7, // Aumentado para melhor performance com DMA
-        .flags = SPI_DEVICE_HALFDUPLEX
+        .queue_size = 7,
     };
-    // Assumindo que o bus SPI (SPI3_HOST) já foi inicializado externamente
-    ESP_ERROR_CHECK(spi_bus_add_device(SPI3_HOST, &devcfg, &spi_dev));
+    
+    esp_err_t ret = spi_add_device(SPI_DEVICE_ST7789, &st7789_cfg);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Falha ao adicionar ST7789 no SPI: %s", esp_err_to_name(ret));
+        return;
+    }
+    
+    // Obtém o handle do device
+    spi_dev = spi_get_handle(SPI_DEVICE_ST7789);
+    if (!spi_dev) {
+        ESP_LOGE(TAG, "Falha ao obter handle do ST7789");
+        return;
+    }
+    // ===================================================
 
     // Configuração dos GPIOs
     gpio_set_direction(ST7789_PIN_DC, GPIO_MODE_OUTPUT);
@@ -390,20 +403,32 @@ void st7789_init(void) {
     gpio_set_direction(ST7789_PIN_BL, GPIO_MODE_OUTPUT);
 
     // Reset por hardware
-    gpio_set_level(ST7789_PIN_RST, 0); vTaskDelay(pdMS_TO_TICKS(100));
-    gpio_set_level(ST7789_PIN_RST, 1); vTaskDelay(pdMS_TO_TICKS(100));
+    gpio_set_level(ST7789_PIN_RST, 0); 
+    vTaskDelay(pdMS_TO_TICKS(100));
+    gpio_set_level(ST7789_PIN_RST, 1); 
+    vTaskDelay(pdMS_TO_TICKS(100));
 
     // Sequência de inicialização do ST7789
-    send_cmd(ST7789_CMD_SWRESET); vTaskDelay(pdMS_TO_TICKS(150));
-    send_cmd(ST7789_CMD_SLPOUT);  vTaskDelay(pdMS_TO_TICKS(255));
+    send_cmd(ST7789_CMD_SWRESET); 
+    vTaskDelay(pdMS_TO_TICKS(150));
+    send_cmd(ST7789_CMD_SLPOUT);  
+    vTaskDelay(pdMS_TO_TICKS(255));
+    
     send_cmd(ST7789_CMD_COLMOD);
-    uint8_t color_mode = 0x55; send_data(&color_mode, 1); // 16 bits por pixel
+    uint8_t color_mode = 0x55; 
+    send_data(&color_mode, 1); // 16 bits por pixel
     vTaskDelay(pdMS_TO_TICKS(10));
+    
     send_cmd(ST7789_CMD_MADCTL);
-    uint8_t madctl = 0x00; send_data(&madctl, 1);
-    send_cmd(ST7789_CMD_INVON);   vTaskDelay(pdMS_TO_TICKS(10));
-    send_cmd(ST7789_CMD_NORON);   vTaskDelay(pdMS_TO_TICKS(10));
-    send_cmd(ST7789_CMD_DISPON);  vTaskDelay(pdMS_TO_TICKS(255));
+    uint8_t madctl = 0x00; 
+    send_data(&madctl, 1);
+    
+    send_cmd(ST7789_CMD_INVON);   
+    vTaskDelay(pdMS_TO_TICKS(10));
+    send_cmd(ST7789_CMD_NORON);   
+    vTaskDelay(pdMS_TO_TICKS(10));
+    send_cmd(ST7789_CMD_DISPON);  
+    vTaskDelay(pdMS_TO_TICKS(255));
 
     size_t fb_size = ST7789_WIDTH * ST7789_HEIGHT * sizeof(uint16_t);
     framebuffer = (uint16_t *)heap_caps_malloc(fb_size, MALLOC_CAP_DMA | MALLOC_CAP_32BIT);
@@ -413,13 +438,15 @@ void st7789_init(void) {
     }
     ESP_LOGI(TAG, "Framebuffer alocado com sucesso (%d bytes)", fb_size);
 
-    // Limpa o framebuffer com a cor preta
-    memset(framebuffer, 0, fb_size); // <-- CORREÇÃO: Apenas limpa a memória já alocada
+    memset(framebuffer, 0, fb_size);
 
     st7789_set_text_size(2);
     st7789_flush();
     backlight_init();
+    
+    ESP_LOGI(TAG, "ST7789 inicializado com sucesso!");
 }
+
 // ✨ OTIMIZADO: Desenha linhas horizontais e verticais de forma muito eficiente.
 
 void st7789_draw_hline_fb(int x, int y, int w, uint16_t color) {

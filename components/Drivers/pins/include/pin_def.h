@@ -1,6 +1,15 @@
 #ifndef PIN_DEF_H
 #define PIN_DEF_H
 
+// SPI
+#define SPI_MOSI_PIN    11
+#define SPI_SCLK_PIN    12
+#define SPI_MISO_PIN    13
+
+// chip select
+#define SD_CARD_CS_PIN  14
+#define ST7789_CS_PIN   48
+
 // buttons
 #define BTN_LEFT     5
 #define BTN_BACK     7

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driver/spi_master.h"
+#include <driver/spi_master.h>
 
 // ** Configurações do display ST7789 **
 #define ST7789_WIDTH    240   // Largura do display em pixels
@@ -13,9 +13,6 @@
 #define ST7789_X_OFFSET 0     // Offset horizontal (ex: 0 ou 80)
 #define ST7789_Y_OFFSET 0     // Offset vertical   (ex: 0 ou 80)
 
-// ** Pinos da interface SPI3 (VSPI) no ESP32-S3 **
-#define ST7789_PIN_MOSI 11    // GPIO11 para MOSI (Master-Out, Slave-In)
-#define ST7789_PIN_SCLK 12    // GPIO12 para SCLK (clock SPI)
 #define ST7789_PIN_CS   48   // GPIO47 para Chip Select (CS)
 #define ST7789_PIN_DC   47    // GPIO48 para Data/Command (DC)
 #define ST7789_PIN_RST  21    // GPIO21 para Reset do display

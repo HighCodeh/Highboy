@@ -4,23 +4,13 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// SPI handle (inicializado em cc1101_init)
-#include <driver/spi_master.h>
-extern spi_device_handle_t cc1101_spi;
-#define CC1101_TXFIFO 0x3F
-  #define CC1101_RXFIFO 0x3F
-
-// Pinos (ajustar conforme hardware)
-#define CC1101_SPI_HOST    SPI3_HOST    // SPI2_HOST (HSPI) ou SPI3_HOST (VSPI)
-#define CC1101_CS_PIN      3       // Exemplo: GPIO15 como CS
-#define CC1101_MOSI_PIN    11           // Exemplo: GPIO13 como MOSI
-#define CC1101_MISO_PIN    13          // Exemplo: GPIO12 como MISO
-#define CC1101_SCLK_PIN    12          // Exemplo: GPIO14 como SCLK
-#define CC1101_GDO0_PIN    42         // Exemplo: GPIO25 como GDO0 (indicador de pacote)
+// Pinos específicos do CC1101
+#define CC1101_CS_PIN      3    // Chip Select
+#define CC1101_GDO0_PIN    42   // Indicador de pacote
 
 // Definições de registradores (endereços do CC1101)
-#define CC1101_IOCFG2    0x00  // GDO2 output pin config
-#define CC1101_IOCFG0    0x06 // GDO0 output pin config
+#define CC1101_IOCFG2    0x00
+#define CC1101_IOCFG0    0x06
 #define CC1101_FIFOTHR   0x03
 #define CC1101_SYNC1     0x04
 #define CC1101_SYNC0     0x05
@@ -56,23 +46,25 @@ extern spi_device_handle_t cc1101_spi;
 #define CC1101_TEST2     0x2C
 #define CC1101_TEST1     0x2D
 #define CC1101_TEST0     0x2E
-#define CC1101_PATABLE   0x3E  // PA Table
+#define CC1101_PATABLE   0x3E
+#define CC1101_TXFIFO    0x3F
+#define CC1101_RXFIFO    0x3F
 
-// Comandos de strobe do CC1101 (endereços 0x30-0x3D)
+// Comandos de strobe do CC1101
 #define CC1101_SRES      0x30  // Reset chip
 #define CC1101_SFSTXON   0x31  // Enable/calibrate freq synthesizer
 #define CC1101_SXOFF     0x32  // Turn off crystal oscillator
-#define CC1101_SCAL      0x33  // Calibrate freq synthesizer and turn it off
+#define CC1101_SCAL      0x33  // Calibrate freq synthesizer
 #define CC1101_SRX       0x34  // Enable RX
 #define CC1101_STX       0x35  // Enable TX
-#define CC1101_SIDLE     0x36  // Exit RX / TX, turn off synthesizer
+#define CC1101_SIDLE     0x36  // Exit RX/TX
 #define CC1101_SPWD      0x39  // Enter power-down mode
 #define CC1101_SFRX      0x3A  // Flush RX FIFO
 #define CC1101_SFTX      0x3B  // Flush TX FIFO
 #define CC1101_SWORRST   0x3C  // Reset real time clock
 #define CC1101_SNOP      0x3D  // No operation
 
-// Prototipos das funcoes
+// Protótipos das funções
 void cc1101_init(void);
 void cc1101_write_reg(uint8_t reg, uint8_t val);
 uint8_t cc1101_read_reg(uint8_t reg);

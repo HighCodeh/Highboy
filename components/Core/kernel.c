@@ -2,9 +2,8 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
-#include "driver/spi_master.h"
 #include "buzzer.h"
-#include "spi_init.h"
+#include "spi.h"
 #include "i2c_init.h"
 #include "home.h"
 #include "led_control.h"
@@ -24,7 +23,7 @@ void kernel_init(void) {
     }
     ESP_ERROR_CHECK(ret);
     
-    init_spi();
+    spi_init();
     init_i2c();
     
     sd_init();
