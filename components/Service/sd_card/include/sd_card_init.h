@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 /* Configurações de pinos */
-#define SD_PIN_MOSI             13
+#define SD_PIN_MOSI             11
 #define SD_PIN_MISO             13
 #define SD_PIN_CLK              12
 #define SD_PIN_CS               14

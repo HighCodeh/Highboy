@@ -87,38 +87,20 @@ static esp_err_t sd_init_internal(uint8_t max_files, bool format_if_failed) {
     
     ESP_LOGI(TAG, "Inicializando SD...");
     
-    // Configura host
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.max_freq_khz = SDMMC_FREQ_DEFAULT;
     host.slot = s_spi_host;
     s_host = host;
     
-    // Configura slot
     sdspi_device_config_t slot_config = SDSPI_DEVICE_CONFIG_DEFAULT();
     slot_config.gpio_cs = s_cs;
     slot_config.host_id = s_host.slot;
     
-    // Configura barramento SPI
-    spi_bus_config_t bus_cfg = {
-        .mosi_io_num = s_mosi,
-        .miso_io_num = s_miso,
-        .sclk_io_num = s_clk,
-        .quadwp_io_num = -1,
-        .quadhd_io_num = -1,
-        .max_transfer_sz = 4000,
-    };
-    
-    esp_err_t ret = spi_bus_initialize(s_host.slot, &bus_cfg, SDSPI_DEFAULT_DMA);
-    if (ret != ESP_OK && ret != ESP_ERR_INVALID_STATE) {
-        ESP_LOGE(TAG, "Erro ao inicializar SPI: %s", esp_err_to_name(ret));
-        return ret;
-    }
-    
-    ret = esp_vfs_fat_sdspi_mount(SD_MOUNT_POINT, &s_host, &slot_config, 
+    // SPI já foi inicializado pelo init_spi(), só monta o cartão
+    esp_err_t ret = esp_vfs_fat_sdspi_mount(SD_MOUNT_POINT, &s_host, &slot_config, 
                                    &mount_config, &s_card);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Erro ao montar SD: %s", esp_err_to_name(ret));
-        spi_bus_free(s_host.slot);
         return ret;
     }
     
@@ -139,7 +121,8 @@ static esp_err_t sd_deinit_internal(void) {
         return ret;
     }
     
-    spi_bus_free(s_host.slot);
+    // Não libera o SPI, é compartilhado com o display
+    
     s_is_mounted = false;
     s_card = NULL;
     
@@ -154,12 +137,8 @@ static void sd_init_thread(void *pvParameters) {
             
             switch (msg.command) {
                 case SD_INIT_CMD_INIT: {
-                    // Atualiza pinos
                     if (msg.payload.init.use_custom_pins) {
-                        s_mosi = msg.payload.init.mosi;
-                        s_miso = msg.payload.init.miso;
-                        s_clk = msg.payload.init.clk;
-                        s_cs = msg.payload.init.cs;
+                        s_cs = msg.payload.init.cs; // Só CS pode mudar, resto é do barramento compartilhado
                     }
                     
                     msg.payload.init.result = sd_init_internal(
@@ -191,14 +170,9 @@ static void sd_init_thread(void *pvParameters) {
                 }
                 
                 case SD_INIT_CMD_RESET_BUS: {
-                    if (s_is_mounted) {
-                        sd_deinit_internal();
-                    }
-                    spi_bus_free(s_host.slot);
-                    ESP_LOGI(TAG, "Barramento SPI resetado");
-                    
-                    msg.payload.reset_bus.result = sd_init_internal(SD_MAX_FILES, false);
-                    msg.result = msg.payload.reset_bus.result;
+                    // Reset desabilitado, barramento é compartilhado com display
+                    msg.payload.reset_bus.result = ESP_ERR_NOT_SUPPORTED;
+                    msg.result = ESP_ERR_NOT_SUPPORTED;
                     break;
                 }
                 
