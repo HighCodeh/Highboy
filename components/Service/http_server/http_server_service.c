@@ -175,3 +175,16 @@ esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer,
 
     return err;
 }
+
+esp_err_t http_service_send_file_from_sd(httpd_req_t *req, const char *filepath) {
+    const char *html_content = get_html_buffer(filepath);
+    
+    if (html_content == NULL) {
+        return http_service_send_error(req, HTTP_STATUS_NOT_FOUND_404, "File not found or empty");
+    }
+
+    esp_err_t err = http_service_send_response(req, html_content, HTTPD_RESP_USE_STRLEN);
+    
+    free((void*)html_content); 
+    return err;
+}

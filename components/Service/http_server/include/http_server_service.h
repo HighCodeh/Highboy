@@ -29,7 +29,7 @@ esp_err_t http_service_query_key_value(const char *data_buffer, const char *key,
 
 // data send
 esp_err_t http_service_send_response(httpd_req_t *req, const char *buffer, ssize_t length);
-
+esp_err_t http_service_send_file_from_sd(httpd_req_t *req, const char *filepath);
 
 // misc 
 const char *get_html_buffer(const char *path);

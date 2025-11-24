@@ -97,18 +97,11 @@ static esp_err_t submit_post_handler(httpd_req_t *req) {
     ESP_LOGW(TAG_ET, "POST received without label 'password'");
   }
 
-  const char *html_buffer = get_html_buffer("/thankyou.html");
-
-  if(html_buffer != NULL){
-    // httpd_resp_send(req, html_buffer, HTTPD_RESP_USE_STRLEN);
-    http_service_send_response(req, html_buffer, HTTPD_RESP_USE_STRLEN);
-    free((void*)html_buffer);
-  } else{
+  if (http_service_send_file_from_sd(req, "/thankyou.html") != ESP_OK){
     ESP_LOGE(TAG_ET, "Failed to load thankyou.html");
     httpd_resp_send(req, "<h1>Obrigado!</h1>", HTTPD_RESP_USE_STRLEN);
   }
 
-  // httpd_resp_send(req, thank_you_html, HTTPD_RESP_USE_STRLEN);
   return ESP_OK;
 }
 
@@ -130,17 +123,7 @@ static esp_err_t passwords_get_handler(httpd_req_t *req) {
 }
 
 static esp_err_t captive_portal_get_handler(httpd_req_t *req) {
-  const char *html_buffer = get_html_buffer("/captiveportal.html");
-
-  if(html_buffer != NULL){
-    http_service_send_response(req, html_buffer, HTTPD_RESP_USE_STRLEN);
-    free((void*) html_buffer);
-  } else {
-    ESP_LOGE(TAG_ET, "Failed to load captiveportal.html");
-  }
-
-  // httpd_resp_send(req, captive_portal_html, HTTPD_RESP_USE_STRLEN);
-  return ESP_OK;
+  return http_service_send_file_from_sd(req, "/captiveportal.html");
 }
 
 static esp_err_t save_captured_password(const char *password) {
