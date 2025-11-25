@@ -86,7 +86,7 @@ static void wifi_action_scan(void) {
     xTaskCreate(scan_animation_task, "scan_anim_task", 4096, NULL, 5, &animation_task_handle);
 
     // --- Esta função é bloqueante. A animação corre em paralelo ---
-    wifi_deauther_scan(); 
+    wifi_service_scan(); 
     // ----------------------------------------------------------------
 
     g_is_scanning = false; // Desativa o sinalizador para parar a animação
@@ -118,7 +118,7 @@ static void wifi_action_attack(void) {
         vTaskDelay(pdMS_TO_TICKS(200));
     }
 
-    const int ap_count = get_stored_ap_count();
+    const int ap_count = wifi_service_get_ap_count();
     if (ap_count == 0) {
         st7789_fill_screen_fb(ST7789_COLOR_BLACK);
         st7789_set_text_size(2);
@@ -132,7 +132,7 @@ static void wifi_action_attack(void) {
     char ap_labels[ap_count][33];
 
     for (int i = 0; i < ap_count; i++) {
-        const wifi_ap_record_t *ap = get_stored_ap_record(i);
+        const wifi_ap_record_t *ap = wifi_service_get_ap_record(i);
         if (ap) {
             strncpy(ap_labels[i], (const char *)ap->ssid, sizeof(ap_labels[i]) - 1);
             ap_labels[i][sizeof(ap_labels[i]) - 1] = '\0';
@@ -179,7 +179,7 @@ static void wifi_action_attack(void) {
                 input_processed = true;
             } else if (!gpio_get_level(BTN_OK)) {
                 while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(200));
-                const wifi_ap_record_t *target_ap = get_stored_ap_record(ap_selection);
+                const wifi_ap_record_t *target_ap = wifi_service_get_ap_record(ap_selection);
                 if (target_ap) {
                     // UI: Mostra mensagem de ataque
                     st7789_fill_screen_fb(ST7789_COLOR_BLACK);
@@ -216,7 +216,7 @@ static void wifi_action_attack(void) {
 static void wifi_action_evil_twin(void) {
     while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(20));
 
-    const int ap_count = get_stored_ap_count();
+    const int ap_count = wifi_service_get_ap_count();
     if (ap_count == 0) {
         st7789_fill_screen_fb(ST7789_COLOR_BLACK);
         st7789_set_text_size(2);
@@ -230,7 +230,7 @@ static void wifi_action_evil_twin(void) {
     char ap_labels[ap_count][33];
 
     for (int i = 0; i < ap_count; i++) {
-        const wifi_ap_record_t *ap = get_stored_ap_record(i);
+        const wifi_ap_record_t *ap = wifi_service_get_ap_record(i);
         if (ap) {
             strncpy(ap_labels[i], (const char *)ap->ssid, sizeof(ap_labels[i]) - 1);
             ap_labels[i][sizeof(ap_labels[i]) - 1] = '\0';
@@ -273,7 +273,7 @@ static void wifi_action_evil_twin(void) {
                 input_processed = true;
             } else if (!gpio_get_level(BTN_OK)) {
                 while (!gpio_get_level(BTN_OK)) vTaskDelay(pdMS_TO_TICKS(50));
-                const wifi_ap_record_t *target = get_stored_ap_record(ap_selection);
+                const wifi_ap_record_t *target = wifi_service_get_ap_record(ap_selection);
                 if (target) {
                     st7789_fill_screen_fb(ST7789_COLOR_BLACK);
                     st7789_draw_text_fb(10, 80, "Iniciando Evil Twin...", ST7789_COLOR_RED, ST7789_COLOR_BLACK);

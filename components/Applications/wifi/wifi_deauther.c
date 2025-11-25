@@ -10,7 +10,6 @@
 // Definições e Variáveis Globais
 // =================================================================
 static const char *TAG = "wifi";
-static SemaphoreHandle_t wifi_mutex = NULL;
 
 wifi_ap_record_t stored_aps[WIFI_SCAN_LIST_SIZE];
 uint16_t stored_ap_count = 0;
@@ -61,43 +60,6 @@ int ieee80211_raw_frame_sanity_check(int32_t arg, int32_t arg2, int32_t arg3) {
     return 0;
 }
 
-
-void wifi_deauther_scan(void) {
-    if (wifi_mutex == NULL) {
-        wifi_mutex = xSemaphoreCreateMutex();
-    }
-    if (xSemaphoreTake(wifi_mutex, pdMS_TO_TICKS(1000)) != pdTRUE) {
-        ESP_LOGE(TAG, "Falha ao obter mutex Wi-Fi");
-        return;
-    }
-
-    // Configuração do scan
-    wifi_scan_config_t scan_config = {
-        .ssid = NULL, .bssid = NULL, .channel = 0, .show_hidden = true,
-    };
-
-    ESP_LOGI(TAG, "Iniciando scan de redes...");
-    esp_err_t ret = esp_wifi_scan_start(&scan_config, true);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Falha ao iniciar scan: %s", esp_err_to_name(ret));
-        led_blink_red();
-        xSemaphoreGive(wifi_mutex);
-        return;
-    }
-
-    // Obtém os resultados
-    stored_ap_count = WIFI_SCAN_LIST_SIZE;
-    ret = esp_wifi_scan_get_ap_records(&stored_ap_count, stored_aps);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Falha ao obter resultados do scan: %s", esp_err_to_name(ret));
-        led_blink_red();
-    } else {
-        ESP_LOGI(TAG, "Encontrados %d pontos de acesso.", stored_ap_count);
-        led_blink_blue();
-    }
-
-    xSemaphoreGive(wifi_mutex);
-}
 void wifi_deauther_send_raw_frame(const uint8_t *frame_buffer, int size) {
     ESP_LOGD(TAG, "Tentando enviar frame bruto de tamanho %d", size);
     esp_err_t ret = esp_wifi_80211_tx(WIFI_IF_AP, frame_buffer, size, false);
@@ -136,13 +98,13 @@ void wifi_deauther_send_deauth_frame(const wifi_ap_record_t *ap_record, deauth_f
     wifi_deauther_send_raw_frame(deauth_frame, sizeof(deauth_frame_invalid_auth));
 }
 
-uint16_t get_stored_ap_count(void) {
-    return stored_ap_count;
-}
-
-const wifi_ap_record_t* get_stored_ap_record(int index) {
-    if (index >= 0 && index < stored_ap_count) {
-        return &stored_aps[index];
-    }
-    return NULL;
-}
+// uint16_t get_stored_ap_count(void) {
+//     return stored_ap_count;
+// }
+//
+// const wifi_ap_record_t* get_stored_ap_record(int index) {
+//     if (index >= 0 && index < stored_ap_count) {
+//         return &stored_aps[index];
+//     }
+//     return NULL;
+// }

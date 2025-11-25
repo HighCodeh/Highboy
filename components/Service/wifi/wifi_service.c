@@ -10,6 +10,9 @@
 #include "freertos/task.h"
 #include "virtual_display_client.h" // Adicionar este include
 
+static wifi_ap_record_t stored_aps[WIFI_SCAN_LIST_SIZE];
+static uint16_t stored_ap_count = 0;
+static SemaphoreHandle_t wifi_mutex = NULL;
 
 static const char *TAG = "wifi_service";
 
@@ -139,6 +142,108 @@ void wifi_init(void) {
     ESP_LOGI(TAG, "Inicialização do Wi-Fi em modo APSTA concluída.");
 }
 
+void wifi_service_perform_scan(void) {
+    if (wifi_mutex == NULL) {
+        wifi_mutex = xSemaphoreCreateMutex();
+    }
+
+    if (xSemaphoreTake(wifi_mutex, pdMS_TO_TICKS(1000)) != pdTRUE) {
+        ESP_LOGE(TAG, "Falha ao obter mutex Wi-Fi para scan");
+        return;
+    }
+
+    // Configuração do scan
+    wifi_scan_config_t scan_config = {
+        .ssid = NULL, 
+        .bssid = NULL, 
+        .channel = 0, 
+        .show_hidden = true,
+        .scan_type = WIFI_SCAN_TYPE_ACTIVE,
+        .scan_time.active.min = 100,
+        .scan_time.active.max = 300
+    };
+
+    ESP_LOGI(TAG, "Iniciando scan de redes (Service)...");
+    
+    // É boa prática garantir que estamos em um modo que suporte scan
+    // O modo APSTA suporta scan, mas o scan acontece na interface STA
+    esp_err_t ret = esp_wifi_scan_start(&scan_config, true);
+    
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Falha ao iniciar scan: %s", esp_err_to_name(ret));
+        led_blink_red();
+        xSemaphoreGive(wifi_mutex);
+        return;
+    }
+
+    // Obtém os resultados
+    uint16_t ap_count = WIFI_SCAN_LIST_SIZE;
+    ret = esp_wifi_scan_get_ap_records(&ap_count, stored_aps);
+    
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Falha ao obter resultados do scan: %s", esp_err_to_name(ret));
+        led_blink_red();
+    } else {
+        stored_ap_count = ap_count;
+        ESP_LOGI(TAG, "Encontrados %d pontos de acesso.", stored_ap_count);
+        led_blink_blue();
+    }
+
+    xSemaphoreGive(wifi_mutex);
+}
+
+uint16_t wifi_service_get_ap_count(void) {
+    return stored_ap_count;
+}
+
+wifi_ap_record_t* wifi_service_get_ap_record(uint16_t index) {
+    if (index < stored_ap_count) {
+        return &stored_aps[index];
+    }
+    return NULL;
+}
+
+esp_err_t wifi_service_connect_to_ap(const char *ssid, const char *password) {
+    if (ssid == NULL) {
+        ESP_LOGE(TAG, "SSID can't be NULL");
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    ESP_LOGI(TAG, "Configurating Wi-Fi connection to:: %s", ssid);
+
+    wifi_config_t wifi_config = {0};
+    
+    strncpy((char *)wifi_config.sta.ssid, ssid, sizeof(wifi_config.sta.ssid));
+    
+    if (password) {
+        strncpy((char *)wifi_config.sta.password, password, sizeof(wifi_config.sta.password));
+        wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA2_PSK;
+    } else {
+        wifi_config.sta.threshold.authmode = WIFI_AUTH_OPEN;
+    }
+
+    wifi_config.sta.pmf_cfg.capable = true;
+    wifi_config.sta.pmf_cfg.required = false;
+
+    esp_wifi_disconnect(); 
+
+    esp_err_t err = esp_wifi_set_config(WIFI_IF_STA, &wifi_config);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to config STA: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    err = esp_wifi_connect();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to init connection: %s", esp_err_to_name(err));
+        return err;
+    }
+
+    ESP_LOGI(TAG, "Connection request send with success.");
+    return ESP_OK;
+}
+
 void wifi_service_init(void) {
-    ESP_LOGI(TAG, "Serviço Wi-Fi inicializado");
+  wifi_mutex = xSemaphoreCreateMutex();
+  ESP_LOGI(TAG, "WIFI service initalized.");
 }
