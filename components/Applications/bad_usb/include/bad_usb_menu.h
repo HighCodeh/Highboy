@@ -1,12 +1,20 @@
+// Copyright (c) 2025 HIGH CODE LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #ifndef BAD_USB_MENU_H
 #define BAD_USB_MENU_H
 
-/**
- * @brief Ponto de entrada para o menu BadUSB.
- *
- * Esta função inicializa o modo BadUSB, exibe o menu de seleção de payloads
- * e, ao retornar, desativa o modo BadUSB para liberar o periférico.
- */
 void show_bad_usb_menu(void);
 
 #endif // BAD_USB_MENU_H

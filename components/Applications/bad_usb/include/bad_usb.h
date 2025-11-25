@@ -1,29 +1,26 @@
+// Copyright (c) 2025 HIGH CODE LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #ifndef BAD_USB_H
 #define BAD_USB_H
-
-/**
- * @brief Inicializa o driver USB, configura o dispositivo como um teclado (HID)
- * e cria uma tarefa para executar o payload do BadUSB assim que o
- * dispositivo for conectado a um computador.
- *
- * Esta é a única função que precisa ser chamada a partir do app_main.
- */
 void bad_usb_init(void);
 
 void bad_usb_stop(void);
-/**
- * @brief Executa o payload "Hello World": abre o Bloco de Notas e digita uma mensagem.
- */
 void run_payload_helloworld(void);
 
-/**
- * @brief Executa o payload "PowerShell": abre um terminal PowerShell no Windows.
- */
 void run_payload_powershell(void);
 
-/**
- * @brief Executa o payload "Rick Roll": abre o navegador no vídeo.
- */
 void run_payload_rickroll(void);
 
 void run_payload_linux_rickroll(void);
