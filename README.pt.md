@@ -74,3 +74,8 @@ Exemplo de layout:
 Agradecemos especialmente aos parceiros que apoiam este projeto:
 
 [![PCBWay](pics/PCBway.png)](https://www.pcbway.com)
+
+
+
+## Licença
+Este projeto está licenciado sob a [Apache License, Version 2.0 ](LICENSE).
