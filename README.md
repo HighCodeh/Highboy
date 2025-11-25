@@ -74,5 +74,5 @@ Special thanks to the partners supporting this project:
 
 
 
-## Licença
+## License
 This project is licensed under the [Apache License, Version 2.0](LICENSE).
