@@ -1,15 +1,17 @@
-/**
- * @file ir_sony.h
- * @brief Sony SIRCS IR Protocol Transmitter for ESP-IDF
- *
- * Implementation of Sony/SIRCS protocol for ESP32
- * Based on Sony SIRCS specification
- * 
- * Supports:
- * - SIRCS-12 (Sony12): 7 command + 5 address bits
- * - SIRCS-15 (Sony15): 7 command + 8 address bits
- * - SIRCS-20 (Sony20): 7 command + 5 device + 8 extended bits
- */
+// Copyright (c) 2025 HIGH CODE LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 #ifndef IR_SONY_H
 #define IR_SONY_H
