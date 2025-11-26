@@ -157,7 +157,7 @@ void wifi_init(void) {
     ESP_LOGI(TAG, "Inicialização do Wi-Fi em modo APSTA concluída.");
 }
 
-void wifi_service_perform_scan(void) {
+void wifi_service_scan(void) {
     if (wifi_mutex == NULL) {
         wifi_mutex = xSemaphoreCreateMutex();
     }
