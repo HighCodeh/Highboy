@@ -18,6 +18,7 @@
 #include "freertos/task.h"
 #include "led_control.h"
 #include "esp_log.h"// Certifique-se que este arquivo contém o ícone 'wifi_main'
+#include "wifi_deauther.h"
 #include <string.h>
 
 // =================================================================
@@ -25,13 +26,6 @@
 // =================================================================
 static const char *TAG = "wifi";
 
-wifi_ap_record_t stored_aps[WIFI_SCAN_LIST_SIZE];
-uint16_t stored_ap_count = 0;
-
-// Armazena os resultados do último scan
-// #define WIFI_SCAN_LIST_SIZE 15
-// static wifi_ap_record_t stored_aps[WIFI_SCAN_LIST_SIZE];
-// static uint16_t stored_ap_count = 0;
 
 static const uint8_t deauth_frame_invalid_auth[] = {
     0xc0, 0x00, 0x3a, 0x01,
