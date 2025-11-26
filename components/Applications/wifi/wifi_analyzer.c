@@ -9,6 +9,7 @@
 
  #include "wifi_analyzer.h"
  #include "st7789.h"
+#include "wifi_service.h"
  #include "wifi_deauther.h"
  #include "pin_def.h"
  #include "freertos/FreeRTOS.h"
@@ -259,12 +260,12 @@
      st7789_draw_text_centered(120, 110, "A procurar...", COLOR_TEXT_PRIMARY);
      st7789_flush();
  
-     wifi_deauther_scan();
-     uint16_t ap_count = get_stored_ap_count();
+     wifi_service_scan();
+     uint16_t ap_count = wifi_service_get_ap_count();
      
      wifi_ap_record_t local_aps[WIFI_SCAN_LIST_SIZE];
      if (ap_count > 0) {
-         memcpy(local_aps, get_stored_ap_record(0), ap_count * sizeof(wifi_ap_record_t));
+         memcpy(local_aps, wifi_service_get_ap_record(0), ap_count * sizeof(wifi_ap_record_t));
          qsort(local_aps, ap_count, sizeof(wifi_ap_record_t), compare_ap_records);
      }
  
