@@ -18,11 +18,6 @@
 #include <stdint.h>
 #include "esp_wifi_types.h"
 
-#define WIFI_SCAN_LIST_SIZE 15
-extern wifi_ap_record_t stored_aps[WIFI_SCAN_LIST_SIZE];
-extern uint16_t stored_ap_count;
-
-
 typedef enum {
     DEAUTH_INVALID_AUTH = 0,
     DEAUTH_INACTIVITY,
