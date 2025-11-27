@@ -17,7 +17,7 @@
 #include "esp_err.h"
 #include "esp_http_server.h"
 #include "esp_log.h"
-#include "sd_card_file.h"
+#include "storage_file.h"
 #include <stdbool.h>
 
 static const char *TAG = "HTTP_SERVICE";
@@ -67,7 +67,7 @@ esp_err_t stop_http_server(void) {
 const char *get_html_buffer(const char *path) {
     size_t file_size = 0; 
     
-    esp_err_t err = sd_file_get_size(path, &file_size);
+    esp_err_t err = storage_file_get_size(path, &file_size);
 
     if (err != ESP_OK) {
         ESP_LOGE(TAG_SD, "Erro ao obter tamanho do arquivo: %s (%s)", 

@@ -26,7 +26,7 @@
 #include "st7789.h"
 #include "pin_def.h"
 #include "driver/gpio.h"
-#include "sd_card_write.h"
+#include "storage_write.h"
 
 // --- Definições de Cores e Layout ---
 #define ST7789_COLOR_ORANGE     0xFD20
@@ -103,7 +103,7 @@ static void pcap_writer_task(void *pvParameters) {
             if (write_buffer) {
                 memcpy(write_buffer, &record_header, sizeof(pcap_record_header_t));
                 memcpy(write_buffer + sizeof(pcap_record_header_t), received_packet.data, received_packet.len);
-                sd_append_binary(g_capture_filename, write_buffer, total_size);
+                storage_append_binary(g_capture_filename, write_buffer, total_size);
                 free(write_buffer);
                 g_packets_captured_count++;
             }
@@ -219,7 +219,7 @@ void show_traffic_analyzer(void) {
                     .magic_number = 0xa1b2c3d4, .version_major = 2, .version_minor = 4,
                     .thiszone = 0, .sigfigs = 0, .snaplen = 65535, .network = 105
                 };
-                sd_write_binary(g_capture_filename, &global_header, sizeof(global_header));
+                storage_write_binary(g_capture_filename, &global_header, sizeof(global_header));
                 g_pcap_queue = xQueueCreate(20, sizeof(packet_data_t));
                 if (g_pcap_queue == NULL) {
                     g_is_capturing_to_sd = false;

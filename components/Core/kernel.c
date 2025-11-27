@@ -28,7 +28,7 @@
 #include "driver/i2c.h"
 #include "nvs_flash.h" 
 #include "wifi_service.h" 
-#include "sd_card_init.h"
+#include "storage_init.h"
 
 void kernel_init(void) {
     esp_err_t ret = nvs_flash_init();
@@ -41,7 +41,7 @@ void kernel_init(void) {
     spi_init();
     init_i2c();
     
-    sd_init();
+    storage_init();
     
     buzzer_init();
     led_rgb_init();

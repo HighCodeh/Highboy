@@ -29,8 +29,8 @@
 #include "brightness_ui.h"
 #include "battery_ui.h"
 #include "GPIO.h"
-#include "sd_card_read.h"
-#include "sd_card_dir.h"
+#include "storage_read.h"
+#include "storage_dir.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -209,7 +209,7 @@ void show_sd_menu(void) {
     file_list->count = 0;
     int selected_item = 0;
 
-    if (sd_dir_list("/sdcard", list_callback, file_list) != ESP_OK) {
+    if (storage_dir_list("/", list_callback, file_list) != ESP_OK) {
         st7789_fill_screen_fb(COLOR_BLACK);
         st7789_draw_text_fb(20, 100, "Erro ao ler o cartao SD!", COLOR_RED, COLOR_BLACK);
         st7789_flush();
@@ -232,9 +232,9 @@ void show_sd_menu(void) {
                 char* file_content = malloc(2048);
                 if (file_content) {
                     char file_path[256];
-                    snprintf(file_path, sizeof(file_path), "/sdcard/%s", file_list->names[selected_item]);
+                    snprintf(file_path, sizeof(file_path), "/%s", file_list->names[selected_item]);
 
-                    if (sd_read_string(file_path, file_content, 2048) == ESP_OK) {
+                    if (storage_read_string(file_path, file_content, 2048) == ESP_OK) {
                         show_file_content_screen(file_list->names[selected_item], file_content);
                     } else {
                         st7789_fill_rect_fb(0, 100, 240, 40, COLOR_RED);

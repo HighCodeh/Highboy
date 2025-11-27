@@ -24,7 +24,7 @@ dependencies:
       type: service
     version: 2.5.5
   espressif/tinyusb:
-    component_hash: aa65639878f27a44d349044afd9c3fc134a92bd560874fdac1d836019b5c07ca
+    component_hash: 5ea9d3b6d6b0734a0a0b3491967aa0e1bece2974132294dbda5dd2839b247bfa
     dependencies:
     - name: idf
       require: private
@@ -36,15 +36,27 @@ dependencies:
     - esp32s2
     - esp32s3
     - esp32p4
-    version: 0.18.0~4
+    - esp32h4
+    version: 0.19.0~2
   idf:
     source:
       type: idf
     version: 5.5.1
+  joltwallet/littlefs:
+    component_hash: 1808d73e99168f6f3c26dd31799a248484762b3a320ec4962dec11a145f4277f
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.20.3
 direct_dependencies:
 - espressif/esp_tinyusb
 - espressif/led_strip
 - espressif/tinyusb
-manifest_hash: 2e1ca79846a572f41f8b62fa949dc14119ff06cec6c03f72548364f97b32960f
+- joltwallet/littlefs
+manifest_hash: 69c262113995629f5970b31363decef57e989be83ef80544184a5d633d5cdb01
 target: esp32s3
 version: 2.0.0

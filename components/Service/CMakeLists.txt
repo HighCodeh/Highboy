@@ -23,12 +23,15 @@ idf_component_register(SRCS
   "dns_server/dns_server.c"
   "bluetooth/bluetooth_service.c"
 
-  "sd_card/sd_card_dir.c"
-  "sd_card/sd_card_file.c"
-  "sd_card/sd_card_info.c"
-  "sd_card/sd_card_init.c"
-  "sd_card/sd_card_read.c"
-  "sd_card/sd_card_write.c"
+  "storage_api/storage_impl.c"
+  "storage_api/storage_init.c"
+  "storage_api/storage_read.c"
+  "storage_api/storage_write.c"
+
+  "storage_vfs/vfs_auto.c"
+  "storage_vfs/vfs_core.c"
+  "storage_vfs/vfs_littlefs.c"
+  "storage_vfs/vfs_sdcard.c"
 
   "ir/ir_encoder.c"
   "ir/ir_common.c"
@@ -52,7 +55,8 @@ idf_component_register(SRCS
   "usb_stream/include"
   "bluetooth/include"
   "ir/include"
-  "sd_card/include"
+  "storage_api/include"
+  "storage_vfs/include"
 
   REQUIRES 
   sdmmc
@@ -66,5 +70,6 @@ idf_component_register(SRCS
   Drivers 
   esp_http_server
   nvs_flash
-  bt 
+  bt
+  littlefs
 )

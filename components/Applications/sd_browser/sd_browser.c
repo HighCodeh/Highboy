@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #include "sd_browser.h"
-#include "sd_card_read.h"
-#include "sd_card_dir.h"
+#include "storage_read.h"
+#include "storage_dir.h"
 #include "sub_menu.h"
 #include "st7789.h"
 #include "icons.h"
@@ -65,7 +65,7 @@ void sd_browser_start(void) {
     file_list->count = 0;
 
     // Tenta listar os ficheiros da raiz "/"
-    if (sd_dir_list("/sdcard", list_callback, file_list) != ESP_OK) {
+    if (storage_dir_list("/", list_callback, file_list) != ESP_OK) {
         menu_draw_header("Erro no SD Card");
         st7789_draw_text_fb(20, 100, "Erro ao ler o cartao SD!", ST7789_COLOR_RED, ST7789_COLOR_BLACK);
         st7789_flush();
@@ -99,9 +99,9 @@ void sd_browser_start(void) {
             if (file_content) {
                 char file_path[256];
                 // Cria o caminho do ficheiro, sempre a partir da raiz "/"
-                snprintf(file_path, sizeof(file_path), "/sdcard/%s", file_list->names[selected_index]);
+                snprintf(file_path, sizeof(file_path), "/%s", file_list->names[selected_index]);
 
-                if (sd_read_string(file_path, file_content, 2048) == ESP_OK) {
+                if (storage_read_string(file_path, file_content, 2048) == ESP_OK) {
                     show_file_content_screen(file_list->names[selected_index], file_content);
                 } else {
                      // Em caso de erro na leitura
