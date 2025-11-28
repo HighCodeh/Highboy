@@ -2,6 +2,8 @@
   <img src="pics/Highboy_repo.png" alt="HighBoy Banner" width="1000"/>
 </p>
 
+---
+
 # 📡 HighBoy Firmware (Beta)
 
 > 🌍 **Languages**:  [🇺🇸 English](README.md) | [🇧🇷 Português](README.pt.md) 
