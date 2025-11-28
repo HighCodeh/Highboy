@@ -1,5 +1,5 @@
 # compiled output
-build/
+/build/
 
 .vscode/
 
@@ -90,7 +90,6 @@ out/
 
 # Gradle files
 .gradle/
-build/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -193,7 +192,6 @@ csrc/
 
 # Log file - the following switch allows to specify the file that will be
 # used to write all messages from simulation:  -l <filename>
-*.log
 
 # Coverage results (generated with urg) and database location.  The
 # following switch can also be used:  urg -dir <coverage_directory>.vdb
@@ -343,7 +341,6 @@ GitHub.sublime-settings
 
 ##### Notepad++
 # Notepad++ backups #
-*.bak
 
 ##### TextMate
 *.tmproj
@@ -365,9 +362,7 @@ tmtags
 **/nbproject/private/
 **/nbproject/Makefile-*.mk
 **/nbproject/Package-*.bash
-build/
 nbbuild/
-dist/
 nbdist/
 .nb-gradle/
 
@@ -446,12 +441,7 @@ fabric.properties
 
 ##### Eclipse
 .metadata
-bin/
 tmp/
-*.tmp
-*.bak
-*.swp
-*~.nib
 local.properties
 .settings/
 .loadpath
@@ -638,7 +628,6 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-*.obj
 *.iobj
 *.pch
 *.pdb
@@ -650,10 +639,7 @@ StyleCopReport.xml
 *.tlb
 *.tli
 *.tlh
-*.tmp
-*.tmp_proj
 *_wpftmp.csproj
-*.log
 *.vspscc
 *.vssscc
 .builds
@@ -793,7 +779,6 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
-*~
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
@@ -925,8 +910,6 @@ FodyWeavers.xsd
 
 ##### Gradle
 .gradle
-**/build/
-!src/**/build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -961,7 +944,6 @@ _deps
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -995,9 +977,7 @@ _deps
 *.d
 
 # Object files
-*.o
 *.ko
-*.obj
 *.elf
 
 # Linker output
@@ -1006,25 +986,12 @@ _deps
 *.exp
 
 # Precompiled Headers
-*.gch
-*.pch
 
 # Libraries
-*.lib
-*.a
-*.la
-*.lo
 
 # Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
 
 # Executables
-*.exe
-*.out
-*.app
 *.i*86
 *.x86_64
 *.hex
@@ -1033,7 +1000,6 @@ _deps
 *.dSYM/
 *.su
 *.idb
-*.pdb
 
 # Kernel Module Compile Results
 *.mod*
@@ -1050,11 +1016,9 @@ dkms.conf
 *.dis
 
 .pytest_cache/
-__pycache__/
 
 # esp-idf built binaries
-build/
-build_*_*/
+/build_*_*/
 sdkconfig
 
 # idf-ci build run output

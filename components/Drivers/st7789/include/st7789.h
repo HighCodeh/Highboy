@@ -1,9 +1,24 @@
+// Copyright (c) 2025 HIGH CODE LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
 #ifndef ST7789_H
 #define ST7789_H
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "driver/spi_master.h"
+#include <driver/spi_master.h>
 
 // ** Configurações do display ST7789 **
 #define ST7789_WIDTH    240   // Largura do display em pixels
@@ -13,9 +28,6 @@
 #define ST7789_X_OFFSET 0     // Offset horizontal (ex: 0 ou 80)
 #define ST7789_Y_OFFSET 0     // Offset vertical   (ex: 0 ou 80)
 
-// ** Pinos da interface SPI3 (VSPI) no ESP32-S3 **
-#define ST7789_PIN_MOSI 11    // GPIO11 para MOSI (Master-Out, Slave-In)
-#define ST7789_PIN_SCLK 12    // GPIO12 para SCLK (clock SPI)
 #define ST7789_PIN_CS   48   // GPIO47 para Chip Select (CS)
 #define ST7789_PIN_DC   47    // GPIO48 para Data/Command (DC)
 #define ST7789_PIN_RST  21    // GPIO21 para Reset do display
@@ -153,6 +165,8 @@ void st7789_draw_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color
 void st7789_draw_bitmap_fb(int x, int y, const uint8_t *bitmap, int w, int h, uint16_t color);
 //static void draw_quarter_circle_fb(int x, int y, int r, int corner, uint16_t color);
 void st7789_fill_round_rect_fb(int x, int y, int w, int h, int r, uint16_t color);
+void st7789_draw_triangle_fb(int x0, int y0, int x1, int y1, int x2, int y2, uint16_t color);
+void st7789_fill_triangle_fb(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
 //static void fill_circle_helper_fb(int16_t x0, int16_t y0, int16_t r, uint8_t corner, int16_t delta, uint16_t color);
 
 uint16_t* st7789_get_framebuffer();

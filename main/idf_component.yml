@@ -1,2 +1,5 @@
 dependencies:
-  espressif/led_strip: "^2.5.1"
+  espressif/led_strip: ^2.5.1
+  espressif/tinyusb: '*'
+  espressif/esp_tinyusb: '*'
+  joltwallet/littlefs: "^1.14.8"

@@ -1,32 +1,54 @@
+// Copyright (c) 2025 HIGH CODE LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
-#include "driver/spi_master.h"
 #include "buzzer.h"
-#include "display.h"
-#include "ir_transmiter.h"
+#include "spi.h"
+#include "i2c_init.h"
 #include "home.h"
 #include "led_control.h"
 #include "pin_def.h" 
+#include "st7789.h"
+#include "bq25896.h"
+#include "driver/i2c.h"
+#include "nvs_flash.h" 
+#include "wifi_service.h" 
+#include "storage_init.h"
 
-typedef enum {
-    STATE_HOME,
-    STATE_MENU
-} app_state_t;
-
-static app_state_t current_state = STATE_HOME;
-// === ESTADOS DA INTERFACE ===
-void kernel_init(void){
-
-    ir_init();
-
+void kernel_init(void) {
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+    
+    spi_init();
+    init_i2c();
+    
+    storage_init();
+    
     buzzer_init();
-    buzzer_boot_sequence(); // Beep de boot (bonito e correto)
-
     led_rgb_init();
-    init_display();
-
-    // xTaskCreate(menu_task, "menu_task", 4096, NULL, 5, NULL); //adicionar depois no main
+    buzzer_boot_sequence();
+    bq25896_init();
+    
+    st7789_init();
+    
+    vTaskDelay(pdMS_TO_TICKS(1500));
 }

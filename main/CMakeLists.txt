@@ -9,16 +9,8 @@ idf_component_register(
     Drivers
     Applications
     Service
-    esp_timer 
-    esp_wifi 
-    nvs_flash 
-    fatfs 
     driver
-    led_strip
     
-     
-  
-
     
 )
 
