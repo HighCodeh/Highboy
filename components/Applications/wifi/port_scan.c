@@ -109,53 +109,117 @@ static int check_udp(const char *ip, int port, char *banner_out) {
     return result;
 }
 
-int scan_perform_full(const char *target_ip, int start_port, int end_port, scan_result_t *results, int max_results) {
+static bool add_result(const char *ip, int port, int scan_type, char *banner, scan_result_t *results, int *count, int max_results) {
+    if (*count >= max_results) return false;
+    scan_result_t *res = &results[*count];
+    strncpy(res->ip_str, ip, 16);
+    res->port = port;
+    res->protocol = (scan_type == 0) ? PROTO_TCP : PROTO_UDP;
+    strncpy(res->banner, banner, MAX_BANNER_LEN);
+    res->status = (scan_type == 0 || scan_type == 1) ? STATUS_OPEN : STATUS_OPEN_FILTERED;
+
+    const char *p_str = (scan_type == 0) ? "TCP" : "UDP";
+    const char *s_str = (res->status == STATUS_OPEN) ? "OPEN" : "FILTERED";
+    ESP_LOGI(TAG, "HIT: %s:%d [%s] %s | %s", ip, port, p_str, s_str, banner);
+    (*count)++;
+    return true;
+}
+
+// Single target scans 
+int port_scan_target_range(const char *target_ip, int start_port, int end_port, scan_result_t *results, int max_results) {
     int count = 0;
-    char banner_buffer[MAX_BANNER_LEN];
-    
-    ESP_LOGI(TAG, "Scan port on %s", target_ip);
-
+    char banner[MAX_BANNER_LEN];
     for (int port = start_port; port <= end_port; port++) {
-        if (count >= max_results) {
-            ESP_LOGW(TAG, "Reached the limit of results");
-            break;
-        }
-
-        if (check_tcp(target_ip, port, banner_buffer)) {
-            // Preenche Struct
-            strncpy(results[count].ip_str, target_ip, 16);
-            results[count].port = port;
-            results[count].protocol = PROTO_TCP;
-            results[count].status = STATUS_OPEN;
-            strncpy(results[count].banner, banner_buffer, MAX_BANNER_LEN);
-
-            ESP_LOGI(TAG, " IP:Porta: %s:%d | Proto: TCP | Status: OPEN | Banner: [%s]", 
-                     target_ip, port, banner_buffer);
-            
-            count++;
-        }
-
         if (count >= max_results) break;
-
-        int udp_res = check_udp(target_ip, port, banner_buffer);
-        if (udp_res >= 0) { // Se for Open ou Open|Filtered
-            strncpy(results[count].ip_str, target_ip, 16);
-            results[count].port = port;
-            results[count].protocol = PROTO_UDP;
-            results[count].status = (udp_res == 1) ? STATUS_OPEN : STATUS_OPEN_FILTERED;
-            strncpy(results[count].banner, banner_buffer, MAX_BANNER_LEN);
-
-            const char *st_str = (udp_res == 1) ? "OPEN" : "OPEN|FILTERED";
-            
-            ESP_LOGI(TAG, "IP:Port: %s:%d | Proto: UDP | Status: %s | Banner: [%s]", 
-                     target_ip, port, st_str, banner_buffer);
-
-            count++;
-        }
-
+        if (check_tcp(target_ip, port, banner)) add_result(target_ip, port, 0, banner, results, &count, max_results);
+        if (count >= max_results) break;
+        int udp = check_udp(target_ip, port, banner);
+        if (udp >= 0) add_result(target_ip, port, udp, banner, results, &count, max_results);
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
-
-    ESP_LOGI(TAG, "Scan finalized. Founded: %d", count);
     return count;
+}
+
+int port_scan_target_list(const char *target_ip, const int *port_list, int list_size, scan_result_t *results, int max_results) {
+    int count = 0;
+    char banner[MAX_BANNER_LEN];
+    for (int i = 0; i < list_size; i++) {
+        int port = port_list[i];
+        if (count >= max_results) break;
+        if (check_tcp(target_ip, port, banner)) add_result(target_ip, port, 0, banner, results, &count, max_results);
+        if (count >= max_results) break;
+        int udp = check_udp(target_ip, port, banner);
+        if (udp >= 0) add_result(target_ip, port, udp, banner, results, &count, max_results);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+    return count;
+}
+
+// Multi target scan 
+static int scan_network_iterator_raw(uint32_t ip_start_hbo, uint32_t ip_end_hbo, 
+                                     int p_start, int p_end, const int *p_list, int list_size, 
+                                     int flag_type, 
+                                     scan_result_t *results, int max_results) {
+    int count = 0;
+    if (ip_start_hbo > ip_end_hbo) { ESP_LOGE(TAG, "IP Start > IP End"); return 0; }
+    
+    uint32_t diff = ip_end_hbo - ip_start_hbo;
+    if (diff > MAX_IP_RANGE_SPAN) {
+        ESP_LOGE(TAG, "Range Error: %u IPs exceeds limit of %d", diff, MAX_IP_RANGE_SPAN);
+        return 0;
+    }
+
+    ESP_LOGI(TAG, "Scanning %u hosts...", diff + 1);
+    uint32_t ip_curr = ip_start_hbo;
+
+    while (ip_curr <= ip_end_hbo && count < max_results) {
+        struct in_addr ip_struct;
+        ip_struct.s_addr = htonl(ip_curr);
+        char current_ip_str[16];
+        strcpy(current_ip_str, inet_ntoa(ip_struct));
+
+        int hits = 0;
+        if (flag_type == 0) hits = port_scan_target_range(current_ip_str, p_start, p_end, &results[count], max_results - count);
+        else hits = port_scan_target_list(current_ip_str, p_list, list_size, &results[count], max_results - count);
+
+        count += hits;
+        ip_curr++;
+        vTaskDelay(20 / portTICK_PERIOD_MS);
+    }
+    return count;
+}
+
+//  Wrappers
+int port_scan_network_range_using_port_range(const char *start_ip, const char *end_ip, int start_port, int end_port, scan_result_t *results, int max_results) {
+    uint32_t s = ntohl(inet_addr(start_ip));
+    uint32_t e = ntohl(inet_addr(end_ip));
+    return scan_network_iterator_raw(s, e, start_port, end_port, NULL, 0, 0, results, max_results);
+}
+
+int port_scan_network_range_using_port_list(const char *start_ip, const char *end_ip, const int *port_list, int list_size, scan_result_t *results, int max_results) {
+    uint32_t s = ntohl(inet_addr(start_ip));
+    uint32_t e = ntohl(inet_addr(end_ip));
+    return scan_network_iterator_raw(s, e, 0, 0, port_list, list_size, 1, results, max_results);
+}
+
+static void calculate_cidr_bounds(const char *base_ip, int cidr, uint32_t *start_out, uint32_t *end_out) {
+    uint32_t ip_val = ntohl(inet_addr(base_ip));
+    uint32_t mask = (cidr == 0) ? 0 : (~0U << (32 - cidr));
+    *start_out = ip_val & mask;
+    *end_out = *start_out | (~mask);
+    if (cidr < 31) { (*start_out)++; (*end_out)--; }
+}
+
+int port_scan_cidr_using_port_range(const char *base_ip, int cidr, int start_port, int end_port, scan_result_t *results, int max_results) {
+    uint32_t s, e;
+    calculate_cidr_bounds(base_ip, cidr, &s, &e);
+    ESP_LOGI(TAG, "CIDR /%d -> Numeric Range Scan", cidr);
+    return scan_network_iterator_raw(s, e, start_port, end_port, NULL, 0, 0, results, max_results);
+}
+
+int port_scan_cidr_using_port_list(const char *base_ip, int cidr, const int *port_list, int list_size, scan_result_t *results, int max_results) {
+    uint32_t s, e;
+    calculate_cidr_bounds(base_ip, cidr, &s, &e);
+    ESP_LOGI(TAG, "CIDR /%d -> Numeric List Scan", cidr);
+    return scan_network_iterator_raw(s, e, 0, 0, port_list, list_size, 1, results, max_results);
 }

@@ -21,6 +21,7 @@
 #define MAX_BANNER_LEN 64       
 #define CONNECT_TIMEOUT_S 1   // seconds
 #define UDP_TIMEOUT_MS 500   // miliseconds 
+#define MAX_IP_RANGE_SPAN 256
 
 typedef enum {
   PROTO_TCP,
@@ -40,6 +41,18 @@ typedef struct {
   char banner[MAX_BANNER_LEN];    
 } scan_result_t;
 
-int scan_perform_full(const char *target_ip, int start_port, int end_port, scan_result_t *results, int max_results);
+
+
+// Unic target scan(level 1)
+int port_scan_target_range(const char *target_ip, int start_port, int end_port, scan_result_t *results, int max_results);
+int port_scan_target_list(const char *target_ip, const int *port_list, int list_size, scan_result_t *results, int max_results);
+
+// Target range scan(level 2)
+int port_scan_network_range_using_port_range(const char *start_ip, const char *end_ip, int start_port, int end_port, scan_result_t *results, int max_results);
+int port_scan_network_range_using_port_list(const char *start_ip, const char *end_ip, const int *port_list, int list_size, scan_result_t *results, int max_results);
+
+// Target scan with CIDR (level 3)
+int port_scan_cidr_using_port_range(const char *base_ip, int cidr, int start_port, int end_port, scan_result_t *results, int max_results);
+int port_scan_cidr_using_port_list(const char *base_ip, int cidr, const int *port_list, int list_size, scan_result_t *results, int max_results);
 
 #endif
