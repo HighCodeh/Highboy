@@ -1031,3 +1031,7 @@ pytest_embedded_log/
 
 # idf-component-manager output
 dependencies.lock
+
+!assets/
+!assets/**
+!assets/**/*
