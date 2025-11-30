@@ -30,6 +30,7 @@
 #include "wifi_service.h" 
 #include "storage_init.h"
 #include "storage_assets.h"
+#include "ram_monitor.h"
 
 void kernel_init(void) {
     esp_err_t ret = nvs_flash_init();
@@ -55,6 +56,7 @@ void kernel_init(void) {
     bq25896_init();
     
     st7789_init();
+    ram_monitor();
     
     vTaskDelay(pdMS_TO_TICKS(1500));
 }
