@@ -8,5 +8,7 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
 project(highboy)
 
+littlefs_create_partition_image(assets assets FLASH_IN_PROJECT)
