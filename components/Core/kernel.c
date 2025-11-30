@@ -29,6 +29,7 @@
 #include "nvs_flash.h" 
 #include "wifi_service.h" 
 #include "storage_init.h"
+#include "storage_assets.h"
 
 void kernel_init(void) {
     esp_err_t ret = nvs_flash_init();
@@ -39,10 +40,15 @@ void kernel_init(void) {
     ESP_ERROR_CHECK(ret);
     
     spi_init();
+    
     init_i2c();
     
-    storage_init();
     
+    //Storage Init
+    storage_init();
+    storage_assets_init();
+    storage_assets_print_info();
+
     buzzer_init();
     led_rgb_init();
     buzzer_boot_sequence();

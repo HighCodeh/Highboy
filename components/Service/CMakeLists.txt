@@ -27,11 +27,11 @@ idf_component_register(SRCS
   "storage_api/storage_init.c"
   "storage_api/storage_read.c"
   "storage_api/storage_write.c"
-
   "storage_vfs/vfs_auto.c"
   "storage_vfs/vfs_core.c"
   "storage_vfs/vfs_littlefs.c"
   "storage_vfs/vfs_sdcard.c"
+  "storage_assets/storage_assets.c"
 
   "ir/ir_encoder.c"
   "ir/ir_common.c"
@@ -57,6 +57,8 @@ idf_component_register(SRCS
   "ir/include"
   "storage_api/include"
   "storage_vfs/include"
+  "storage_assets/include"
+  
 
   REQUIRES 
   sdmmc
