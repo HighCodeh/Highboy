@@ -26,6 +26,10 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# ESP_IDF COMPONENTS 
+managed_components/
+/managed_components/
+
 # Windows shortcuts
 *.lnk
 
