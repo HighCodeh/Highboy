@@ -95,9 +95,9 @@ int bq25896_get_battery_percentage(uint16_t voltage_mv);
 // --- Extended telemetry + control ------------------------------------------
 // Additive layer used by the power screen. Implemented in bq25896_ext.c on top
 // of the public base API above: battery voltage/percent/charge/vbus are real,
-// and the charge-enable / ship-mode / raw-register controls are now real
-// register writes (bq25896.c). Only the aggregated telemetry's VSYS/VBUS mV and
-// currents remain approximate.
+// and the charge-enable / ship-mode / raw-register controls are real register
+// writes (bq25896.c). The telemetry's VSYS/VBUS/currents/temperature are decoded
+// from the BQ25896 ADC (REG0F/10/11/12/13).
 
 /** @brief Whether battery charging is currently enabled (REG03 CHG_CONFIG). */
 bool bq25896_get_charge_enable(void);
@@ -126,7 +126,9 @@ typedef struct {
   uint16_t vsys_mv;            ///< System voltage in mV.
   uint16_t vbus_mv;            ///< VBUS voltage in mV.
   uint16_t ichg_ma;            ///< Charge current in mA.
-  uint16_t iinlim_ma;          ///< Input current limit in mA.
+  uint16_t iinlim_ma;          ///< Effective input current limit in mA (REG13 IDPM, post-ICO).
+  uint16_t iinlim_set_ma;      ///< Configured input current limit in mA (REG00 IINLIM).
+  uint16_t ts_pct_x10;         ///< TS pin reading, % of REGN x10 (e.g. 350 = 35.0%).
   uint8_t fault;               ///< Raw fault register value.
   int soc;                     ///< Estimated state of charge (0-100).
   bq25896_charge_status_t chg; ///< Current charge status.
@@ -136,7 +138,7 @@ typedef struct {
 } bq25896_telem_t;
 
 /**
- * @brief Fill @p out with a telemetry snapshot (real battery data, mocked diags).
+ * @brief Fill @p out with a telemetry snapshot (real battery + charger ADC diagnostics).
  *
  * @param[out] out  Destination snapshot. Must not be NULL.
  * @return ESP_OK on success, ESP_ERR_INVALID_ARG if @p out is NULL.
@@ -147,7 +149,7 @@ esp_err_t bq25896_read_telemetry(bq25896_telem_t *out);
  * @brief Raw read of any register.
  *
  * @param reg  Register address to read.
- * @return Register value, or 0 in this mocked build.
+ * @return Register value, or 0 on I2C read failure.
  */
 uint8_t bq25896_reg_raw(uint8_t reg);
 
